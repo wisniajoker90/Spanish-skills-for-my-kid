@@ -85,9 +85,27 @@
 #epicGames{scroll-margin-top:14px}
 @media(max-width:760px){.ux-activity-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.ux-activity-grid button{min-height:83px}.ux-continue button{width:100%}}
 @media(max-width:430px){.ux-activity-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style><style>
+/* Sprint 6: source-aware school checkpoints and A1 foundation */
+.s6-check-chooser{margin:22px 0 4px;padding:14px;border:1px solid #cbded1;border-radius:15px;background:#f2f8ee}
+.s6-check-links,.s6-actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.s6-check-links button{flex:1;min-width:185px}
+.s6-panel{margin:18px 0;scroll-margin-top:14px}.s6-panel[hidden]{display:none!important}
+.s6-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}.s6-head h2{margin:0}
+.s6-question{margin:16px 0;padding:18px;background:#f5f9f2;border:1px solid #d6e6d8;border-radius:16px}
+.s6-question h3{margin:0 0 11px;font-size:1.18rem}.s6-answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.s6-answers button{min-height:67px;background:white;color:#244d41;border:2px solid #bbd5c9;text-align:left}
+.s6-answers button.s6-good{background:#c6f0d3;color:#13542b;border-color:#18854f}
+.s6-answers button.s6-bad{background:#ffe1dd;color:#813027;border-color:#dc5142}
+.s6-feedback{font-size:1.05rem;font-weight:800;min-height:20px}.s6-source-badge{display:inline-block;border-radius:10px;padding:5px 9px;background:#e9efe9;color:#385d4d;font-size:.8rem;font-weight:750}
+.s6-result{background:#e9f7ed;border-radius:15px;padding:18px;margin:15px 0}.s6-topic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px}
+.s6-foundation-card{background:#f1f8f3;border-radius:14px;border:1px solid #cbded1;padding:19px;text-align:center;margin:16px 0}
+.s6-foundation-card .s6-emoji{font-size:3rem}.s6-foundation-card strong{font-size:1.5rem;display:block;margin:8px}.s6-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:9px}
+.s6-stat{border:1px solid #dce7df;border-radius:12px;background:#f4f8f3;padding:11px;display:grid;gap:3px}.s6-stat strong{font-size:1.4rem}
+@media(max-width:580px){.s6-answers{grid-template-columns:1fr}.s6-check-links{display:grid}.s6-question{padding:12px}}
 </style></head>
 <body><div class="app">
-<header><div><h1>¡Hola, Franek!</h1><p>Hiszpańska przygoda • słuchaj, graj, powtarzaj • v5.1</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
+<header><div><h1>¡Hola, Franek!</h1><p>Hiszpańska przygoda • słuchaj, graj, powtarzaj • v6.0</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
 <main>
 <section class="home-screen panel" id="homeScreen"><h2>¡Vamos, Franek! 🇪🇸</h2><p>Jak chcesz się dzisiaj uczyć?</p><div class="home-tiles"><button data-enter="car">🚗<strong>Tryb samochodowy</strong><span>Słucham i powtarzam — bez patrzenia w ekran</span></button><button data-enter="learn">🎮<strong>Centrum nauki</strong><span>Fiszki, quizy i pięć gier</span></button></div></section><div hidden="" id="workArea"><nav class="home-nav"><button class="secondary" id="backHome">🏠 Menu główne</button><span id="modeLabel"></span></nav><div id="carArea"><section aria-labelledby="carTitle" class="car-mode"><h2 id="carTitle">🚗 Tryb samochodowy — 10 minut</h2><p>Aktywna nauka przez słuchanie: Franek usłyszy słowo lub zwrot po hiszpańsku, chwilę na odpowiedź i odpowiedź po polsku. Nie trzeba patrzeć na ekran ani niczego dotykać w trakcie jazdy.</p><label for="carUnit"><strong>Rozdział do słuchania</strong></label><br/><select id="carUnit"></select><div class="car-controls"><button id="carStart">▶ Rozpocznij 10 minut</button><button class="secondary" disabled="" id="carPause">⏸ Pauza</button><button class="secondary" disabled="" id="carStop">■ Zakończ</button></div><div aria-live="polite" class="car-status" id="carStatus" role="status">Gotowe do rozpoczęcia. Wybierz rozdział.</div><div aria-label="Postęp sesji" class="car-progress"><span id="carProgress"></span></div><p class="small" id="carClock">Pozostało: 10:00</p><div class="car-note"><strong>Bezpieczeństwo:</strong> kierowca nie powinien obsługiwać ekranu. Uruchom sesję przed ruszeniem lub poproś pasażera. Quiz z przyciskami jest dostępny wyłącznie po zaznaczeniu, że samochód stoi — aplikacja nie wykrywa ruchu pojazdu.</div><label class="mode" style="margin-top:12px"><input id="carParked" type="checkbox"/> Samochód stoi bezpiecznie — odblokuj quiz ekranowy</label><div class="car-controls"><button class="secondary" disabled="" id="carQuiz">🎯 Quiz (tylko na postoju)</button></div></section></div><div id="learnArea"><div class="notice ux-source-note"><strong>Opracowane rozdziały: Otoño, Invierno i Primavera.</strong> Lekcje jesienna, zimowa i wiosenna zostały opracowane na podstawie przesłanych stron z podręcznika Colorín Colorado mini. Unidad Inicial i Verano zawierają przykładowe treści demonstracyjne — nie traktuj ich jako materiału z podręcznika.</div>
 <div class="stats"><span class="pill">⭐ Punkty: <span id="points">0</span></span><span class="pill">✅ Umiem: <span id="learnedCount">0</span></span><span class="pill">🔁 Do powtórki: <span id="reviewCount">0</span></span><span class="pill">💾 Postępy zapisują się na tym urządzeniu</span></div>
@@ -120,7 +138,7 @@
 </div>
 <p aria-live="polite" class="small ux-activity-note" id="uxActivityNote"></p>
 <button class="ux-primary" id="uxStart" type="button">🚀 Zaczynam!</button>
-<div class="ux-game-links"><button class="secondary" id="uxGames" type="button">🎮 Zagraj</button><button class="secondary" id="uxMemory" type="button">🧠 Memory — szybki start</button></div>
+<div class="ux-game-links"><button class="secondary" id="uxGames" type="button">🎮 Zagraj</button><button class="secondary" id="uxMemory" type="button">🧠 Memory — szybki start</button></div><div class="s6-check-chooser"><div class="ux-label">3. Sprawdź, co już umiesz</div><div class="s6-check-links"><button id="s6SchoolStart" type="button">📋 Checkpoint szkolny</button><button class="secondary" id="s6A1Start" type="button">🗣️ Wyzwanie A1</button></div><p class="small" id="s6SchoolNote">Szkolny sprawdzian korzysta tylko z materiału przypisanego do wybranego rozdziału; źródło zadań jest oznaczone.</p></div>
 </div>
 <div hidden="" id="uxLearningStage">
 <div class="ux-session-bar"><span id="uxStageTitle"></span><button class="secondary" id="uxBackToChoice" type="button">← Zmień ćwiczenie</button></div>
@@ -131,7 +149,11 @@
 <div class="bottom"><label class="mode"><input id="audioOnly" type="checkbox"/> Tryb samochodowy: ukryj polskie podpowiedzi</label><button id="startGame">🎯 Zagraj w quiz</button></div>
 <div hidden="" id="game"><hr style="border:0;border-top:1px solid #e3e9e0;margin:24px 0"/><h2 style="text-align:center">Co oznacza to słowo?</h2><div id="gameEmoji" style="text-align:center;font-size:2.6rem">👋</div><div id="gameWord" style="text-align:center;font-size:1.7rem;font-weight:800">Hola</div><div class="gamegrid" id="choices"></div><div aria-live="polite" class="feedback" id="feedback"></div><div style="text-align:center;margin-top:12px"><button id="nextQuestion">Następne pytanie</button></div></div>
 </section></div><div hidden="" id="uxA1Pane"><div aria-live="polite" class="a1-stats" id="a1Stats"></div><div aria-live="polite" class="a1-stage" id="a1Stage"></div></div>
-</div></section><div class="tabs" hidden="" id="tabs"><button class="active" data-unit="0">Unidad Inicial</button><button data-unit="1">Otoño</button><button data-unit="2">Invierno</button><button data-unit="3">Primavera</button><button data-unit="4">Verano</button><button data-unit="5">💬 Daily chat</button></div>
+</div></section>
+<section class="panel s6-panel" id="s6TestingPanel" hidden><div class="s6-head"><h2 id="s6TestTitle">📋 Checkpoint szkolny</h2><button class="secondary" id="s6TestClose">← Wróć do nauki</button></div><p id="s6TestSource" class="small"></p><div id="s6TestBody"></div><p class="s6-feedback" id="s6TestFeedback" aria-live="polite"></p><div class="s6-actions" id="s6TestActions"></div><div id="s6TestHistory" class="small"></div></section>
+<section class="panel s6-panel" id="s6Foundation"><details><summary>🧱 Fundament A1 — liczby, kolory, zwierzęta i codzienne przedmioty</summary><p>Materiał dodatkowy A1, poza podręcznikiem. Wybierz temat, słuchaj, ćwicz fiszki albo sprawdź swoją wiedzę.</p><label class="ux-label" for="s6FoundationTopic">Kategoria podstawowego słownictwa</label><select class="ux-select" id="s6FoundationTopic"></select><div id="s6FoundationStats" class="small"></div><div class="s6-actions"><button id="s6FoundationCards">📚 Fiszki</button><button class="secondary" id="s6FoundationQuiz">🎯 Quiz tematyczny</button></div><div id="s6FoundationBody"></div></details></section>
+<section class="panel s6-panel" id="s6Tracking"><h2>📊 Szkoła i droga do A1 — osobne wyniki</h2><p class="small">Checkpointy szkolne nie są ocenami z dziennika. Zadania A1 pokazują postęp w ćwiczeniach, nie certyfikują znajomości języka.</p><div id="s6TrackingBody"></div></section>
+<div class="tabs" hidden="" id="tabs"><button class="active" data-unit="0">Unidad Inicial</button><button data-unit="1">Otoño</button><button data-unit="2">Invierno</button><button data-unit="3">Primavera</button><button data-unit="4">Verano</button><button data-unit="5">💬 Daily chat</button></div>
 
 
 
@@ -512,5 +534,136 @@ $('uxGames').onclick=()=>openGames(false);
 $('uxMemory').onclick=()=>openGames(true);
 const initial=Math.min(5,Math.max(0,Number((()=>{try{return JSON.parse(localStorage.getItem('hiszpanskiFrankaProgressV1')||'{}').unit||1}catch(e){return 1}})())||1));
 choose(initial,'words');refreshResume();
+})();
+</script><script>
+/* Sprint 6 — School First, A1 Next. No modification to v5.1 localStorage keys. */
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const unique=a=>[...new Set(a)];
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const newNode=(tag,cl,txt)=>{const x=document.createElement(tag);if(cl)x.className=cl;if(txt!==undefined)x.textContent=txt;return x};
+const button=(txt,cb,cls='secondary')=>{const b=newNode('button',cls,txt);b.type='button';b.onclick=cb;return b};
+const s6Key='hiszpanskiFrankaSprint6ProgressV1';
+let state={school:{},a1:{},foundation:{}};
+try{let x=JSON.parse(localStorage.getItem(s6Key)||'null');if(x&&typeof x==='object')state={school:x.school||{},a1:x.a1||{},foundation:x.foundation||{}}}catch(e){}
+function save(){try{localStorage.setItem(s6Key,JSON.stringify(state))}catch(e){};drawDashboard()}
+function say(es){if(typeof speak==='function')speak(es)}
+// Only the listed notebook entries are verified at ITEM level. Other chapter material
+// was prepared from earlier supplied excerpts; it is NOT asserted to be fully verified.
+const notebookOtono=new Set('Pájaros|Uvas|Higos|Lluvia|Frío|Castañas|Calabaza|Hojas|Árbol|Setas|Hongos|Champiñones|Noches largas|Días cortos|Coliflor|Aguacate|Judías verdes|Manzana|Pera|Granadas|Nueces|Moras|Sol|Día|Noche|Rojo|Amarillo|Verde|Naranja|Negro|Morado|Azul|Gris|Rosa|Café|Marrón|Uno|Dos|Tres|Cuatro|Cinco|Seis|Siete|Ocho|Nueve|Diez'.split('|').map(v=>v.toLocaleLowerCase('es')));
+const bookInitial=new Set('Hola|Mucho gusto|Rojo|Amarillo|Verde|Azul|Negro|Rosa|Naranja|Marrón|Gracias|De nada'.split('|').map(v=>v.toLocaleLowerCase('es')));
+function schoolSource(u,c){const word=c[1].trim().toLocaleLowerCase('es');if(u===1&&notebookOtono.has(word))return 'Zeszyt Franka — Otoño, potwierdzone na dostarczonych stronach';if(u===0&&bookInitial.has(word))return 'Przesłane strony Unidad Inicial — potwierdzony przykład';if(u===1||u===2||u===3)return 'Rozdział opracowany z dostarczonych materiałów; pozycja do szczegółowej weryfikacji';return 'Materiał dodatkowy / demonstracyjny'}
+function isVerified(u,c){return (u===1&&notebookOtono.has(c[1].trim().toLocaleLowerCase('es')))||(u===0&&bookInitial.has(c[1].trim().toLocaleLowerCase('es')))}
+function poolFor(u){const seen=new Set();return (units[u]?.cards||[]).filter(c=>{const key=c[2].toLocaleLowerCase('pl').trim();if(seen.has(key))return false;seen.add(key);return true})}
+// School checkpoints are limited to school chapters. Verified notebook material takes precedence.
+function schoolPool(u){if(u===0||u===4||u===5)return [];const all=poolFor(u);const verified=all.filter(c=>isVerified(u,c));return verified.length>=4?verified:all}
+const foundation={
+ '🔢 Liczby 1–20':[['1️⃣','Uno','Jeden'],['2️⃣','Dos','Dwa'],['3️⃣','Tres','Trzy'],['4️⃣','Cuatro','Cztery'],['5️⃣','Cinco','Pięć'],['6️⃣','Seis','Sześć'],['7️⃣','Siete','Siedem'],['8️⃣','Ocho','Osiem'],['9️⃣','Nueve','Dziewięć'],['🔟','Diez','Dziesięć'],['🔢','Once','Jedenaście'],['🔢','Doce','Dwanaście'],['🔢','Trece','Trzynaście'],['🔢','Catorce','Czternaście'],['🔢','Quince','Piętnaście'],['🔢','Dieciséis','Szesnaście'],['🔢','Diecisiete','Siedemnaście'],['🔢','Dieciocho','Osiemnaście'],['🔢','Diecinueve','Dziewiętnaście'],['🔢','Veinte','Dwadzieścia']],
+ '🎨 Kolory':[['🔴','Rojo','Czerwony'],['🔵','Azul','Niebieski'],['🟢','Verde','Zielony'],['🟡','Amarillo','Żółty'],['⚫','Negro','Czarny'],['⚪','Blanco','Biały'],['🟠','Naranja','Pomarańczowy'],['🟣','Morado','Fioletowy'],['🌸','Rosa','Różowy'],['🟤','Marrón','Brązowy'],['🌫️','Gris','Szary']],
+ '🐶 Zwierzęta':[['🐶','Perro','Pies'],['🐱','Gato','Kot'],['🐟','Pez','Ryba'],['🐦','Pájaro','Ptak'],['🐰','Conejo','Królik'],['🐭','Ratón','Mysz'],['🐴','Caballo','Koń'],['🐮','Vaca','Krowa'],['🐷','Cerdo','Świnia'],['🐔','Gallina','Kura'],['🦋','Mariposa','Motyl'],['🐝','Abeja','Pszczoła']],
+ '✏️ Przedmioty szkolne':[['📘','Libro','Książka'],['📓','Cuaderno','Zeszyt'],['✏️','Lápiz','Ołówek'],['🖊️','Bolígrafo','Długopis'],['🧽','Goma de borrar','Gumka do mazania'],['🎒','Mochila','Plecak'],['📏','Regla','Linijka'],['✂️','Tijeras','Nożyczki'],['🪑','Silla','Krzesło'],['🖼️','Pizarra','Tablica'],['🖍️','Lápices de colores','Kredki'],['📚','Clase','Lekcja / klasa']],
+ '👨‍👩‍👦 Rodzina':[['👩','Madre','Mama'],['👨','Padre','Tata'],['👦','Hermano','Brat'],['👧','Hermana','Siostra'],['👵','Abuela','Babcia'],['👴','Abuelo','Dziadek'],['👶','Bebé','Niemowlę'],['👨‍👩‍👦','Familia','Rodzina']],
+ '🍎 Jedzenie i picie':[['🍎','Manzana','Jabłko'],['🍌','Plátano','Banan'],['🍐','Pera','Gruszka'],['🍞','Pan','Chleb'],['🧀','Queso','Ser'],['🥛','Leche','Mleko'],['💧','Agua','Woda'],['🍚','Arroz','Ryż'],['🥚','Huevo','Jajko'],['🍲','Sopa','Zupa'],['🍊','Naranja','Pomarańcza (owoc)']],
+ '🏠 Dom i przedmioty':[['🏠','Casa','Dom'],['🚪','Puerta','Drzwi'],['🪟','Ventana','Okno'],['🛏️','Cama','Łóżko'],['🪑','Mesa','Stół'],['🪑','Silla','Krzesło'],['🍳','Cocina','Kuchnia'],['🚿','Baño','Łazienka'],['🛋️','Salón','Salon'],['💡','Lámpara','Lampa']],
+ '🧍 Części ciała':[['🙂','Cabeza','Głowa'],['👀','Ojos','Oczy'],['👂','Orejas','Uszy'],['👃','Nariz','Nos'],['👄','Boca','Usta'],['🖐️','Mano','Dłoń'],['💪','Brazo','Ramię'],['🦵','Pierna','Noga'],['🦶','Pie','Stopa'],['🦷','Dientes','Zęby']],
+ '👕 Ubrania':[['👕','Camiseta','Koszulka'],['👖','Pantalones','Spodnie'],['👟','Zapatos','Buty'],['🧦','Calcetines','Skarpetki'],['🧥','Chaqueta','Kurtka'],['🧣','Bufanda','Szalik'],['🧤','Guantes','Rękawiczki'],['🧢','Gorro','Czapka']],
+ '🌤️ Pogoda i pory roku':[['☀️','Sol','Słońce'],['🌧️','Lluvia','Deszcz'],['❄️','Nieve','Śnieg'],['💨','Viento','Wiatr'],['🌱','Primavera','Wiosna'],['☀️','Verano','Lato'],['🍂','Otoño','Jesień'],['❄️','Invierno','Zima'],['☁️','Nube','Chmura']],
+ '👋 Powitania':[['👋','Hola','Cześć'],['👋','Adiós','Do widzenia'],['🙏','Gracias','Dziękuję'],['😊','De nada','Nie ma za co'],['🙂','Por favor','Proszę'],['🤝','Mucho gusto','Miło mi'],['🗣️','¿Cómo estás?','Jak się masz?'],['😊','Estoy bien','Mam się dobrze']]
+};
+const sentences={
+ 1:[['En otoño llueve.','Jesienią pada deszcz.','🌧️','¿Qué tiempo hace?','Llueve.'],['Las hojas son amarillas.','Liście są żółte.','🍂','¿De qué color son las hojas?','Son amarillas.'],['Veo un árbol.','Widzę drzewo.','🌳','¿Qué ves?','Veo un árbol.'],['Me gusta la manzana.','Lubię jabłko.','🍎','¿Qué te gusta?','Me gusta la manzana.']],
+ 2:[['Hoy hace frío.','Dziś jest zimno.','🥶','¿Qué tiempo hace hoy?','Hace frío.'],['Llevo una bufanda.','Mam na sobie szalik.','🧣','¿Qué llevas?','Llevo una bufanda.'],['Veo nieve.','Widzę śnieg.','❄️','¿Qué ves?','Veo nieve.']],
+ 3:[['Veo una mariposa.','Widzę motyla.','🦋','¿Qué ves?','Veo una mariposa.'],['Me gusta jugar al fútbol.','Lubię grać w piłkę nożną.','⚽','¿Qué te gusta hacer?','Me gusta jugar al fútbol.'],['Hay una flor.','Jest kwiat.','🌸','¿Qué hay?','Hay una flor.']]
+};
+const s6Panel=$('s6TestingPanel'),answer=$('s6TestBody'),feedback=$('s6TestFeedback'),actions=$('s6TestActions');
+let test=null;
+function hideGame(){s6Panel.hidden=true;test=null}
+function openGame(type,u,incorrectOnly=false){
+ $('epicGames').hidden=true;$('uxLearningStage').hidden=true;
+ s6Panel.hidden=false;feedback.textContent='';actions.replaceChildren();
+ if(type==='school'){
+  const pool=schoolPool(u);const past=state.school[u]?.incorrect||[];
+  const filtered=incorrectOnly?pool.filter(c=>past.includes(c[1])):pool;
+  if(!filtered.length){answer.textContent='Brak pytań dla tego rozdziału lub brak błędnych odpowiedzi do poprawienia.';return}
+  // 15 non-duplicate questions, repeating only when chapter has fewer entries.
+  const shuffled=shuffle(filtered);
+  const list=Array.from({length:Math.min(15,Math.max(6,shuffled.length))},(_,i)=>shuffled[i%shuffled.length]);
+  test={type,u,pool,questions:list,idx:0,correct:0,incorrect:[],answered:false};
+  $('s6TestTitle').textContent='📋 Checkpoint: '+units[u].title;
+  $('s6TestSource').textContent=u===1?'Pytania z haseł potwierdzonych w dostarczonym zeszycie Otoño. Dodatkowe zwroty nie są w tym teście.':'Pytania z opracowanego rozdziału; zgodność poszczególnych pozycji z podręcznikiem wymaga dalszej weryfikacji.';
+ }else{
+  const lesson=sentences[u]||[];
+  if(!lesson.length){$('s6TestTitle').textContent='🗣️ Wyzwanie A1';$('s6TestSource').textContent='Do tego rozdziału przygotujemy zadania A1 w kolejnej aktualizacji.';answer.textContent='Brak wyzwania A1 dla tego rozdziału. Możesz wybrać Otoño, Invierno lub Primavera.';return}
+  test={type,u,questions:shuffle(lesson),idx:0,correct:0,incorrect:[],answered:false,spoken:0};
+  $('s6TestTitle').textContent='🗣️ Wyzwanie A1: '+units[u].title;
+  $('s6TestSource').textContent='Przykładowe zdania komunikacyjne A1 — materiał opracowany na podstawie poznanych słówek, nie cytat z książki. Odpowiedź ustną oceń samodzielnie lub z rodzicem.';
+ }
+ showQuestion();s6Panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function showQuestion(){
+ feedback.textContent='';actions.replaceChildren();answer.replaceChildren();if(!test)return;
+ if(test.idx>=test.questions.length){finishTest();return}
+ test.answered=false;const c=test.questions[test.idx],n=test.idx+1,total=test.questions.length;
+ const box=newNode('div','s6-question');box.append(newNode('p','small',`Pytanie ${n} z ${total}`));
+ if(test.type==='school'){
+  const mode=(test.idx%3);const ask=mode===0?'Wybierz poprawne znaczenie:':mode===1?'Posłuchaj i wybierz znaczenie:':'Jak to powiedzieć po hiszpańsku?';
+  box.append(newNode('h3','',ask));
+  const prompt=mode===2?c[2]:mode===1?'🔊 Najpierw odsłuchaj słowo':c[1];box.append(newNode('p','epic-prompt',prompt));
+  if(mode===1){box.append(button('🔊 Odtwórz słowo',()=>say(c[1]),'epic-listen'))}
+  const correct=mode===2?c[1]:c[2];let options=shuffle(test.pool.filter(x=>x[1]!==c[1]&&x[2]!==c[2])).slice(0,3).map(x=>mode===2?x[1]:x[2]);options=shuffle([...options,correct]);
+  const choices=newNode('div','s6-answers');options.forEach(x=>choices.append(button(x,()=>{
+    if(test.answered)return;test.answered=true;const ok=x===correct;if(ok)test.correct++;else test.incorrect.push(c[1]);
+    choices.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add('s6-good');else if(b.textContent===x&&!ok)b.classList.add('s6-bad')});
+    feedback.textContent=ok?'✅ ¡Muy bien!':'❌ Poprawna odpowiedź: '+correct;
+    actions.append(button(n===total?'📊 Zobacz wynik':'➡️ Następne pytanie',()=>{test.idx++;showQuestion()},'epic-primary'));
+  })));box.append(choices);
+  box.append(newNode('p','small',schoolSource(test.u,c)));
+ }else{
+  box.append(newNode('h3','',test.idx%2===0?'Posłuchaj i wybierz właściwe znaczenie':'Odpowiedz na głos'));
+  if(test.idx%2===0){
+    box.append(newNode('p','epic-prompt','🎧 Co usłyszałeś?'),button('🔊 Posłuchaj zdania',()=>say(c[0]),'epic-listen'));
+    const choices=newNode('div','s6-answers');const correct=c[1];const alts=shuffle(test.questions.filter(x=>x[1]!==correct)).slice(0,2).map(x=>x[1]);
+    shuffle([correct,...alts]).forEach(x=>choices.append(button(x,()=>{if(test.answered)return;test.answered=true;const ok=x===correct;if(ok)test.correct++;else test.incorrect.push(c[0]);choices.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add('s6-good');else if(b.textContent===x&&!ok)b.classList.add('s6-bad')});feedback.textContent=ok?'✅ Zgadza się!':'❌ Poprawnie: '+correct;actions.append(button(n===total?'📊 Zobacz wynik':'➡️ Dalej',()=>{test.idx++;showQuestion()},'epic-primary'))})));box.append(choices)
+  }else{
+    box.append(newNode('p','epic-prompt',c[3]),button('🔊 Posłuchaj pytania',()=>say(c[3]),'epic-listen'),newNode('p','small','Powiedz odpowiedź po hiszpańsku, zanim ją odkryjesz.'));
+    const example=newNode('p','s6-result',c[4]);example.hidden=true;box.append(button('👀 Pokaż przykładową odpowiedź',()=>{example.hidden=false;say(c[4]);actions.replaceChildren();actions.append(button('✅ Udało mi się odpowiedzieć',()=>rating(true)),button('🔁 Jeszcze ćwiczę',()=>rating(false),'secondary'))}),example);
+    function rating(ok){if(test.answered)return;test.answered=true;if(ok){test.correct++;test.spoken++}else test.incorrect.push(c[0]);feedback.textContent=ok?'✅ Świetnie, ćwicz dalej!':'👍 Dobrze, że próbujesz — wrócimy do tego zdania.';actions.replaceChildren();actions.append(button(n===total?'📊 Zobacz wynik':'➡️ Dalej',()=>{test.idx++;showQuestion()},'epic-primary'))}
+  }
+ }
+ answer.append(box)
+}
+function finishTest(){
+ const n=test.questions.length,pct=Math.round(100*test.correct/n);const kind=test.type;const u=test.u;
+ const record={time:new Date().toISOString(),right:test.correct,total:n,percent:pct,incorrect:unique(test.incorrect),spoken:test.spoken||0};
+ const section=kind==='school'?state.school:state.a1;const old=section[u]||{history:[]};old.history=[record,...(old.history||[])].slice(0,15);old.incorrect=record.incorrect;section[u]=old;save();
+ answer.replaceChildren();answer.append(newNode('div','s6-result',`🏆 Wynik: ${test.correct}/${n} (${pct}%)`),newNode('p','',kind==='school'?(pct>=85?'Świetnie opanowany materiał!':'Zobacz błędne odpowiedzi i poćwicz je ponownie.'):'To wynik ćwiczeń — nie jest formalną oceną A1.'));
+ if(record.incorrect.length)answer.append(newNode('p','small','Do powtórki: '+record.incorrect.join(', ')));
+ feedback.textContent='';actions.replaceChildren();
+ if(kind==='school'&&record.incorrect.length)actions.append(button('🔁 Poćwicz błędne odpowiedzi',()=>openGame('school',u,true)));
+ actions.append(button('↻ Cały sprawdzian od nowa',()=>openGame(kind,u),'secondary'));
+ drawDashboard();
+}
+$('s6SchoolStart').addEventListener('click',()=>{const u=Number($('uxUnit').value);if(u===0||u===4||u===5||u>=6){$('s6SchoolNote').textContent='Wybierz Otoño, Invierno lub Primavera: pozostałe tematy są dodatkowe lub niezweryfikowane jako pełny rozdział.';return}openGame('school',u)});
+$('s6A1Start').addEventListener('click',()=>{const u=Number($('uxUnit').value);openGame('a1',u)});
+$('s6TestClose').onclick=()=>{hideGame();$('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
+// A1 fundamental lexicon: distinct from source-verified school data.
+const fSelect=$('s6FoundationTopic');Object.keys(foundation).forEach((k,i)=>fSelect.add(new Option(k,String(i))));let fi=0,cardIndex=0,fmode='cards';const cats=Object.keys(foundation);
+function fRecords(){const key=cats[fi];return state.foundation[key]||(state.foundation[key]={correct:0,attempts:0})}
+function drawFoundation(){const cards=foundation[cats[fi]],root=$('s6FoundationBody');root.replaceChildren();$('s6FoundationStats').textContent=`${cards.length} haseł · ${fRecords().correct}/${fRecords().attempts} poprawnych odpowiedzi w quizach`;
+ if(fmode==='cards'){
+  const c=cards[cardIndex%cards.length];const item=newNode('div','s6-foundation-card');item.append(newNode('div','s6-emoji',c[0]),newNode('strong','',c[1]),newNode('p','',c[2]));
+  const controls=newNode('div','s6-actions');controls.append(button('🔊 Posłuchaj',()=>say(c[1]),'epic-listen'),button('➡️ Następne',()=>{cardIndex=(cardIndex+1)%cards.length;drawFoundation()},'epic-primary'));root.append(item,controls);
+ }else{
+  const c=cards[cardIndex%cards.length],right=c[2],alts=shuffle(cards.filter(x=>x[2]!==right)).slice(0,3).map(x=>x[2]);const q=newNode('div','s6-question');q.append(newNode('h3','','Co oznacza „'+c[1]+'”?'),button('🔊 Odsłuchaj',()=>say(c[1]),'epic-listen'));const a=newNode('div','s6-answers');shuffle([...alts,right]).forEach(t=>a.append(button(t,()=>{if(q.dataset.answered)return;q.dataset.answered='1';const r=fRecords();r.attempts++;const ok=t===right;if(ok)r.correct++;save();a.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===right)b.classList.add('s6-good');else if(b.textContent===t&&!ok)b.classList.add('s6-bad')});q.append(newNode('p','s6-feedback',ok?'✅ Doskonale!':'❌ Poprawnie: '+right));q.append(button('➡️ Następne',()=>{cardIndex=(cardIndex+1)%cards.length;drawFoundation()},'epic-primary'))})));q.append(a);root.append(q)
+ }
+}
+fSelect.onchange=()=>{fi=Number(fSelect.value);cardIndex=0;drawFoundation()};$('s6FoundationCards').onclick=()=>{fmode='cards';drawFoundation()};$('s6FoundationQuiz').onclick=()=>{fmode='quiz';drawFoundation()};drawFoundation();
+function drawDashboard(){const root=$('s6TrackingBody');if(!root)return;root.replaceChildren();
+ const grid=newNode('div','s6-stat-grid');for(let u of [1,2,3]){const sh=state.school[u]?.history?.[0],a1=state.a1[u]?.history?.[0];const b=newNode('div','s6-stat');b.append(newNode('strong','',units[u].title),newNode('span','small','📋 Szkoła: '+(sh?`${sh.percent}% (${sh.right}/${sh.total})`:'brak sprawdzianu')),newNode('span','small','🗣️ A1: '+(a1?`${a1.percent}% (${a1.right}/${a1.total})`:'brak próby')));grid.append(b)}root.append(grid);
+ const count=Object.values(state.foundation).reduce((acc,r)=>acc+(r.attempts||0),0);root.append(newNode('p','small','🧱 Fundament A1: '+count+' odpowiedzi w quizach. Wszystkie wyniki pozostają w tej przeglądarce.'));
+}
+drawDashboard();
+window.addEventListener('storage',drawDashboard);
 })();
 </script></body></html>
