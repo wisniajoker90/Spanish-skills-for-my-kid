@@ -105,7 +105,7 @@
 @media(max-width:580px){.s6-answers{grid-template-columns:1fr}.s6-check-links{display:grid}.s6-question{padding:12px}}
 </style></head>
 <body><div class="app">
-<header><div><h1>¡Hola, Franek!</h1><p>Hiszpańska przygoda • słuchaj, graj, powtarzaj • v6.0</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
+<header><div><h1>¡Hola, Franek!</h1><p>Hiszpańska przygoda • słuchaj, graj, powtarzaj • v6.1</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
 <main>
 <section class="home-screen panel" id="homeScreen"><h2>¡Vamos, Franek! 🇪🇸</h2><p>Jak chcesz się dzisiaj uczyć?</p><div class="home-tiles"><button data-enter="car">🚗<strong>Tryb samochodowy</strong><span>Słucham i powtarzam — bez patrzenia w ekran</span></button><button data-enter="learn">🎮<strong>Centrum nauki</strong><span>Fiszki, quizy i pięć gier</span></button></div></section><div hidden="" id="workArea"><nav class="home-nav"><button class="secondary" id="backHome">🏠 Menu główne</button><span id="modeLabel"></span></nav><div id="carArea"><section aria-labelledby="carTitle" class="car-mode"><h2 id="carTitle">🚗 Tryb samochodowy — 10 minut</h2><p>Aktywna nauka przez słuchanie: Franek usłyszy słowo lub zwrot po hiszpańsku, chwilę na odpowiedź i odpowiedź po polsku. Nie trzeba patrzeć na ekran ani niczego dotykać w trakcie jazdy.</p><label for="carUnit"><strong>Rozdział do słuchania</strong></label><br/><select id="carUnit"></select><div class="car-controls"><button id="carStart">▶ Rozpocznij 10 minut</button><button class="secondary" disabled="" id="carPause">⏸ Pauza</button><button class="secondary" disabled="" id="carStop">■ Zakończ</button></div><div aria-live="polite" class="car-status" id="carStatus" role="status">Gotowe do rozpoczęcia. Wybierz rozdział.</div><div aria-label="Postęp sesji" class="car-progress"><span id="carProgress"></span></div><p class="small" id="carClock">Pozostało: 10:00</p><div class="car-note"><strong>Bezpieczeństwo:</strong> kierowca nie powinien obsługiwać ekranu. Uruchom sesję przed ruszeniem lub poproś pasażera. Quiz z przyciskami jest dostępny wyłącznie po zaznaczeniu, że samochód stoi — aplikacja nie wykrywa ruchu pojazdu.</div><label class="mode" style="margin-top:12px"><input id="carParked" type="checkbox"/> Samochód stoi bezpiecznie — odblokuj quiz ekranowy</label><div class="car-controls"><button class="secondary" disabled="" id="carQuiz">🎯 Quiz (tylko na postoju)</button></div></section></div><div id="learnArea"><div class="notice ux-source-note"><strong>Opracowane rozdziały: Otoño, Invierno i Primavera.</strong> Lekcje jesienna, zimowa i wiosenna zostały opracowane na podstawie przesłanych stron z podręcznika Colorín Colorado mini. Unidad Inicial i Verano zawierają przykładowe treści demonstracyjne — nie traktuj ich jako materiału z podręcznika.</div>
 <div class="stats"><span class="pill">⭐ Punkty: <span id="points">0</span></span><span class="pill">✅ Umiem: <span id="learnedCount">0</span></span><span class="pill">🔁 Do powtórki: <span id="reviewCount">0</span></span><span class="pill">💾 Postępy zapisują się na tym urządzeniu</span></div>
@@ -138,7 +138,7 @@
 </div>
 <p aria-live="polite" class="small ux-activity-note" id="uxActivityNote"></p>
 <button class="ux-primary" id="uxStart" type="button">🚀 Zaczynam!</button>
-<div class="ux-game-links"><button class="secondary" id="uxGames" type="button">🎮 Zagraj</button><button class="secondary" id="uxMemory" type="button">🧠 Memory — szybki start</button></div><div class="s6-check-chooser"><div class="ux-label">3. Sprawdź, co już umiesz</div><div class="s6-check-links"><button id="s6SchoolStart" type="button">📋 Checkpoint szkolny</button><button class="secondary" id="s6A1Start" type="button">🗣️ Wyzwanie A1</button></div><p class="small" id="s6SchoolNote">Szkolny sprawdzian korzysta tylko z materiału przypisanego do wybranego rozdziału; źródło zadań jest oznaczone.</p></div>
+<div class="ux-game-links"><button class="secondary" id="uxGames" type="button">🎮 Zagraj</button><button class="secondary" id="uxMemory" type="button">🧠 Memory — szybki start</button></div><div class="s6-check-chooser"><div class="ux-label">3. Sprawdź, co już umiesz</div><div class="s6-check-links"><button id="s6SchoolStart" type="button">📋 Checkpoint szkolny</button><button class="secondary" id="s6A1Start" type="button">🗣️ Wyzwanie A1</button></div><p class="small" id="s6SchoolNote">Sprawdzian sprawdza wybrany rozdział. Verano to test ćwiczeniowy z materiału niezweryfikowanego ze szkołą.</p></div>
 </div>
 <div hidden="" id="uxLearningStage">
 <div class="ux-session-bar"><span id="uxStageTitle"></span><button class="secondary" id="uxBackToChoice" type="button">← Zmień ćwiczenie</button></div>
@@ -148,10 +148,15 @@
 <div class="actions"><button class="secondary" id="repeat">🔁 Powtórz jeszcze raz</button><button id="markLearned">✅ Umiem to!</button><button class="secondary" id="markReview">🔁 Do powtórki</button><button id="next">➡️ Następna karta</button></div>
 <div class="bottom"><label class="mode"><input id="audioOnly" type="checkbox"/> Tryb samochodowy: ukryj polskie podpowiedzi</label><button id="startGame">🎯 Zagraj w quiz</button></div>
 <div hidden="" id="game"><hr style="border:0;border-top:1px solid #e3e9e0;margin:24px 0"/><h2 style="text-align:center">Co oznacza to słowo?</h2><div id="gameEmoji" style="text-align:center;font-size:2.6rem">👋</div><div id="gameWord" style="text-align:center;font-size:1.7rem;font-weight:800">Hola</div><div class="gamegrid" id="choices"></div><div aria-live="polite" class="feedback" id="feedback"></div><div style="text-align:center;margin-top:12px"><button id="nextQuestion">Następne pytanie</button></div></div>
-</section></div><div hidden="" id="uxA1Pane"><div aria-live="polite" class="a1-stats" id="a1Stats"></div><div aria-live="polite" class="a1-stage" id="a1Stage"></div></div>
+</section></div><div hidden="" id="uxA1Pane"><div aria-live="polite" class="a1-stats" id="a1Stats"></div><div aria-live="polite" class="a1-stage" id="a1Stage"></div></div><div id="uxFoundationSlot" hidden>
+  <p class="small">✨ Temat dodatkowy A1 — słówka i ćwiczenia, nie materiał z podręcznika.</p>
+  <div class="s6-actions"><button id="s6FoundationCards" type="button">📚 Fiszki</button><button class="secondary" id="s6FoundationQuiz" type="button">🎯 Quiz tematyczny</button></div>
+  <p id="s6FoundationStats" class="small" aria-live="polite"></p>
+  <div id="s6FoundationBody"></div>
+</div>
 </div></section>
 <section class="panel s6-panel" id="s6TestingPanel" hidden><div class="s6-head"><h2 id="s6TestTitle">📋 Checkpoint szkolny</h2><button class="secondary" id="s6TestClose">← Wróć do nauki</button></div><p id="s6TestSource" class="small"></p><div id="s6TestBody"></div><p class="s6-feedback" id="s6TestFeedback" aria-live="polite"></p><div class="s6-actions" id="s6TestActions"></div><div id="s6TestHistory" class="small"></div></section>
-<section class="panel s6-panel" id="s6Foundation"><details><summary>🧱 Fundament A1 — liczby, kolory, zwierzęta i codzienne przedmioty</summary><p>Materiał dodatkowy A1, poza podręcznikiem. Wybierz temat, słuchaj, ćwicz fiszki albo sprawdź swoją wiedzę.</p><label class="ux-label" for="s6FoundationTopic">Kategoria podstawowego słownictwa</label><select class="ux-select" id="s6FoundationTopic"></select><div id="s6FoundationStats" class="small"></div><div class="s6-actions"><button id="s6FoundationCards">📚 Fiszki</button><button class="secondary" id="s6FoundationQuiz">🎯 Quiz tematyczny</button></div><div id="s6FoundationBody"></div></details></section>
+
 <section class="panel s6-panel" id="s6Tracking"><h2>📊 Szkoła i droga do A1 — osobne wyniki</h2><p class="small">Checkpointy szkolne nie są ocenami z dziennika. Zadania A1 pokazują postęp w ćwiczeniach, nie certyfikują znajomości języka.</p><div id="s6TrackingBody"></div></section>
 <div class="tabs" hidden="" id="tabs"><button class="active" data-unit="0">Unidad Inicial</button><button data-unit="1">Otoño</button><button data-unit="2">Invierno</button><button data-unit="3">Primavera</button><button data-unit="4">Verano</button><button data-unit="5">💬 Daily chat</button></div>
 
@@ -485,16 +490,17 @@ const choice=$('uxUnit'), activities=[...document.querySelectorAll('[data-ux-act
 const getUnit=()=>Number(choice.value);
 const display={words:'Słówka',sentences:'Zdania',dialogues:'Dialogi',listening:'Słuchanie',speaking:'Mówienie'};
 const topicIndex={1:0,2:1,3:2,6:3,7:4};
+const isFoundation=u=>u>=100&&u<111;
 const uxKey='hiszpanskiFrankaLastActivityV1';
 let selected='words';
-function supported(unit,kind){return kind==='words'||unit in topicIndex ? (kind==='words'?unit<6:unit in topicIndex):false}
+function supported(unit,kind){return isFoundation(unit)?kind==='words':kind==='words'?unit<6:unit in topicIndex}
 function choose(unit,kind){
  choice.value=String(unit);const valid=supported(unit,kind);
- selected=valid?kind:(unit>=6?'sentences':'words');
+ selected=valid?kind:'words';
  activities.forEach(b=>{b.disabled=!supported(unit,b.dataset.uxActivity);b.classList.toggle('active',b.dataset.uxActivity===selected);b.setAttribute('aria-pressed',String(b.dataset.uxActivity===selected))});
  const label=choice.options[choice.selectedIndex].text;
- $('uxActivityNote').textContent=unit===0||unit===4||unit===5?'Ten rozdział ma na razie słówka i gry; ćwiczenia zdań będą dodawane stopniowo.':unit>=6?'Dodatkowy materiał A1 — zdania, dialogi, słuchanie i mówienie.':'Wybierz ulubioną aktywność i rozpocznij.';
- $('uxSource').textContent=unit===0||unit===4?'Materiał demonstracyjny — sprawdź zgodność z zeszytem i podręcznikiem.':unit===5||unit>=6?'Materiał dodatkowy, poza szkolnym podręcznikiem.':'Ćwiczenia oparte na znanym rozdziale szkolnym. Zdania są przykładami ułożonymi specjalnie do nauki.';
+ $('uxActivityNote').textContent=isFoundation(unit)?'Dodatkowy temat A1: fiszki i quiz tematyczny.':unit===0||unit===4||unit===5?'Ten rozdział ma na razie słówka i gry; ćwiczenia zdań będą dodawane stopniowo.':unit>=6?'Dodatkowy materiał A1 — zdania, dialogi, słuchanie i mówienie.':'Wybierz ulubioną aktywność i rozpocznij.';
+ $('uxSource').textContent=isFoundation(unit)?'Rozszerzenie A1 — poza materiałem szkolnym.':unit===0||unit===4?'Materiał demonstracyjny — sprawdź zgodność z zeszytem i podręcznikiem.':unit===5||unit>=6?'Materiał dodatkowy, poza szkolnym podręcznikiem.':'Ćwiczenia oparte na znanym rozdziale szkolnym. Zdania są przykładami ułożonymi specjalnie do nauki.';
  // Keep one chosen lesson across flashcards, games, and dialogue engine.
  if(unit<6){const tab=document.querySelector('#tabs button[data-unit="'+unit+'"]');if(tab)tab.click();$('epicUnit').value=String(unit);if($('smartUnit'))$('smartUnit').value=String(unit)}
  if(unit in topicIndex){const a1=$('a1Topic');a1.value=String(topicIndex[unit]);a1.dispatchEvent(new Event('change',{bubbles:true}))}
@@ -505,15 +511,16 @@ function showLearning(){
  if(!supported(unit,kind))return;
  $('epicGames').hidden=true;
  $('uxLearningStage').hidden=false;
- $('uxWordsSlot').hidden=kind!=='words';$('uxA1Pane').hidden=kind==='words';
+ $('uxWordsSlot').hidden=kind!=='words'||isFoundation(unit);$('uxA1Pane').hidden=kind==='words'||isFoundation(unit);$('uxFoundationSlot').hidden=!isFoundation(unit);
  $('uxStageTitle').textContent=choice.options[choice.selectedIndex].text+' · '+display[kind];
+ if(isFoundation(unit)){document.dispatchEvent(new CustomEvent('franka:foundationStart',{detail:{index:unit-100}}))}
  if(kind!=='words'){const button=document.querySelector('[data-a1-view="'+kind+'"]');if(button)button.click()}
  try{localStorage.setItem(uxKey,JSON.stringify({unit,kind}))}catch(e){}
  refreshResume();$('uxLearningStage').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function refreshResume(){
  let v=null;try{v=JSON.parse(localStorage.getItem(uxKey)||'null')}catch(e){}
- const ok=v&&Number.isInteger(v.unit)&&v.unit>=0&&v.unit<=7&&typeof v.kind==='string'&&supported(v.unit,v.kind);
+ const ok=v&&Number.isInteger(v.unit)&&v.unit>=0&&v.unit<=110&&typeof v.kind==='string'&&supported(v.unit,v.kind);
  $('uxContinue').hidden=!ok;
  if(ok){const option=[...choice.options].find(o=>Number(o.value)===v.unit);$('uxContinueLabel').textContent=(option?option.text:'')+' · '+display[v.kind]}
 }
@@ -524,7 +531,7 @@ $('uxBackToChoice').onclick=()=>{$('uxLearningStage').hidden=true;$('uxChooser')
 $('uxResume').onclick=()=>{let v;try{v=JSON.parse(localStorage.getItem(uxKey)||'null')}catch(e){}if(v&&supported(v.unit,v.kind)){choose(v.unit,v.kind);showLearning()}};
 function openGames(startMemory){
  const n=getUnit();
- if(n>=6){$('uxActivityNote').textContent='Gry ze słówkami dostępne są dla rozdziałów szkolnych i Daily chat. Wybierz jeden z nich.';return}
+ if(n>=6){$('uxActivityNote').textContent='Gry Memory i pozostałe gry są obecnie dostępne dla rozdziałów szkolnych i Daily chat. Dla wybranego tematu A1 wybierz Fiszki lub Quiz tematyczny.';return}
  $('epicUnit').value=String(n);$('epicGames').hidden=false;
  if(startMemory){const exit=$('epicExit');if(!$('epicStage').hidden)exit.click();const b=document.querySelector('[data-epic="memory"]');if(b)b.click()}
  $('epicGames').scrollIntoView({behavior:'smooth',block:'start'});
@@ -533,7 +540,7 @@ $('uxCloseGames').onclick=()=>{$('epicGames').hidden=true;$('uxChooser').scrollI
 $('uxGames').onclick=()=>openGames(false);
 $('uxMemory').onclick=()=>openGames(true);
 const initial=Math.min(5,Math.max(0,Number((()=>{try{return JSON.parse(localStorage.getItem('hiszpanskiFrankaProgressV1')||'{}').unit||1}catch(e){return 1}})())||1));
-choose(initial,'words');refreshResume();
+window.frankaRefreshResume=refreshResume;choose(initial,'words');refreshResume();
 })();
 </script><script>
 /* Sprint 6 — School First, A1 Next. No modification to v5.1 localStorage keys. */
@@ -557,7 +564,7 @@ function schoolSource(u,c){const word=c[1].trim().toLocaleLowerCase('es');if(u==
 function isVerified(u,c){return (u===1&&notebookOtono.has(c[1].trim().toLocaleLowerCase('es')))||(u===0&&bookInitial.has(c[1].trim().toLocaleLowerCase('es')))}
 function poolFor(u){const seen=new Set();return (units[u]?.cards||[]).filter(c=>{const key=c[2].toLocaleLowerCase('pl').trim();if(seen.has(key))return false;seen.add(key);return true})}
 // School checkpoints are limited to school chapters. Verified notebook material takes precedence.
-function schoolPool(u){if(u===0||u===4||u===5)return [];const all=poolFor(u);const verified=all.filter(c=>isVerified(u,c));return verified.length>=4?verified:all}
+function schoolPool(u){if(u===0||u===5)return [];const all=poolFor(u);const verified=all.filter(c=>isVerified(u,c));return verified.length>=4?verified:all}
 const foundation={
  '🔢 Liczby 1–20':[['1️⃣','Uno','Jeden'],['2️⃣','Dos','Dwa'],['3️⃣','Tres','Trzy'],['4️⃣','Cuatro','Cztery'],['5️⃣','Cinco','Pięć'],['6️⃣','Seis','Sześć'],['7️⃣','Siete','Siedem'],['8️⃣','Ocho','Osiem'],['9️⃣','Nueve','Dziewięć'],['🔟','Diez','Dziesięć'],['🔢','Once','Jedenaście'],['🔢','Doce','Dwanaście'],['🔢','Trece','Trzynaście'],['🔢','Catorce','Czternaście'],['🔢','Quince','Piętnaście'],['🔢','Dieciséis','Szesnaście'],['🔢','Diecisiete','Siedemnaście'],['🔢','Dieciocho','Osiemnaście'],['🔢','Diecinueve','Dziewiętnaście'],['🔢','Veinte','Dwadzieścia']],
  '🎨 Kolory':[['🔴','Rojo','Czerwony'],['🔵','Azul','Niebieski'],['🟢','Verde','Zielony'],['🟡','Amarillo','Żółty'],['⚫','Negro','Czarny'],['⚪','Blanco','Biały'],['🟠','Naranja','Pomarańczowy'],['🟣','Morado','Fioletowy'],['🌸','Rosa','Różowy'],['🟤','Marrón','Brązowy'],['🌫️','Gris','Szary']],
@@ -574,7 +581,8 @@ const foundation={
 const sentences={
  1:[['En otoño llueve.','Jesienią pada deszcz.','🌧️','¿Qué tiempo hace?','Llueve.'],['Las hojas son amarillas.','Liście są żółte.','🍂','¿De qué color son las hojas?','Son amarillas.'],['Veo un árbol.','Widzę drzewo.','🌳','¿Qué ves?','Veo un árbol.'],['Me gusta la manzana.','Lubię jabłko.','🍎','¿Qué te gusta?','Me gusta la manzana.']],
  2:[['Hoy hace frío.','Dziś jest zimno.','🥶','¿Qué tiempo hace hoy?','Hace frío.'],['Llevo una bufanda.','Mam na sobie szalik.','🧣','¿Qué llevas?','Llevo una bufanda.'],['Veo nieve.','Widzę śnieg.','❄️','¿Qué ves?','Veo nieve.']],
- 3:[['Veo una mariposa.','Widzę motyla.','🦋','¿Qué ves?','Veo una mariposa.'],['Me gusta jugar al fútbol.','Lubię grać w piłkę nożną.','⚽','¿Qué te gusta hacer?','Me gusta jugar al fútbol.'],['Hay una flor.','Jest kwiat.','🌸','¿Qué hay?','Hay una flor.']]
+ 3:[['Veo una mariposa.','Widzę motyla.','🦋','¿Qué ves?','Veo una mariposa.'],['Me gusta jugar al fútbol.','Lubię grać w piłkę nożną.','⚽','¿Qué te gusta hacer?','Me gusta jugar al fútbol.'],['Hay una flor.','Jest kwiat.','🌸','¿Qué hay?','Hay una flor.']],
+ 4:[['En verano hace calor.','Latem jest gorąco.','☀️','¿Qué tiempo hace en verano?','Hace calor.'],['Me gusta el verano.','Lubię lato.','🏖️','¿Qué estación te gusta?','Me gusta el verano.'],['Bebo agua.','Piję wodę.','💧','¿Qué bebes?','Bebo agua.'],['Veo el sol.','Widzę słońce.','☀️','¿Qué ves?','Veo el sol.']]
 };
 const s6Panel=$('s6TestingPanel'),answer=$('s6TestBody'),feedback=$('s6TestFeedback'),actions=$('s6TestActions');
 let test=null;
@@ -590,14 +598,14 @@ function openGame(type,u,incorrectOnly=false){
   const shuffled=shuffle(filtered);
   const list=Array.from({length:Math.min(15,Math.max(6,shuffled.length))},(_,i)=>shuffled[i%shuffled.length]);
   test={type,u,pool,questions:list,idx:0,correct:0,incorrect:[],answered:false};
-  $('s6TestTitle').textContent='📋 Checkpoint: '+units[u].title;
-  $('s6TestSource').textContent=u===1?'Pytania z haseł potwierdzonych w dostarczonym zeszycie Otoño. Dodatkowe zwroty nie są w tym teście.':'Pytania z opracowanego rozdziału; zgodność poszczególnych pozycji z podręcznikiem wymaga dalszej weryfikacji.';
+  $('s6TestTitle').textContent=(u===4?'📋 Test ćwiczeniowy: ':'📋 Checkpoint: ')+units[u].title;
+  $('s6TestSource').textContent=u===4?'⚠️ Verano: test z obecnego słownictwa demonstracyjnego. Nie został potwierdzony z podręcznikiem; wynik nie oznacza opanowania materiału szkolnego.':u===1?'Pytania z haseł potwierdzonych w dostarczonym zeszycie Otoño. Dodatkowe zwroty nie są w tym teście.':'Pytania z opracowanego rozdziału; zgodność poszczególnych pozycji z podręcznikiem wymaga dalszej weryfikacji.';
  }else{
   const lesson=sentences[u]||[];
-  if(!lesson.length){$('s6TestTitle').textContent='🗣️ Wyzwanie A1';$('s6TestSource').textContent='Do tego rozdziału przygotujemy zadania A1 w kolejnej aktualizacji.';answer.textContent='Brak wyzwania A1 dla tego rozdziału. Możesz wybrać Otoño, Invierno lub Primavera.';return}
+  if(!lesson.length){$('s6TestTitle').textContent='🗣️ Wyzwanie A1';$('s6TestSource').textContent='Do tego rozdziału przygotujemy zadania A1 w kolejnej aktualizacji.';answer.textContent='Brak wyzwania A1 dla tego tematu. Wybierz Otoño, Invierno, Primavera lub Verano.';return}
   test={type,u,questions:shuffle(lesson),idx:0,correct:0,incorrect:[],answered:false,spoken:0};
   $('s6TestTitle').textContent='🗣️ Wyzwanie A1: '+units[u].title;
-  $('s6TestSource').textContent='Przykładowe zdania komunikacyjne A1 — materiał opracowany na podstawie poznanych słówek, nie cytat z książki. Odpowiedź ustną oceń samodzielnie lub z rodzicem.';
+  $('s6TestSource').textContent=(u===4?'⚠️ Verano: dodatkowe ćwiczenia komunikacyjne A1, niezweryfikowane jako materiał szkolny. ':'')+'Przykładowe zdania A1 opracowane do nauki, nie cytat z książki. Odpowiedź ustną oceń samodzielnie lub z rodzicem.';
  }
  showQuestion();s6Panel.scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -644,11 +652,14 @@ function finishTest(){
  actions.append(button('↻ Cały sprawdzian od nowa',()=>openGame(kind,u),'secondary'));
  drawDashboard();
 }
-$('s6SchoolStart').addEventListener('click',()=>{const u=Number($('uxUnit').value);if(u===0||u===4||u===5||u>=6){$('s6SchoolNote').textContent='Wybierz Otoño, Invierno lub Primavera: pozostałe tematy są dodatkowe lub niezweryfikowane jako pełny rozdział.';return}openGame('school',u)});
+$('s6SchoolStart').addEventListener('click',()=>{const u=Number($('uxUnit').value);if(u===0||u===5||u>=6){$('s6SchoolNote').textContent='Checkpointy szkolne: Otoño, Invierno, Primavera. Verano: test ćwiczeniowy z niezweryfikowanego materiału.';return}openGame('school',u)});
 $('s6A1Start').addEventListener('click',()=>{const u=Number($('uxUnit').value);openGame('a1',u)});
 $('s6TestClose').onclick=()=>{hideGame();$('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
 // A1 fundamental lexicon: distinct from source-verified school data.
-const fSelect=$('s6FoundationTopic');Object.keys(foundation).forEach((k,i)=>fSelect.add(new Option(k,String(i))));let fi=0,cardIndex=0,fmode='cards';const cats=Object.keys(foundation);
+const fSelect=$('uxUnit');let fi=0,cardIndex=0,fmode='cards';const cats=Object.keys(foundation);
+const fGroup=document.createElement('optgroup');fGroup.label='🧱 Dodatkowe tematy A1 — słówka';
+cats.forEach((k,i)=>fGroup.append(new Option(k,String(100+i))));fSelect.append(fGroup);
+if(typeof window.frankaRefreshResume==='function')window.frankaRefreshResume();
 function fRecords(){const key=cats[fi];return state.foundation[key]||(state.foundation[key]={correct:0,attempts:0})}
 function drawFoundation(){const cards=foundation[cats[fi]],root=$('s6FoundationBody');root.replaceChildren();$('s6FoundationStats').textContent=`${cards.length} haseł · ${fRecords().correct}/${fRecords().attempts} poprawnych odpowiedzi w quizach`;
  if(fmode==='cards'){
@@ -658,12 +669,27 @@ function drawFoundation(){const cards=foundation[cats[fi]],root=$('s6FoundationB
   const c=cards[cardIndex%cards.length],right=c[2],alts=shuffle(cards.filter(x=>x[2]!==right)).slice(0,3).map(x=>x[2]);const q=newNode('div','s6-question');q.append(newNode('h3','','Co oznacza „'+c[1]+'”?'),button('🔊 Odsłuchaj',()=>say(c[1]),'epic-listen'));const a=newNode('div','s6-answers');shuffle([...alts,right]).forEach(t=>a.append(button(t,()=>{if(q.dataset.answered)return;q.dataset.answered='1';const r=fRecords();r.attempts++;const ok=t===right;if(ok)r.correct++;save();a.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===right)b.classList.add('s6-good');else if(b.textContent===t&&!ok)b.classList.add('s6-bad')});q.append(newNode('p','s6-feedback',ok?'✅ Doskonale!':'❌ Poprawnie: '+right));q.append(button('➡️ Następne',()=>{cardIndex=(cardIndex+1)%cards.length;drawFoundation()},'epic-primary'))})));q.append(a);root.append(q)
  }
 }
-fSelect.onchange=()=>{fi=Number(fSelect.value);cardIndex=0;drawFoundation()};$('s6FoundationCards').onclick=()=>{fmode='cards';drawFoundation()};$('s6FoundationQuiz').onclick=()=>{fmode='quiz';drawFoundation()};drawFoundation();
+document.addEventListener('franka:foundationStart',event=>{
+ fi=event.detail.index;cardIndex=0;fmode='cards';drawFoundation();
+});
+$('s6FoundationCards').onclick=()=>{fmode='cards';drawFoundation()};
+$('s6FoundationQuiz').onclick=()=>{fmode='quiz';drawFoundation()};
 function drawDashboard(){const root=$('s6TrackingBody');if(!root)return;root.replaceChildren();
- const grid=newNode('div','s6-stat-grid');for(let u of [1,2,3]){const sh=state.school[u]?.history?.[0],a1=state.a1[u]?.history?.[0];const b=newNode('div','s6-stat');b.append(newNode('strong','',units[u].title),newNode('span','small','📋 Szkoła: '+(sh?`${sh.percent}% (${sh.right}/${sh.total})`:'brak sprawdzianu')),newNode('span','small','🗣️ A1: '+(a1?`${a1.percent}% (${a1.right}/${a1.total})`:'brak próby')));grid.append(b)}root.append(grid);
- const count=Object.values(state.foundation).reduce((acc,r)=>acc+(r.attempts||0),0);root.append(newNode('p','small','🧱 Fundament A1: '+count+' odpowiedzi w quizach. Wszystkie wyniki pozostają w tej przeglądarce.'));
+ const grid=newNode('div','s6-stat-grid');for(let u of [1,2,3,4]){const sh=state.school[u]?.history?.[0],a1=state.a1[u]?.history?.[0];const b=newNode('div','s6-stat');b.append(newNode('strong','',units[u].title+(u===4?' (ćwiczeniowy)':'')),newNode('span','small','📋 Szkoła: '+(sh?`${sh.percent}% (${sh.right}/${sh.total})`:'brak sprawdzianu')),newNode('span','small','🗣️ A1: '+(a1?`${a1.percent}% (${a1.right}/${a1.total})`:'brak próby')));grid.append(b)}root.append(grid);
+ const count=Object.values(state.foundation).reduce((acc,r)=>acc+(r.attempts||0),0);root.append(newNode('p','small','🧱 Dodatkowe tematy A1: '+count+' odpowiedzi w quizach. Wyniki pozostają w tej przeglądarce.'));
 }
 drawDashboard();
+
+// In-place UX: Verano is available as practice, never shown as a verified textbook test.
+function updateCheckpointLabel(){
+ const u=Number($('uxUnit').value),b=$('s6SchoolStart'),a=$('s6A1Start');
+ b.textContent=u===4?'📋 Test ćwiczeniowy Verano':'📋 Checkpoint szkolny';
+ b.disabled=(u===0||u===5||u>=6);
+ a.disabled=(u!==1&&u!==2&&u!==3&&u!==4);
+ $('s6SchoolNote').textContent=u===4?'⚠️ Verano: test z przykładowych słówek, jeszcze niezweryfikowanych z podręcznikiem.':u>=100?'Wybierz „Słówka”, a potem „Quiz tematyczny” dla tej kategorii A1.':u===0||u===5||u>=6?'Brak szkolnego checkpointu dla tej kategorii.':'Szkolny checkpoint sprawdza wybrany rozdział i oznacza źródła pytań.';
+}
+$('uxUnit').addEventListener('change',updateCheckpointLabel);
+updateCheckpointLabel();
 window.addEventListener('storage',drawDashboard);
 })();
 </script></body></html>
