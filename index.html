@@ -103,17 +103,25 @@
 .s6-foundation-card .s6-emoji{font-size:3rem}.s6-foundation-card strong{font-size:1.5rem;display:block;margin:8px}.s6-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:9px}
 .s6-stat{border:1px solid #dce7df;border-radius:12px;background:#f4f8f3;padding:11px;display:grid;gap:3px}.s6-stat strong{font-size:1.4rem}
 @media(max-width:580px){.s6-answers{grid-template-columns:1fr}.s6-check-links{display:grid}.s6-question{padding:12px}}
+</style><style>
+/* Sprint 7: focused learning inside existing trainer, no new top-level section */
+.s7-daily,.s7-insights{margin:18px 0 10px;padding:16px;border:1px solid #d3e6d9;border-radius:17px;background:#f5faf3}.s7-daily-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.s7-daily h3,.s7-insights h3{margin:0 0 6px}.s7-plan{display:grid;gap:8px;margin-top:12px}.s7-plan-row{background:white;border:1px solid #e0e9dd;border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;gap:10px;align-items:center}.s7-plan-row small{color:#557162}.s7-session{border:2px solid #b4ddc3;background:#fff;border-radius:16px;margin-top:14px;padding:14px}.s7-progress-line{display:flex;align-items:center;justify-content:space-between;gap:8px}.s7-answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.s7-answers button{min-height:55px}.s7-answers button.good{background:#c7f1d4!important;color:#135d37!important;border:3px solid #1b9653}.s7-answers button.bad{background:#ffe0da!important;color:#853122!important;border:3px solid #db4c43}.s7-next{text-align:center;margin:16px 0}.s7-next button{min-height:50px}.s7-topic-list{display:grid;gap:8px}.s7-topic{background:white;border-radius:10px;padding:10px 12px;border:1px solid #e1e9dd}.s7-topic strong{display:block}.s7-topic small{display:block;color:#617467;margin-top:4px}.s7-illustration{font-size:3.2rem;text-align:center}.s7-question{font-size:1.2rem;text-align:center;font-weight:800}.s7-help{text-align:center;color:#5a7060}.s7-session button:disabled{opacity:.6}@media(max-width:520px){.s7-daily,.s7-insights{padding:12px}.s7-answers{grid-template-columns:1fr}.s7-daily-head>button{width:100%}}
 </style></head>
 <body><div class="app">
-<header><div><h1>¡Hola, Franek!</h1><p>Hiszpańska przygoda • słuchaj, graj, powtarzaj • v6.1</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
+<header><div><h1>¡Hola, Franek!</h1><p>Hiszpańska przygoda • słuchaj, graj, powtarzaj • v7.0</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
 <main>
 <section class="home-screen panel" id="homeScreen"><h2>¡Vamos, Franek! 🇪🇸</h2><p>Jak chcesz się dzisiaj uczyć?</p><div class="home-tiles"><button data-enter="car">🚗<strong>Tryb samochodowy</strong><span>Słucham i powtarzam — bez patrzenia w ekran</span></button><button data-enter="learn">🎮<strong>Centrum nauki</strong><span>Fiszki, quizy i pięć gier</span></button></div></section><div hidden="" id="workArea"><nav class="home-nav"><button class="secondary" id="backHome">🏠 Menu główne</button><span id="modeLabel"></span></nav><div id="carArea"><section aria-labelledby="carTitle" class="car-mode"><h2 id="carTitle">🚗 Tryb samochodowy — 10 minut</h2><p>Aktywna nauka przez słuchanie: Franek usłyszy słowo lub zwrot po hiszpańsku, chwilę na odpowiedź i odpowiedź po polsku. Nie trzeba patrzeć na ekran ani niczego dotykać w trakcie jazdy.</p><label for="carUnit"><strong>Rozdział do słuchania</strong></label><br/><select id="carUnit"></select><div class="car-controls"><button id="carStart">▶ Rozpocznij 10 minut</button><button class="secondary" disabled="" id="carPause">⏸ Pauza</button><button class="secondary" disabled="" id="carStop">■ Zakończ</button></div><div aria-live="polite" class="car-status" id="carStatus" role="status">Gotowe do rozpoczęcia. Wybierz rozdział.</div><div aria-label="Postęp sesji" class="car-progress"><span id="carProgress"></span></div><p class="small" id="carClock">Pozostało: 10:00</p><div class="car-note"><strong>Bezpieczeństwo:</strong> kierowca nie powinien obsługiwać ekranu. Uruchom sesję przed ruszeniem lub poproś pasażera. Quiz z przyciskami jest dostępny wyłącznie po zaznaczeniu, że samochód stoi — aplikacja nie wykrywa ruchu pojazdu.</div><label class="mode" style="margin-top:12px"><input id="carParked" type="checkbox"/> Samochód stoi bezpiecznie — odblokuj quiz ekranowy</label><div class="car-controls"><button class="secondary" disabled="" id="carQuiz">🎯 Quiz (tylko na postoju)</button></div></section></div><div id="learnArea"><div class="notice ux-source-note"><strong>Opracowane rozdziały: Otoño, Invierno i Primavera.</strong> Lekcje jesienna, zimowa i wiosenna zostały opracowane na podstawie przesłanych stron z podręcznika Colorín Colorado mini. Unidad Inicial i Verano zawierają przykładowe treści demonstracyjne — nie traktuj ich jako materiału z podręcznika.</div>
 <div class="stats"><span class="pill">⭐ Punkty: <span id="points">0</span></span><span class="pill">✅ Umiem: <span id="learnedCount">0</span></span><span class="pill">🔁 Do powtórki: <span id="reviewCount">0</span></span><span class="pill">💾 Postępy zapisują się na tym urządzeniu</span></div>
 <section class="panel smart-panel" id="smartPanel">
-<div class="smart-heading"><div><h2>🧠 Mój trener słówek</h2><p class="small">Aplikacja zapamiętuje odpowiedzi i proponuje powtórki. Nie musisz ćwiczyć wszystkiego naraz.</p></div><span class="pill">Sprint 4</span></div>
+<div class="smart-heading"><div><h2>🧠 Mój trener słówek</h2><p class="small">Aplikacja zapamiętuje odpowiedzi i proponuje powtórki. Nie musisz ćwiczyć wszystkiego naraz.</p></div><span class="pill">Smart Learning 2.0</span></div>
 <div class="smart-counters"><div><strong id="smartMastered">0</strong><small>Opanowane</small></div><div><strong id="smartDue">0</strong><small>Do powtórki dziś</small></div><div><strong id="smartTricky">0</strong><small>Trudniejsze</small></div><div><strong id="smartAttempts">0</strong><small>Odpowiedzi</small></div></div>
 <div class="smart-actions"><label>Rozdział <select id="smartUnit"></select></label><button id="smartStart">🎯 Powtórz trudne słówka</button><button class="secondary" id="smartDueStart">📆 Dzisiejsza powtórka</button></div>
-<div aria-live="polite" class="smart-progress" id="smartProgress"></div>
+<div class="s7-daily" id="s7Daily" aria-labelledby="s7DailyHeading">
+<div class="s7-daily-head"><div><h3 id="s7DailyHeading">⭐ Moja nauka na dziś</h3><p class="small">Krótki plan na podstawie wyników Franka. Najpierw szkoła, potem zdania i zabawa.</p></div><button id="s7DailyStart" type="button">▶ Zacznij krótką sesję</button></div>
+<div class="s7-plan" id="s7Plan" aria-live="polite"></div>
+<div class="s7-session" hidden id="s7Session"><div class="s7-progress-line"><strong id="s7SessionProgress"></strong><button class="secondary" type="button" id="s7SessionClose">✕ Zakończ</button></div><div id="s7SessionBody"></div><p id="s7SessionFeedback" aria-live="polite"></p><div class="s7-next" hidden id="s7NextWrap"><button type="button" id="s7Next">➡️ Dalej</button></div></div>
+</div>
+<div class="s7-insights" id="s7Insights"><h3>📋 Co warto powtórzyć w szkole?</h3><div id="s7WeakTopics" class="s7-topic-list"></div><p class="small">Wskazówki bazują na odpowiedziach w aplikacji; nie zastępują szkolnych ocen ani rozmowy z nauczycielem.</p></div><div aria-live="polite" class="smart-progress" id="smartProgress"></div>
 <p class="small">„Opanowane” oznacza co najmniej 3 poprawne odpowiedzi i 80% skuteczności. To szacunkowy wskaźnik nauki, nie ocena szkolna. Wyniki przechowywane są tylko w tej przeglądarce.</p>
 <div class="smart-review" hidden="" id="smartReview"><h3 id="smartReviewTitle">Powtórka</h3><p id="smartReviewCounter"></p><p class="epic-prompt" id="smartReviewPrompt"></p><div class="smart-review-btns"><button class="epic-listen" id="smartListen">🔊 Posłuchaj</button><button class="secondary" id="smartQuit">✕ Zakończ</button></div><div class="epic-choices" id="smartReviewChoices"></div><p aria-live="polite" class="epic-feedback" id="smartReviewFeedback"></p><div class="epic-action-row" hidden="" id="smartNextWrap"><button class="epic-primary" id="smartNext">➡️ Następne słowo</button></div></div>
 </section>
@@ -412,7 +420,7 @@ function showQuestion(){if(!session)return;const item=session.queue[session.inde
  $('smartReviewCounter').textContent=`Słówko ${session.index+1} z ${session.queue.length}`;
  $('smartReviewPrompt').textContent=item.card[1];$('smartReviewFeedback').textContent='';$('smartReviewFeedback').className='epic-feedback';$('smartNextWrap').hidden=true;
  const distractors=units[item.u].cards.filter(c=>c!==item.card&&c[2]!==item.card[2]);
- const choices=shuffle([item.card,...shuffle(distractors).slice(0,3)]);const box=$('smartReviewChoices');box.replaceChildren();
+ const howMany=item.data&&item.data.wrong>item.data.right?2:item.data&&item.data.streak>=3?4:3;const choices=shuffle([item.card,...shuffle(distractors).slice(0,howMany-1)]);const box=$('smartReviewChoices');box.replaceChildren();
  choices.forEach(c=>{const b=document.createElement('button');b.className='secondary';b.textContent=c[2];b.onclick=()=>{if(!session||session.answered)return;session.answered=true;const ok=c===item.card;recordResult(item.u,item.card,ok,'smart-review');if(ok){session.correct++;points++;saveProgress()}
  box.querySelectorAll('button').forEach(other=>{other.disabled=true;if(other.textContent===item.card[2])other.classList.add('correct')});if(!ok)b.classList.add('wrong');
  $('smartReviewFeedback').textContent=ok?'✅ ¡Muy bien! Brawo!':'❌ Poprawna odpowiedź: '+item.card[2];$('smartReviewFeedback').className='epic-feedback '+(ok?'good':'bad');
@@ -621,7 +629,7 @@ function showQuestion(){
   if(mode===1){box.append(button('🔊 Odtwórz słowo',()=>say(c[1]),'epic-listen'))}
   const correct=mode===2?c[1]:c[2];let options=shuffle(test.pool.filter(x=>x[1]!==c[1]&&x[2]!==c[2])).slice(0,3).map(x=>mode===2?x[1]:x[2]);options=shuffle([...options,correct]);
   const choices=newNode('div','s6-answers');options.forEach(x=>choices.append(button(x,()=>{
-    if(test.answered)return;test.answered=true;const ok=x===correct;if(ok)test.correct++;else test.incorrect.push(c[1]);
+    if(test.answered)return;test.answered=true;const ok=x===correct;if(ok)test.correct++;else test.incorrect.push(c[1]);recordResult(test.u,c,ok,'school-checkpoint');window.dispatchEvent(new CustomEvent('franka:s7school',{detail:{u:test.u,es:c[1],pl:c[2],correct:ok}}));
     choices.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add('s6-good');else if(b.textContent===x&&!ok)b.classList.add('s6-bad')});
     feedback.textContent=ok?'✅ ¡Muy bien!':'❌ Poprawna odpowiedź: '+correct;
     actions.append(button(n===total?'📊 Zobacz wynik':'➡️ Następne pytanie',()=>{test.idx++;showQuestion()},'epic-primary'));
@@ -632,11 +640,11 @@ function showQuestion(){
   if(test.idx%2===0){
     box.append(newNode('p','epic-prompt','🎧 Co usłyszałeś?'),button('🔊 Posłuchaj zdania',()=>say(c[0]),'epic-listen'));
     const choices=newNode('div','s6-answers');const correct=c[1];const alts=shuffle(test.questions.filter(x=>x[1]!==correct)).slice(0,2).map(x=>x[1]);
-    shuffle([correct,...alts]).forEach(x=>choices.append(button(x,()=>{if(test.answered)return;test.answered=true;const ok=x===correct;if(ok)test.correct++;else test.incorrect.push(c[0]);choices.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add('s6-good');else if(b.textContent===x&&!ok)b.classList.add('s6-bad')});feedback.textContent=ok?'✅ Zgadza się!':'❌ Poprawnie: '+correct;actions.append(button(n===total?'📊 Zobacz wynik':'➡️ Dalej',()=>{test.idx++;showQuestion()},'epic-primary'))})));box.append(choices)
+    shuffle([correct,...alts]).forEach(x=>choices.append(button(x,()=>{if(test.answered)return;test.answered=true;const ok=x===correct;if(ok)test.correct++;else test.incorrect.push(c[0]);window.dispatchEvent(new CustomEvent('franka:s7sentence',{detail:{u:test.u,es:c[0],pl:c[1],correct:ok,kind:'listening'}}));choices.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add('s6-good');else if(b.textContent===x&&!ok)b.classList.add('s6-bad')});feedback.textContent=ok?'✅ Zgadza się!':'❌ Poprawnie: '+correct;actions.append(button(n===total?'📊 Zobacz wynik':'➡️ Dalej',()=>{test.idx++;showQuestion()},'epic-primary'))})));box.append(choices)
   }else{
     box.append(newNode('p','epic-prompt',c[3]),button('🔊 Posłuchaj pytania',()=>say(c[3]),'epic-listen'),newNode('p','small','Powiedz odpowiedź po hiszpańsku, zanim ją odkryjesz.'));
     const example=newNode('p','s6-result',c[4]);example.hidden=true;box.append(button('👀 Pokaż przykładową odpowiedź',()=>{example.hidden=false;say(c[4]);actions.replaceChildren();actions.append(button('✅ Udało mi się odpowiedzieć',()=>rating(true)),button('🔁 Jeszcze ćwiczę',()=>rating(false),'secondary'))}),example);
-    function rating(ok){if(test.answered)return;test.answered=true;if(ok){test.correct++;test.spoken++}else test.incorrect.push(c[0]);feedback.textContent=ok?'✅ Świetnie, ćwicz dalej!':'👍 Dobrze, że próbujesz — wrócimy do tego zdania.';actions.replaceChildren();actions.append(button(n===total?'📊 Zobacz wynik':'➡️ Dalej',()=>{test.idx++;showQuestion()},'epic-primary'))}
+    function rating(ok){if(test.answered)return;test.answered=true;if(ok){test.correct++;test.spoken++}else test.incorrect.push(c[0]);window.dispatchEvent(new CustomEvent('franka:s7sentence',{detail:{u:test.u,es:c[0],pl:c[1],correct:ok,kind:'self-reported-speaking'}}));feedback.textContent=ok?'✅ Świetnie, ćwicz dalej!':'👍 Dobrze, że próbujesz — wrócimy do tego zdania.';actions.replaceChildren();actions.append(button(n===total?'📊 Zobacz wynik':'➡️ Dalej',()=>{test.idx++;showQuestion()},'epic-primary'))}
   }
  }
  answer.append(box)
@@ -691,5 +699,66 @@ function updateCheckpointLabel(){
 $('uxUnit').addEventListener('change',updateCheckpointLabel);
 updateCheckpointLabel();
 window.addEventListener('storage',drawDashboard);
+})();
+</script><script>
+/* Sprint 7 — Smart Learning 2.0: additive, compatible with previous progress keys. */
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const MAIN='hiszpanskiFrankaProgressV1';
+const S6='hiszpanskiFrankaSprint6ProgressV1';
+const S7='hiszpanskiFrankaSmart7V1';
+const day=86400000;
+let data={sentences:{},schoolTopics:{},dailyHistory:[]};
+try{const x=JSON.parse(localStorage.getItem(S7)||'null');if(x&&typeof x==='object')data={...data,...x,sentences:x.sentences||{},schoolTopics:x.schoolTopics||{},dailyHistory:x.dailyHistory||[]}}catch(e){}
+const load=k=>{try{return JSON.parse(localStorage.getItem(k)||'{}')||{}}catch(e){return {}}};
+function store(){try{localStorage.setItem(S7,JSON.stringify(data))}catch(e){}}
+function id(u,es){return u+'|'+es.normalize('NFC').trim().toLocaleLowerCase('es').replace(/\s+/g,' ')}
+function reviewSentence(u,es,pl,correct,kind){const key=id(u,es),now=Date.now();const r=data.sentences[key]||{u,es,pl,right:0,wrong:0,streak:0,due:0};r.u=u;r.es=es;r.pl=pl;r.right+=(correct?1:0);r.wrong+=(!correct?1:0);r.streak=correct?r.streak+1:0;const intervals=[1,3,7,14,30];r.due=now+(correct?intervals[Math.min(intervals.length-1,Math.max(0,r.streak-1))]*day:10*60*1000);r.last=now;r.kind=kind;data.sentences[key]=r;store();draw()}
+window.addEventListener('franka:s7sentence',e=>{const x=e.detail;if(!x||!x.es)return;reviewSentence(x.u,x.es,x.pl,!!x.correct,x.kind||'listening')});
+window.addEventListener('franka:s7school',e=>{const x=e.detail;if(!x||!x.es)return;const key=id(x.u,x.es),r=data.schoolTopics[key]||{u:x.u,es:x.es,pl:x.pl,right:0,wrong:0};r.right+=x.correct?1:0;r.wrong+=x.correct?0:1;r.last=Date.now();data.schoolTopics[key]=r;store();draw()});
+function allSchool(){return Object.values(data.schoolTopics)}
+function schoolWords(){const memory=load(MAIN).mastery||{};const out=[];
+ // Keep school chapters first; never mistake extra A1 as confirmed school content.
+ for(let u=1;u<=4;u++){for(const c of units[u]?.cards||[]){const key=id(u,c[1]);const r=memory[key];const sr=data.schoolTopics[key];if(((sr?.wrong>0)&&(!r||r.streak<2)) || (r?.wrong>0&&r?.source==='school-checkpoint'&&r.streak<2) || (r&&r.due<=Date.now()))out.push({kind:'word',u,es:c[1],pl:c[2],icon:c[0],due:r?.due||0,weight:(sr?.wrong||0)*3+(r?.wrong||0),source:sr?'checkpoint':'powtórka'})}}
+ return out.sort((a,b)=>(b.weight-a.weight)||(a.due-b.due));
+}
+function pendingSentences(){return Object.values(data.sentences).filter(r=>r.wrong>0||r.due<=Date.now()).sort((a,b)=>(b.wrong-a.wrong)||(a.due-b.due))}
+function newSentences(){// Only sample phrases already shipped as learning exercises in the accepted version.
+return [
+[1,'En otoño llueve.','Jesienią pada deszcz.','🌧️'],[1,'Las hojas son amarillas.','Liście są żółte.','🍂'],[1,'Veo un árbol.','Widzę drzewo.','🌳'],
+[2,'Hoy hace frío.','Dziś jest zimno.','🥶'],[2,'Llevo una bufanda.','Mam na sobie szalik.','🧣'],
+[3,'Veo una mariposa.','Widzę motyla.','🦋'],[3,'Me gusta jugar al fútbol.','Lubię grać w piłkę nożną.','⚽'],
+[4,'En verano hace calor.','Latem jest gorąco.','☀️'],[4,'Bebo agua.','Piję wodę.','💧']].map(([u,es,pl,icon])=>({kind:'sentence',u,es,pl,icon,due:0,wrong:0}))}
+function freshWords(){const mem=load(MAIN).mastery||{};const all=[];for(let u=1;u<=4;u++)for(const c of units[u]?.cards||[]){if(!mem[id(u,c[1])])all.push({kind:'word',u,es:c[1],pl:c[2],icon:c[0],due:0,weight:0,source:'nowe'})}return all}
+function buildPlan(){const w=schoolWords(),s=pendingSentences(),fresh=freshWords();const sentenceAll=newSentences();let sent=[...s.map(x=>({...x,kind:'sentence'})),...sentenceAll.filter(x=>!data.sentences[id(x.u,x.es)])];const unique=new Set(),queue=[];function add(arr,n){for(const x of arr){const k=x.kind+id(x.u,x.es);if(!unique.has(k)){unique.add(k);queue.push(x);if(--n===0)break}}}
+ add(w,4);if(queue.filter(x=>x.kind==='word').length<4)add(fresh,4-queue.filter(x=>x.kind==='word').length);
+ add(sent,2);return queue.slice(0,6)}
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b};
+function n(tag,cl,content){const e=document.createElement(tag);if(cl)e.className=cl;if(content!==undefined)e.textContent=content;return e}
+function b(text,onclick,cls='secondary'){const x=n('button',cls,text);x.type='button';x.onclick=onclick;return x}
+let session=null;
+function draw(){const plan=buildPlan(),root=$('s7Plan');root.replaceChildren();const words=plan.filter(x=>x.kind==='word'),ss=plan.filter(x=>x.kind==='sentence');const school=allSchool().filter(x=>x.wrong>0);
+const desc=[['📚',`${words.length} słówka`,school.length?'W tym trudności ze szkolnych sprawdzianów':'Powtórki i nowe słówka'],['🗣️',`${ss.length} krótkie zdania`,'Rozumiem całe wypowiedzi'],['🎮','Memory na koniec','Ulubiona gra po sesji']];for(const [ic,t,sub] of desc){const row=n('div','s7-plan-row');const left=n('div');left.append(n('strong','',ic+' '+t),n('small','',sub));row.append(left);root.append(row)}
+$('s7DailyStart').disabled=!plan.length;$('s7DailyStart').textContent='▶ Zacznij krótką sesję';
+const weak=$('s7WeakTopics');weak.replaceChildren();const grouped={};for(const x of allSchool()){if(!grouped[x.u])grouped[x.u]=[];grouped[x.u].push(x)}
+let found=false;for(const u of [1,2,3,4]){const entries=grouped[u]||[];if(!entries.length)continue;found=true;const mem=load(MAIN).mastery||{};const wrong=entries.filter(x=>x.wrong>0&&(mem[id(u,x.es)]?.streak||0)<2).sort((a,b)=>b.wrong-a.wrong);const last=load(S6).school?.[u]?.history?.[0];const row=n('div','s7-topic');row.append(n('strong','',(units[u]?.title||'Rozdział')+' — '+(last?last.percent+'% w ostatnim teście':'ćwiczone słowa')));row.append(n('small','',wrong.length?'Do przećwiczenia: '+wrong.slice(0,4).map(x=>x.pl).join(', '):'Brak błędnych odpowiedzi w zapisanych wynikach.'));weak.append(row)}
+if(!found){weak.append(n('p','small','Rozwiąż szkolny checkpoint, a tutaj zobaczysz trudniejsze słowa i zagadnienia. Wcześniejszych wyników nie odgadujemy.'))}
+}
+function show(){if(!session)return;const item=session.queue[session.i];$('s7SessionFeedback').textContent='';$('s7NextWrap').hidden=true;const body=$('s7SessionBody');body.replaceChildren();if(!item){const correct=session.ok;const total=session.queue.length;body.append(n('h3','','🏆 Brawo, Franek!'),n('p','',`Ukończone zadania: ${total}. Poprawne odpowiedzi: ${correct}.`));$('s7SessionProgress').textContent='Sesja zakończona';const next=b('🧠 Zagraj w Memory',()=>{$('s7Session').hidden=true;$('uxMemory').click()});body.append(next);data.dailyHistory.unshift({day:new Date().toISOString().slice(0,10),correct,total});data.dailyHistory=data.dailyHistory.slice(0,30);store();draw();session=null;return}
+session.answered=false;$('s7SessionProgress').textContent=`Zadanie ${session.i+1} z ${session.queue.length} · ${item.kind==='word'?'Słówko':'Zdanie'}`;
+const pic=n('div','s7-illustration',item.icon||'💬');const question=n('p','s7-question',item.kind==='sentence'?'🎧 Posłuchaj całego zdania':item.es);body.append(pic,question,b('🔊 Posłuchaj',()=>speak(item.es),'epic-listen'));
+const possible=item.kind==='word'?(units[item.u]?.cards||[]).map(x=>x[2]):newSentences().map(x=>x.pl);
+const alts=[...new Set(possible.filter(x=>x!==item.pl))];const m=load(MAIN).mastery?.[id(item.u,item.es)];const choicesCount=item.kind==='sentence'?3:(m?.wrong>m?.right?2:m?.streak>=3?4:3);const choices=shuffle([item.pl,...shuffle(alts).slice(0,choicesCount-1)]);
+const box=n('div','s7-answers');for(const choice of choices){const button=b(choice,()=>{if(!session||session.answered)return;session.answered=true;const ok=choice===item.pl;if(ok)session.ok++;
+if(item.kind==='word')recordResult(item.u,units[item.u].cards.find(c=>c[1]===item.es),ok,'daily-session');else reviewSentence(item.u,item.es,item.pl,ok,'daily-listening');
+for(const other of box.querySelectorAll('button')){other.disabled=true;if(other.textContent===item.pl)other.classList.add('good');else if(other===button&&!ok)other.classList.add('bad')}
+$('s7SessionFeedback').textContent=ok?'✅ Świetnie!':'❌ Poprawna odpowiedź: '+item.pl;$('s7NextWrap').hidden=false;$('s7Next').textContent=session.i+1===session.queue.length?'🏆 Zobacz wynik':'➡️ Następne zadanie';},'secondary');box.append(button)}body.append(box);
+}
+$('s7DailyStart').onclick=()=>{const queue=buildPlan();if(!queue.length)return;session={queue,i:0,ok:0,answered:false};$('s7Session').hidden=false;show();$('s7Session').scrollIntoView({behavior:'smooth',block:'start'})};
+$('s7Next').onclick=()=>{if(!session||!session.answered)return;session.i++;show()};
+$('s7SessionClose').onclick=()=>{session=null;$('s7Session').hidden=true;draw()};
+draw();document.querySelectorAll('[data-enter]').forEach(btn=>btn.addEventListener('click',()=>{if(btn.dataset.enter==='learn')draw()}));
+window.addEventListener('storage',draw);
 })();
 </script></body></html>
