@@ -108,7 +108,7 @@
 .s7-daily,.s7-insights{margin:18px 0 10px;padding:16px;border:1px solid #d3e6d9;border-radius:17px;background:#f5faf3}.s7-daily-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.s7-daily h3,.s7-insights h3{margin:0 0 6px}.s7-plan{display:grid;gap:8px;margin-top:12px}.s7-plan-row{background:white;border:1px solid #e0e9dd;border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;gap:10px;align-items:center}.s7-plan-row small{color:#557162}.s7-session{border:2px solid #b4ddc3;background:#fff;border-radius:16px;margin-top:14px;padding:14px}.s7-progress-line{display:flex;align-items:center;justify-content:space-between;gap:8px}.s7-answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.s7-answers button{min-height:55px}.s7-answers button.good{background:#c7f1d4!important;color:#135d37!important;border:3px solid #1b9653}.s7-answers button.bad{background:#ffe0da!important;color:#853122!important;border:3px solid #db4c43}.s7-next{text-align:center;margin:16px 0}.s7-next button{min-height:50px}.s7-topic-list{display:grid;gap:8px}.s7-topic{background:white;border-radius:10px;padding:10px 12px;border:1px solid #e1e9dd}.s7-topic strong{display:block}.s7-topic small{display:block;color:#617467;margin-top:4px}.s7-illustration{font-size:3.2rem;text-align:center}.s7-question{font-size:1.2rem;text-align:center;font-weight:800}.s7-help{text-align:center;color:#5a7060}.s7-session button:disabled{opacity:.6}@media(max-width:520px){.s7-daily,.s7-insights{padding:12px}.s7-answers{grid-template-columns:1fr}.s7-daily-head>button{width:100%}}
 </style>
 <style>
-/* Sprint 8 — four-season journey */
+/* Sprint 8 — four-season journey; Sprint 9 — illustration QA and learning order */
 .s8-seasons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0 4px}
 .s8-season{min-height:130px;text-align:left;background:#f9fbf8;color:#173e34;border:2px solid #dae7db;border-radius:16px;padding:15px;display:flex;flex-direction:column;gap:7px}
 .s8-season.selected{border-color:#16816e;background:#e9f6ed;box-shadow:0 0 0 2px #c4e9d6}
@@ -119,7 +119,32 @@
 .s8-single{border:1px solid #c8dfd0;background:#f3f9f2;border-radius:14px;padding:12px 15px;margin-top:12px}
 .s8-daily-tip{background:#fff8e8;border-radius:10px;padding:8px 12px;margin:10px 0;font-size:.91rem;color:#534526}
 @media(max-width:440px){.s8-seasons{gap:8px}.s8-season{min-height:110px;padding:10px}.s8-season strong{font-size:1rem}}
-</style></head>
+</style><style>
+/* Sprint 10 — Learning Path 2.0 */
+.s10-learning-path{margin:16px 0 22px;padding:16px;border-radius:20px;background:#f6f9ee;border:1px solid #d9e5d4}
+.s10-path-header,.s10-lesson-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.s10-path-header h3{margin:0 0 5px;font-size:1.24rem}.s10-path-header p{margin:0}
+.s10-steps{display:grid;gap:9px;margin-top:14px}
+.s10-step{width:100%;display:flex;gap:12px;align-items:center;text-align:left;border:1.5px solid #cadaca;border-radius:15px;background:#fff;color:#194d40;padding:12px 14px;min-height:72px;cursor:pointer}
+.s10-step:hover:not(:disabled){border-color:#3c9077;background:#f5fbf7}
+.s10-step:focus-visible{outline:3px solid #e0ad4b;outline-offset:2px}
+.s10-step:disabled{cursor:not-allowed;opacity:.65;background:#edf0ea;color:#53655b}
+.s10-step.done{border-color:#65a888;background:#e4f5ea}.s10-step.active{border-color:#c89538;background:#fff9e6}
+.s10-step-ico{font-size:1.8rem;flex:0 0 40px;text-align:center}.s10-step-main{display:grid;gap:3px;flex:1;min-width:0}.s10-step-main strong{font-size:1rem}.s10-step-main small{line-height:1.35;font-size:.86rem;color:#53655b}
+.s10-step-mark{font-weight:800;font-size:.87rem;white-space:nowrap}
+.s10-lesson{background:#fff;border:1px solid #d6e5d8;border-radius:17px;padding:16px;margin-top:14px}
+.s10-lesson-head{margin-bottom:14px}.s10-lesson-head button{font-size:.9rem}
+.s10-question{text-align:center;font-size:1.34rem;font-weight:800;margin:14px 0}
+.s10-answer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:16px 0}
+.s10-answer-grid button{min-height:68px;padding:12px;font-size:1rem}
+.s10-answer-grid button.right{background:#bcebd0;color:#104e31;border-color:#38945f}
+.s10-answer-grid button.wrong{background:#ffe0de;color:#9c2925;border-color:#d4554e}
+.s10-center{display:flex;justify-content:center;margin:12px 0}.s10-center button{min-width:180px}
+.s10-help{background:#f3f8ff;border-radius:12px;padding:12px;color:#244f6c;margin:12px 0}
+.s10-feedback.good{color:#1d7544;font-weight:800}.s10-feedback.bad{color:#a33b32;font-weight:800}
+@media(max-width:480px){.s10-learning-path{padding:11px}.s10-step{padding:11px}.s10-answer-grid{grid-template-columns:1fr}}
+</style>
+</head>
 <body><div class="app">
 <header><div><h1>¡Hola, Franek!</h1><p>Hiszpańska przygoda • słuchaj, graj, powtarzaj • v8.0</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
 <main>
@@ -141,6 +166,11 @@
 <section class="panel ux-continue" hidden="" id="uxContinue"><div><strong>▶️ Kontynuuj naukę</strong><p class="small" id="uxContinueLabel"></p></div><button id="uxResume" type="button">Wracam do nauki →</button></section><section aria-labelledby="a1LabTitle" class="panel a1-panel" id="communicationLab">
 <div class="a1-heading"><div><span class="a1-eyebrow">🌱 Cztery etapy · Jedna droga do A1</span><h2 id="a1LabTitle">🗣️ Mówię po hiszpańsku</h2><p>W każdym rozdziale poznajesz cały dostępny materiał szkolny i uczysz się używać go w życiu.</p></div><span class="pill">Cel: A1 · czerwiec 2027</span></div>
 <div class="s8-single" id="s8JourneySummary" aria-live="polite">🌱 Wybierz porę roku, aby zobaczyć postęp.</div>
+<section class="s10-learning-path" aria-labelledby="s10PathTitle">
+ <div class="s10-path-header"><div><h3 id="s10PathTitle">🧭 Moja droga krok po kroku</h3><p class="small">Najpierw słówka ze szkoły, potem nowe zdania i A1. Możesz też zawsze wybrać gry poniżej.</p></div><span class="pill" id="s10PathProgress">0/5 etapów</span></div>
+ <div id="s10Steps" class="s10-steps" aria-label="Kolejne etapy rozdziału"></div>
+ <div class="s10-lesson" id="s10Lesson" hidden><div class="s10-lesson-head"><strong id="s10LessonHeading"></strong><button class="secondary" type="button" id="s10LessonClose">✕ Zamknij</button></div><div id="s10LessonBody"></div><p id="s10LessonFeedback" aria-live="polite"></p></div>
+ </section>
 <div aria-label="Rodzaj ćwiczenia" class="a1-nav" hidden="" role="group"><button class="active" data-a1-view="sentences">📚 Proste zdania</button><button data-a1-view="dialogues">💬 Mini-dialogi</button><button data-a1-view="listening">🎧 Rozumiem zdania</button><button data-a1-view="speaking">🎤 Odpowiadam na głos</button></div>
 <div class="a1-setup" hidden=""><label for="a1Topic">Temat <select id="a1Topic"></select></label><div class="a1-note" id="a1SourceLabel">Wybierz temat. Rozdziały szkolne są oddzielone od materiałów dodatkowych.</div></div>
 
@@ -324,10 +354,19 @@ const node=(tag,cls='',txt='')=>{const n=document.createElement(tag);n.className
 // Ręcznie opisane kategorie obiektów: wektorowe rysunki SVG, bez sieci i bez czcionek emoji.
 // Dla zdań złożonych tworzona jest ilustracja tematu wypowiedzi.
 const V32_PICTURES=[
-[/calabaza/i,'pumpkin'],[/manzana/i,'apple'],[/pera$/i,'pear'],[/uvas/i,'grapes'],[/aguacate/i,'avocado'],[/higos/i,'fig'],[/granadas/i,'pomegranate'],[/moras/i,'berry'],[/nueces|castañas|bellotas/i,'nuts'],[/judías/i,'beans'],[/zanahoria/i,'carrot'],[/coliflor/i,'cauliflower'],[/setas|hongos|champiñones/i,'mushroom'],[/árbol/i,'tree'],[/hojas|otoño/i,'leaves'],[/flores/i,'flower'],[/ardilla/i,'squirrel'],[/erizo/i,'hedgehog'],[/pájaros|pajaritos/i,'birds'],[/búho/i,'owl'],[/paraguas/i,'umbrella'],[/abrigo/i,'coat'],[/botas/i,'boots'],[/noche|noches/i,'night'],[/días|día/i,'day'],[/lluvia|llueve|lloviendo|tiempo/i,'rain'],[/viento/i,'wind'],[/sol|despejado/i,'sun'],[/nubes/i,'cloud'],[/frío/i,'cold'],[/calor/i,'hot'],[/cielo/i,'sky'],[/rojo/i,'red'],[/naranja/i,'orange'],[/marrón|café/i,'brown'],[/amarillo/i,'yellow'],[/verde/i,'green'],[/negro/i,'black'],[/morado/i,'purple'],[/azul/i,'blue'],[/gris/i,'gray'],[/rosa/i,'pink'],[/uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez/i,'number']
+[/calabaza/i,'pumpkin'],[/manzana/i,'apple'],[/pera$/i,'pear'],[/uvas/i,'grapes'],[/aguacate/i,'avocado'],[/higos/i,'fig'],[/granadas/i,'pomegranate'],[/moras/i,'berry'],[/nueces|castañas|bellotas/i,'nuts'],[/judías/i,'beans'],[/zanahoria/i,'carrot'],[/coliflor/i,'cauliflower'],[/setas|hongos|champiñones/i,'mushroom'],[/árbol/i,'tree'],[/hojas|otoño/i,'leaves'],[/flores/i,'flower'],[/ardilla/i,'squirrel'],[/erizo/i,'hedgehog'],[/pájaros|pajaritos/i,'birds'],[/búho/i,'owl'],[/paraguas/i,'umbrella'],[/abrigo/i,'coat'],[/botas/i,'boots'],[/noche|noches/i,'night'],[/días|día/i,'day'],[/lluvia|llueve|lloviendo|tiempo/i,'rain'],[/viento/i,'wind'],[/sol|despejado/i,'sun'],[/nubes/i,'cloud'],[/frío/i,'cold'],[/calor/i,'hot'],[/cielo/i,'sky'],[/rojo/i,'red'],[/naranja/i,'orange'],[/marrón|café/i,'brown'],[/amarillo/i,'yellow'],[/verde/i,'green'],[/negro/i,'black'],[/morado/i,'purple'],[/azul/i,'blue'],[/gris/i,'gray'],[/rosa/i,'pink'],[/\b(?:once|doce|trece|catorce|quince|dieciséis|diecisiete|dieciocho|diecinueve|veinte)\b/i,'number'],[/\b(?:perro|perros)\b/i,'dog'],[/\b(?:gato|gatos)\b/i,'cat'],[/\b(?:pez|peces)\b/i,'fish'],[/\b(?:conejo|conejos)\b/i,'rabbit'],[/\b(?:mariposa|mariposas)\b/i,'butterfly'],[/\b(?:caracol|caracoles)\b/i,'snail'],[/\b(?:abeja|abejas)\b/i,'bee'],[/\b(?:mariquita|mariquitas)\b/i,'ladybug'],[/\b(?:plátano|plátanos)\b/i,'banana'],[/\b(?:sandía|sandías)\b/i,'watermelon'],[/\b(?:playa|playas)\b/i,'beach'],[/\b(?:nieve|nieva|nevando|muñeco de nieve)\b/i,'snow'],[/\b(?:libro|cuaderno)\b/i,'book'],[/\b(?:lápiz|lápices|bolígrafo|regla)\b/i,'pencil'],[/\b(?:mochila)\b/i,'bag'],[/\b(?:casa|clase|colegio)\b/i,'house'],[/\b(?:agua|bebo agua|quiero agua)\b/i,'water'],[/\b(?:fútbol|pelota|balón)\b/i,'ball'],[/\b(?:pan|queso|leche|arroz|sopa|huevo)\b/i,'food'],[/\b(?:familia|madre|padre|hermano|hermana)\b/i,'family'],[/\b(?:blanco|blanca)\b/i,'white'],[/\b(?:pies|pie|mano|manos|cabeza|ojos|boca|nariz|orejas)\b/i,'body'],[/\b(?:salto|saltar|tobogán|bici)\b/i,'play'],
+[/uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez/i,'number']
 ];
+
+function pictureKind(card){
+ const text=String(card.es||'').normalize('NFC');
+ const meaning=String(card.pl||'').toLocaleLowerCase('pl');
+ if(/^naranja$/i.test(text.trim())&&/pomarańcza|owoc/.test(meaning))return 'orangefruit';
+ return (V32_PICTURES.find(([re])=>re.test(text))||[])[1]||'generic';
+}
+function hasPicture(card){return pictureKind(card)!=='generic';}
 function art(card){
- const text=card.es||'',kind=(V32_PICTURES.find(([re])=>re.test(text))||[])[1]||'generic';
+ const text=card.es||'',kind=pictureKind(card);
  const bg={pumpkin:'#fff2d8',apple:'#faebe5',pear:'#f0f5d9',grapes:'#f3e9f5',avocado:'#eaf4df',fig:'#f8eaf4',pomegranate:'#fff1ee',berry:'#f0e9fd',nuts:'#fff0d8',beans:'#e8f8de',carrot:'#ffefda',cauliflower:'#f2f5e8',mushroom:'#fff2e3',tree:'#e5f4e9',leaves:'#fff0d9',flower:'#fce9f0',squirrel:'#f6edde',hedgehog:'#fff2df',birds:'#e6f2fc',owl:'#f4eede',umbrella:'#e7f4fc',coat:'#e8f2fb',boots:'#fff0de',night:'#e7eafb',day:'#eff6ff',rain:'#e4f1fd',wind:'#eaf7f7',sun:'#fff6da',cloud:'#eff6fb',cold:'#e1f4fa',hot:'#fff0db',sky:'#e3f1ff'}[kind]||'#f0f5ef';
  const shapes={
  pumpkin:'<ellipse cx="80" cy="66" rx="46" ry="31" fill="#f58d2b"/><ellipse cx="64" cy="66" rx="17" ry="31" fill="#ffae43"/><ellipse cx="95" cy="66" rx="17" ry="31" fill="#ffac45"/><path d="M79 34Q74 22 84 18" fill="none" stroke="#447d42" stroke-width="8" stroke-linecap="round"/>',
@@ -363,11 +402,35 @@ function art(card){
  hot:'<circle cx="80" cy="56" r="30" fill="#ffae37"/><path d="M60 21Q67 9 73 21M85 19Q92 6 99 22" stroke="#d8723a" stroke-width="5" fill="none"/>',
  sky:'<path d="M15 72Q37 46 59 64Q78 40 100 63Q129 45 144 72" stroke="white" stroke-width="15" stroke-linecap="round" fill="none"/>',
  number:'<circle cx="80" cy="57" r="40" fill="#ffcb70"/><circle cx="80" cy="57" r="31" fill="#fff1c9"/>',
+ dog:'<ellipse cx="80" cy="74" rx="35" ry="23" fill="#bf8357"/><circle cx="80" cy="48" r="27" fill="#d7a06b"/><ellipse cx="50" cy="42" rx="12" ry="24" fill="#95623e"/><ellipse cx="111" cy="42" rx="12" ry="24" fill="#95623e"/><circle cx="69" cy="46" r="4" fill="#322d2a"/><circle cx="91" cy="46" r="4" fill="#322d2a"/><ellipse cx="80" cy="57" rx="8" ry="6" fill="#36302c"/>',
+ cat:'<path d="M48 41L53 19L72 34Q80 30 89 34L109 19L112 43Q128 76 101 91Q80 103 59 91Q35 73 48 41Z" fill="#d99b60"/><circle cx="65" cy="57" r="4" fill="#34313a"/><circle cx="94" cy="57" r="4" fill="#34313a"/><path d="M75 71L85 71L80 76Z" fill="#bd6070"/><path d="M57 75L30 70M103 75L130 70" stroke="#84563b" stroke-width="3"/>',
+ fish:'<ellipse cx="79" cy="56" rx="36" ry="24" fill="#55b8d7"/><path d="M109 55L141 29L141 85Z" fill="#438fb1"/><circle cx="59" cy="49" r="5" fill="#293f59"/><path d="M80 32L94 18L103 36" fill="#84d1e7"/>',
+ rabbit:'<ellipse cx="80" cy="73" rx="35" ry="24" fill="#ddd5d5"/><ellipse cx="64" cy="35" rx="11" ry="31" fill="#eee5e5"/><ellipse cx="94" cy="35" rx="11" ry="31" fill="#eee5e5"/><ellipse cx="64" cy="35" rx="5" ry="23" fill="#efb9bf"/><ellipse cx="94" cy="35" rx="5" ry="23" fill="#efb9bf"/><circle cx="67" cy="68" r="4" fill="#554a50"/><circle cx="92" cy="68" r="4" fill="#554a50"/><circle cx="80" cy="79" r="5" fill="#df909d"/>',
+ butterfly:'<ellipse cx="57" cy="41" rx="25" ry="20" fill="#e6a1d7"/><ellipse cx="102" cy="41" rx="25" ry="20" fill="#97a9ef"/><ellipse cx="58" cy="73" rx="24" ry="18" fill="#e6a1d7"/><ellipse cx="101" cy="73" rx="24" ry="18" fill="#97a9ef"/><path d="M80 34V82" stroke="#54465d" stroke-width="7" stroke-linecap="round"/><path d="M80 38Q63 13 55 20M80 38Q97 13 105 20" stroke="#54465d" stroke-width="3" fill="none"/>',
+ snail:'<path d="M30 84Q55 70 102 81Q123 55 135 75Q148 95 120 94H30Z" fill="#7abf83"/><circle cx="75" cy="57" r="28" fill="#dca76d"/><path d="M72 56Q85 43 91 61Q90 77 75 76Q60 70 65 55" fill="none" stroke="#94674b" stroke-width="6"/><path d="M112 73V40M127 73V40" stroke="#7abf83" stroke-width="6"/><circle cx="112" cy="36" r="5" fill="#333"/><circle cx="127" cy="36" r="5" fill="#333"/>',
+ bee:'<ellipse cx="80" cy="60" rx="31" ry="21" fill="#ffd75e"/><path d="M65 41V79M88 39V80" stroke="#453f3c" stroke-width="11"/><ellipse cx="67" cy="35" rx="15" ry="20" fill="#d6f5f4" opacity=".82"/><ellipse cx="90" cy="33" rx="15" ry="20" fill="#d6f5f4" opacity=".82"/><circle cx="103" cy="55" r="4" fill="#333"/>',
+ ladybug:'<ellipse cx="81" cy="62" rx="37" ry="30" fill="#d74343"/><path d="M81 34V91" stroke="#343134" stroke-width="5"/><circle cx="65" cy="53" r="7" fill="#333"/><circle cx="97" cy="53" r="7" fill="#333"/><circle cx="66" cy="74" r="6" fill="#333"/><circle cx="96" cy="74" r="6" fill="#333"/><circle cx="81" cy="32" r="15" fill="#39353a"/>',
+ orangefruit:'<circle cx="80" cy="59" r="35" fill="#f5a235"/><path d="M79 24Q83 14 91 11" stroke="#6c8c44" stroke-width="5" fill="none"/><ellipse cx="104" cy="21" rx="14" ry="7" fill="#5aab68"/>',
+ banana:'<path d="M39 31Q61 105 125 42Q119 96 87 100Q54 98 39 31Z" fill="#f4cd48" stroke="#b69a38" stroke-width="3"/>',
+ watermelon:'<path d="M37 63Q80 106 123 63Z" fill="#df555d"/><path d="M37 63Q80 113 123 63" stroke="#4c9b62" stroke-width="12" fill="none"/><circle cx="64" cy="74" r="4" fill="#342e35"/><circle cx="84" cy="83" r="4" fill="#342e35"/><circle cx="101" cy="74" r="4" fill="#342e35"/>',
+ beach:'<rect x="2" y="2" width="156" height="60" rx="15" fill="#bce8f6"/><path d="M2 57Q60 43 158 57V83H2Z" fill="#4bbacf"/><path d="M2 82Q65 76 158 87V113H2Z" fill="#f3d392"/><path d="M74 35Q110 9 142 35Z" fill="#ef6965"/><path d="M108 33V97" stroke="#946d4e" stroke-width="6"/>',
+ snow:'<circle cx="80" cy="79" r="30" fill="#f8fcff" stroke="#a8d1df" stroke-width="3"/><circle cx="80" cy="38" r="21" fill="#f8fcff" stroke="#a8d1df" stroke-width="3"/><circle cx="73" cy="33" r="3"/><circle cx="88" cy="33" r="3"/><path d="M79 38L99 42L80 46Z" fill="#ed943f"/>',
+ book:'<path d="M22 27Q54 17 80 33Q108 17 138 27V95Q107 85 80 99Q50 85 22 95Z" fill="#5aa4d9"/><path d="M80 34V99" stroke="#fff" stroke-width="5"/><path d="M30 43Q52 38 69 46M91 46Q109 38 130 43" stroke="#fff" stroke-width="4" fill="none"/>',
+ pencil:'<path d="M49 93L105 24L127 42L72 109L42 114Z" fill="#f5ca53" stroke="#af7d36" stroke-width="3"/><path d="M105 24L117 11L139 29L127 42" fill="#dc7970"/><path d="M49 93L42 114L72 109" fill="#ddd5b7"/>',
+ bag:'<rect x="45" y="40" width="70" height="61" rx="12" fill="#6d97c8"/><path d="M65 43V32Q65 20 80 20Q95 20 95 32V43" fill="none" stroke="#446d9e" stroke-width="8"/><rect x="62" y="61" width="38" height="24" rx="6" fill="#90b5df"/>',
+ house:'<path d="M28 58L80 16L132 58V102H28Z" fill="#f2d3ad"/><path d="M20 58L80 10L140 58" stroke="#b76c58" stroke-width="10" fill="none" stroke-linejoin="round"/><rect x="68" y="66" width="24" height="36" fill="#986a61"/><rect x="39" y="65" width="18" height="18" fill="#91cfe2"/>',
+ water:'<path d="M80 14Q71 38 53 59Q34 89 60 103Q80 117 100 103Q126 89 106 59Q89 34 80 14Z" fill="#5caede"/><path d="M55 80Q52 60 66 48" stroke="#cdefff" stroke-width="8" stroke-linecap="round" fill="none"/>',
+ ball:'<circle cx="80" cy="57" r="39" fill="#fff" stroke="#394b49" stroke-width="4"/><path d="M80 38L95 50L89 68H71L65 50Z" fill="#394b49"/><path d="M80 38L69 22M95 50L119 44M89 68L104 88M71 68L57 88M65 50L41 44" stroke="#394b49" stroke-width="5"/>',
+ food:'<ellipse cx="80" cy="80" rx="55" ry="20" fill="#dddde2"/><ellipse cx="80" cy="77" rx="46" ry="14" fill="#fafafa"/><path d="M48 71Q50 43 78 40Q112 41 113 72Z" fill="#eebc6b"/><path d="M54 72H110" stroke="#b47c49" stroke-width="5"/>',
+ family:'<circle cx="49" cy="40" r="15" fill="#d8a67e"/><circle cx="111" cy="40" r="15" fill="#d8a67e"/><circle cx="80" cy="62" r="12" fill="#e7b48b"/><path d="M24 96Q25 58 49 58Q72 58 72 96ZM88 96Q89 58 111 58Q135 58 136 96Z" fill="#6596c0"/><path d="M61 104Q63 74 80 74Q97 74 99 104Z" fill="#e1a35e"/>',
+ body:'<circle cx="80" cy="27" r="16" fill="#e6b58e"/><path d="M80 43V81M80 54L44 69M80 54L116 69M80 81L55 105M80 81L105 105" stroke="#6eacb2" stroke-width="12" stroke-linecap="round"/>',
+ play:'<rect x="20" y="71" width="120" height="11" rx="5" fill="#72b891"/><path d="M47 71L77 27L107 71" stroke="#e9a34b" stroke-width="11" fill="none"/><circle cx="80" cy="19" r="11" fill="#f4d26e"/>',
+ white:'<circle cx="80" cy="56" r="38" fill="#ffffff" stroke="#9da9af" stroke-width="4"/>',
  generic:'<circle cx="80" cy="56" r="35" fill="#a8d5b5"/><path d="M60 55Q80 27 102 55Q80 86 60 55" fill="#5dab7f"/>'
  };
  const palette={red:'#dc4c4f',orange:'#f7a23e',brown:'#8b6147',yellow:'#f7d354',green:'#63ad66',black:'#42434c',purple:'#8d62bd',blue:'#619edb',gray:'#aab4b9',pink:'#e99bc1'};
- let content=shapes[kind];if(palette[kind]) content='<circle cx="80" cy="55" r="40" fill="'+palette[kind]+'"/><path d="M57 33Q80 22 102 36" stroke="#fff9" stroke-width="8" fill="none" stroke-linecap="round"/>';
- if(kind==='number'){const digits={Uno:'1',Dos:'2',Tres:'3',Cuatro:'4',Cinco:'5',Seis:'6',Siete:'7',Ocho:'8',Nueve:'9',Diez:'10'};content+='<text x="80" y="76" font-size="47" text-anchor="middle" font-family="sans-serif" font-weight="900" fill="#965a39">'+(digits[text]||'?')+'</text>'}
+ let content=shapes[kind]||shapes.generic;if(kind==='generic')content='<circle cx="80" cy="56" r="36" fill="#c8dfcf"/><text x="80" y="72" text-anchor="middle" font-size="44" fill="#285944" font-weight="700">?</text>';if(palette[kind]) content='<circle cx="80" cy="55" r="40" fill="'+palette[kind]+'"/><path d="M57 33Q80 22 102 36" stroke="#fff9" stroke-width="8" fill="none" stroke-linecap="round"/>';
+ if(kind==='number'){const digits={Uno:'1',Dos:'2',Tres:'3',Cuatro:'4',Cinco:'5',Seis:'6',Siete:'7',Ocho:'8',Nueve:'9',Diez:'10',Once:'11',Doce:'12',Trece:'13',Catorce:'14',Quince:'15',Dieciséis:'16',Diecisiete:'17',Dieciocho:'18',Diecinueve:'19',Veinte:'20'};content+='<text x="80" y="76" font-size="47" text-anchor="middle" font-family="sans-serif" font-weight="900" fill="#965a39">'+(digits[text]||'?')+'</text>'}
  // Every word gets its own consistent, accessible illustration and unique accent color.
  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 160 115');svg.setAttribute('role','img');svg.setAttribute('aria-label','Rysunek: '+card.pl);svg.classList.add('v32-illustration');
  const root='<rect x="2" y="2" width="156" height="111" rx="21" fill="'+bg+'"/><ellipse cx="80" cy="104" rx="53" ry="5" fill="#294d3c" opacity=".08"/>';
@@ -379,7 +442,7 @@ function reward(n=1){points+=n;saveProgress()}
 function begin(type){const cards=pool();if(cards.length<2){feedback('Za mało słówek w tym rozdziale.');return}state={type,cards,score:0,moves:0,correct:0,locked:false,finished:false};el('epicMenu').hidden=true;el('epicStage').hidden=false;const names={memory:'🧠 Memory',audio:'🎧 Zgadnij ze słuchu',match:'🎯 Dopasuj pary',letters:'🔤 Rozsypanka liter',timed:'⏱️ Wyzwanie 60 sekund'};set('epicTitle',names[type]);gameFeedback('','');if(type==='memory')memory();if(type==='audio')question(true);if(type==='match')matching();if(type==='letters')letters();if(type==='timed'){state.deadline=Date.now()+60000;state.timer=setInterval(()=>{if(!state||state.type!=='timed')return;const left=Math.max(0,Math.ceil((state.deadline-Date.now())/1000));set('epicScore',`⏱️ ${left} s • ⭐ ${state.score} pkt`);if(!left){clearInterval(state.timer);state.finished=true;el('epicContent').replaceChildren(node('p','epic-prompt',`Koniec czasu! Zdobyte punkty: ${state.score}`));feedback('¡Muy bien!')}} ,250);question(false)}}
 document.querySelectorAll('[data-epic]').forEach(b=>b.onclick=()=>begin(b.dataset.epic));
 el('epicExit').onclick=()=>{if(state?.timer)clearInterval(state.timer);state=null;el('epicStage').hidden=true;el('epicMenu').hidden=false;feedback('')};
-function memory(){const picks=sample(state.cards,nPairs());const cards=shuffle(picks.flatMap(c=>[{key:c.id,kind:'word',c},{key:c.id,kind:'picture',c}]));state.open=[];state.found=new Set();state.locked=false;const grid=node('div','epic-cards');el('epicContent').replaceChildren(grid);function paint(){grid.replaceChildren();cards.forEach((item,i)=>{const found=state.found.has(item.key),open=state.open.includes(i);const b=btn('',()=>flip(i),'epic-card '+(found?'done':open?'':'covered'));if(found||open){if(item.kind==='picture')b.append(art(item.c));else {b.textContent=item.c.es;b.setAttribute('aria-label','Słowo hiszpańskie: '+item.c.es)}}else b.textContent='❔';b.disabled=found||open||state.locked;grid.append(b)});set('epicScore',`Znalezione pary: ${state.found.size}/${picks.length} • Ruchy: ${state.moves}`)}
+function memory(){const illustrated=state.cards.filter(hasPicture);const picks=sample(illustrated,nPairs());if(picks.length<2){el('epicContent').textContent='W tym rozdziale nie ma jeszcze wystarczająco wielu ilustrowanych haseł. Wybierz inną grę.';return;} const cards=shuffle(picks.flatMap(c=>[{key:c.id,kind:'word',c},{key:c.id,kind:'picture',c}]));state.open=[];state.found=new Set();state.locked=false;const grid=node('div','epic-cards');el('epicContent').replaceChildren(grid);function paint(){grid.replaceChildren();cards.forEach((item,i)=>{const found=state.found.has(item.key),open=state.open.includes(i);const b=btn('',()=>flip(i),'epic-card '+(found?'done':open?'':'covered'));if(found||open){if(item.kind==='picture')b.append(art(item.c));else {b.textContent=item.c.es;b.setAttribute('aria-label','Słowo hiszpańskie: '+item.c.es)}}else b.textContent='❔';b.disabled=found||open||state.locked;grid.append(b)});set('epicScore',`Znalezione pary: ${state.found.size}/${picks.length} • Ruchy: ${state.moves}`)}
 function flip(i){if(state.locked||state.found.has(cards[i].key))return;state.open.push(i);paint();if(state.open.length===2){state.moves++;const [a,b]=state.open.map(j=>cards[j]);if(a.key===b.key&&a.kind!==b.kind){state.found.add(a.key);reward();recordResult(a.c.unit,a.c.raw,true,'memory');speak(a.c.es);state.open=[];feedback('¡Muy bien! Znaleziona para!');paint();if(state.found.size===picks.length)feedback(`🏆 Brawo! ${state.moves} ruchów.`)}else{state.locked=true;setTimeout(()=>{if(!state||state.type!=='memory')return;state.open=[];state.locked=false;paint()},950)}}}paint()}
 function gameFeedback(message,kind){const f=el('epicFeedback');f.textContent=message;f.className='feedback epic-feedback '+(kind||'')}
 function actionRow(label,handler,primary=true){const wrap=node('div','epic-action-row');wrap.append(btn(label,handler,primary?'epic-primary':'secondary'));return wrap}
@@ -814,7 +877,7 @@ window.addEventListener('franka:s7school',e=>{const x=e.detail;if(!x||!x.es)retu
 function allSchool(){return Object.values(data.schoolTopics)}
 
 function buildPlan(){
- const u=Number($('s8FocusSeason')?.value||$('uxUnit').value||1),J=window.frankaJourney8,all=units[u].cards;
+ const u=Number($('s8FocusSeason')?.value||$('uxUnit').value||1),J=window.frankaJourney8,all=window.frankaPath10?.dailyCards(u)||units[u].cards;
  const normalize=x=>x.normalize('NFC').trim().toLocaleLowerCase('es').replace(/\s+/g,' ');
  const rows=all.map(c=>({kind:'word',u,es:c[1],pl:c[2],icon:c[0],status:J?.get(u,'word',c[1])}));
  const pending=rows.filter(x=>x.status&&(x.status.wrong>x.status.right||x.status.next<=Date.now())).sort((a,b)=>(b.status.wrong-b.status.right)||(a.status.next-b.status.next));
@@ -827,9 +890,9 @@ function buildPlan(){
  const newSentence=sentences.filter(x=>!J?.get(u,'sentence',x.es));
  const oldSentence=sentences.filter(x=>{const r=J?.get(u,'sentence',x.es);return r&&(r.wrong>r.right||r.next<=Date.now())});
  const queue=[],seen=new Set();function add(arr,n){for(const x of arr){const k=x.kind+'|'+normalize(x.es);if(!seen.has(k)){seen.add(k);queue.push(x);if(--n<=0)break}}}
- add(pending,2);add(rotate(freshBySchool,today),3);
+ add(pending,2);add(freshBySchool,3);
  if(queue.filter(x=>x.kind==='word').length<5)add(rows.filter(x=>!seen.has(x.kind+'|'+normalize(x.es))),5-queue.filter(x=>x.kind==='word').length);
- add(oldSentence,1);add(rotate(newSentence,today),1);
+ add(oldSentence,1);add(newSentence,1);
  if(queue.filter(x=>x.kind==='sentence').length<2)add(rotate(sentences,today),2-queue.filter(x=>x.kind==='sentence').length);
  return queue.slice(0,7);
 }
@@ -848,7 +911,7 @@ function draw(){const plan=buildPlan(),root=$('s7Plan');root.replaceChildren();c
  for(const [ic,t,sub] of desc){const row=n('div','s7-plan-row'),left=n('div');left.append(n('strong','',ic+' '+t),n('small','',sub));row.append(left);root.append(row)}
  $('s7DailyStart').disabled=!plan.length;
  const u=Number($('s8FocusSeason').value),sum=window.frankaJourney8?.progress(u);
- $('s8DailyTip').textContent=`${window.frankaSeasons8.names[u]} · ${sum?sum.pct:0}% postępu. Najpierw materiał szkolny, następnie nowe słowa A1.`;
+ $('s8DailyTip').textContent=`${window.frankaSeasons8.names[u]} · ${sum?sum.pct:0}% postępu. Nowy materiał poznajesz po kolei: najpierw szkoła, potem rozszerzenia A1.`;
  const weak=$('s7WeakTopics');weak.replaceChildren();const difficult=(units[u]?.cards||[]).filter(c=>{const r=window.frankaJourney8?.get(u,'word',c[1]);return r&&r.wrong>r.right}).slice(0,5);
  weak.append(n('p','small',difficult.length?'Do powtórki: '+difficult.map(c=>c[2]).join(', '):'Nie ma obecnie trudniejszych słówek w tym rozdziale. Możesz poznać nowe!'));
 }
@@ -876,4 +939,95 @@ $('s7SessionClose').onclick=()=>{session=null;$('s7Session').hidden=true;draw()}
 draw();document.querySelectorAll('[data-enter]').forEach(btn=>btn.addEventListener('click',()=>{if(btn.dataset.enter==='learn')draw()}));
 window.addEventListener('storage',draw);
 })();
-</script></body></html>
+</script><script>
+/* Sprint 10 — Learning Path 2.0. Independent step results; v9 picture safety inherited. */
+(function(){
+'use strict';
+const $=id=>document.getElementById(id),STORE='hiszpanskiFrankaPath10V2';
+const SCHOOL=window.frankaSeasons8?.school||{}, ORIGIN=window.frankaSeasons8?.origin||{};
+const normal=s=>String(s).normalize('NFC').trim().toLocaleLowerCase('es').replace(/\s+/g,' ');
+const chunks=(xs,n)=>Array.from({length:Math.ceil(xs.length/n)},(_,i)=>xs.slice(i*n,(i+1)*n));
+let data={};try{const obj=JSON.parse(localStorage.getItem(STORE)||'{}');if(obj&&typeof obj==='object')data=obj}catch(e){}
+const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(data))}catch(e){}};
+function unique(u){const seen=new Set();return (units[u]?.cards||[]).filter(c=>{const k=normal(c[1]);if(seen.has(k))return false;seen.add(k);return true})}
+function school(u,c){return ORIGIN[u+'|'+normal(c[1])]!=='rozszerzenie A1' && (SCHOOL[u]||[]).some(s=>normal(s[1])===normal(c[1]))}
+const sentenceBank={
+1:[['Me llamo Franek.','Mam na imię Franek.'],['En otoño llueve.','Jesienią pada deszcz.'],['Las hojas son amarillas.','Liście są żółte.'],['Veo una ardilla.','Widzę wiewiórkę.']],
+2:[['Hoy hace frío.','Dziś jest zimno.'],['Tengo un libro.','Mam książkę.'],['Llevo una bufanda.','Noszę szalik.'],['El gato es pequeño.','Kot jest mały.']],
+3:[['Veo una mariposa.','Widzę motyla.'],['Me gusta jugar al fútbol.','Lubię grać w piłkę nożną.'],['Quiero agua, por favor.','Poproszę wodę.'],['Es una flor.','To jest kwiat.']],
+4:[['En verano hace calor.','Latem jest gorąco.'],['Bebo agua.','Piję wodę.'],['Voy a la playa.','Idę na plażę.'],['Me gusta el sol.','Lubię słońce.']]};
+function stages(u){const words=unique(u),schoolSets=chunks(words.filter(c=>school(u,c)),5),a1Sets=chunks(words.filter(c=>!school(u,c)),5),out=[];
+const entry=(kind,raw,title,note,emoji)=>({kind,raw,title,note,emoji,id:kind+':'+raw.map(c=>normal(kind==='sentence'?c[0]:c[1])).join('~')});
+// School always has first place, then introduce A1 expansions at a steady pace.
+let si=0,ai=0;
+while(si<schoolSets.length||ai<a1Sets.length){
+ for(let k=0;k<2&&si<schoolSets.length;k++,si++)out.push(entry('school',schoolSets[si],`Szkolne słówka · zestaw ${si+1}`,'Słówka z rozdziału i ćwiczenia', '📚'));
+ if(ai<a1Sets.length){out.push(entry('a1',a1Sets[ai],`Rozwijam hiszpański · zestaw ${ai+1}`,'Nowe słowa potrzebne do A1','🌱'));ai++}
+}
+out.push(entry('sentence',sentenceBank[u]||[],'Buduję proste zdania','Rozumiem i powtarzam pełne wypowiedzi','🗣️'));
+out.push({kind:'checkpoint',id:'checkpoint',raw:[],title:'Checkpoint rozdziału',note:'Sprawdzam szkolny materiał',emoji:'🏆'});
+return out;
+}
+function status(u,s){return data[u]?.[s.id]||null}
+function done(u,s){return !!status(u,s)?.done}
+function unlocked(u,i){const list=stages(u);return i===0||done(u,list[i-1])}
+let session=null,showAll=false;
+function h(tag,cl,txt){const e=document.createElement(tag);if(cl)e.className=cl;if(txt!==undefined)e.textContent=txt;return e}
+function button(txt,onClick,cl='secondary'){const b=h('button',cl,txt);b.type='button';b.onclick=onClick;return b}
+function shuffle(a){const x=[...a];for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x}
+function complete(u,s,details){data[u]??={};data[u][s.id]={done:true,date:new Date().toISOString().slice(0,10),...details};save();draw();
+ const focus=$('s8FocusSeason');if(focus&&Number(focus.value)===Number(u))focus.dispatchEvent(new Event('change'));
+}
+function display(){if(!session)return;const x=session,body=$('s10LessonBody');body.replaceChildren();$('s10LessonFeedback').textContent='';$('s10LessonFeedback').className='';
+ if(x.pos>=x.list.length){finish();return}
+ const row=x.list[x.pos],sentence=x.stage.kind==='sentence',es=sentence?row[0]:row[1],pl=sentence?row[1]:row[2];
+ $('s10LessonHeading').textContent=`${x.stage.emoji} ${x.stage.title} · ${x.pos+1}/${x.list.length}`;
+ body.append(h('p','s10-question',sentence?'🎧 Posłuchaj zdania':es));
+ const listen=h('div','s10-center');listen.append(button('🔊 Posłuchaj',()=>speak(es),'epic-listen'));body.append(listen);
+ const help=h('div','s10-help',`Najpierw posłuchaj i powtórz: ${es} — ${pl}. Potem sprawdź, czy pamiętasz.`);body.append(help);
+ const answerBlock=h('div');answerBlock.hidden=true;body.append(answerBlock);
+ const prep=h('div','s10-center');const reveal=button('✅ Spróbuję odpowiedzieć',()=>{help.hidden=true;prep.hidden=true;answerBlock.hidden=false},'epic-primary');prep.append(reveal);body.insertBefore(prep,answerBlock);
+ const meanings=sentence?(sentenceBank[x.u]||[]).map(c=>c[1]):unique(x.u).map(c=>c[2]);
+ const choices=shuffle([pl,...shuffle([...new Set(meanings.filter(v=>v!==pl))]).slice(0,3)]),grid=h('div','s10-answer-grid');answerBlock.append(grid);
+ for(const val of choices){grid.append(button(val,()=>{
+ if(x.answered)return;x.answered=true;const right=val===pl;if(right)x.correct++;
+ // Feed the same smart-learning engine used by Memory, checkpoints and daily sessions.
+ if(x.stage.kind==='sentence')window.dispatchEvent(new CustomEvent('franka:s7sentence',{detail:{u:x.u,es,pl,correct:right,kind:'learning-path'}}));
+ else recordResult(x.u,row,right,'learning-path');
+ grid.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===pl)b.classList.add('right');else if(b.textContent===val&&!right)b.classList.add('wrong')});
+ const fb=$('s10LessonFeedback');fb.className='s10-feedback '+(right?'good':'bad');fb.textContent=right?'✅ Świetnie!':'❌ Poprawnie: '+pl;
+ const next=h('div','s10-center');next.append(button(x.pos===x.list.length-1?'🏆 Zakończ etap':'➡️ Następne pytanie',()=>{x.pos++;x.answered=false;display()},'epic-primary'));body.append(next);
+ },'secondary'))}
+}
+function begin(u,i){const items=stages(u),s=items[i];if(!s||!unlocked(u,i))return;
+ if(s.kind==='checkpoint'){$('s10Lesson').hidden=true;$('s6SchoolStart').click();return}
+ if(!s.raw.length){complete(u,s,{empty:true});return}
+ session={u,stage:s,list:shuffle(s.raw),pos:0,correct:0,answered:false};$('s10Lesson').hidden=false;display();$('s10Lesson').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function finish(){if(!session)return;const x=session,ok=x.correct>=Math.ceil(x.list.length*.75),body=$('s10LessonBody');body.replaceChildren();
+ body.append(h('p','s10-question',ok?'🏆 Etap zaliczony!':'🌱 Poćwiczmy jeszcze trochę'));
+ body.append(h('p','',`Poprawne odpowiedzi: ${x.correct}/${x.list.length}. ${ok?'Odblokowany jest kolejny etap.':'Możesz powtórzyć ten zestaw.'}`));
+ if(ok)complete(x.u,x.stage,{correct:x.correct,total:x.list.length});
+ const wrap=h('div','s10-center');wrap.append(button(ok?'🏠 Wróć do ścieżki':'🔁 Powtórz zestaw',()=>{if(ok){$('s10Lesson').hidden=true;session=null;draw()}else begin(x.u,stages(x.u).findIndex(s=>s.id===x.stage.id))},'epic-primary'));body.append(wrap);session=null;
+}
+function draw(){const u=Number($('uxUnit')?.value||1),root=$('s10Steps');if(!root)return;const all=stages(u),completed=all.filter(s=>done(u,s)).length,next=all.findIndex(s=>!done(u,s));
+ $('s10PathProgress').textContent=`${completed}/${all.length} etapów`;
+ root.replaceChildren();
+ const visible=all.map((s,i)=>i).filter(i=>showAll||i<=3||i>=Math.max(0,next-1)&&i<=next+2);
+ for(const i of visible){const s=all[i],passed=done(u,s),open=unlocked(u,i),item=button('',()=>begin(u,i),'s10-step'+(passed?' done':open?' active':''));item.disabled=!open;
+ item.append(h('span','s10-step-ico',s.emoji));const content=h('span','s10-step-main');content.append(h('strong','',s.title));content.append(h('small','',s.note+(s.kind!=='checkpoint'?` · ${s.raw.length} zadań`:'')));item.append(content);item.append(h('span','s10-step-mark',passed?'✓ Gotowe':open?'▶ Start':'🔒'));root.append(item)}
+ if(all.length>visible.length)root.append(button(`📖 ${showAll?'Pokaż mniej':'Pokaż wszystkie etapy'} (${all.length})`,()=>{showAll=!showAll;draw()},'secondary'));
+ else if(showAll&&all.length>5)root.append(button('📖 Pokaż mniej',()=>{showAll=false;draw()},'secondary'));
+}
+$('s10LessonClose').onclick=()=>{$('s10Lesson').hidden=true;session=null};
+$('uxUnit').addEventListener('change',()=>{$('s10Lesson').hidden=true;session=null;showAll=false;draw()});
+window.addEventListener('franka:s8checkpoint',e=>{const x=e.detail,u=Number(x?.u);if(x?.type==='school'&&[1,2,3,4].includes(u)){
+ const s=stages(u).at(-1);if(x.percent>=85)complete(u,s,{score:x.percent});else draw();
+}});
+window.frankaPath10={stages,draw,dailyCards(u){const list=stages(u),set=new Set();for(let i=0;i<list.length;i++){const s=list[i];if(!unlocked(u,i)||s.kind==='checkpoint'||s.kind==='sentence')continue;for(const c of s.raw)set.add(normal(c[1]))}
+ const filtered=unique(u).filter(c=>set.has(normal(c[1])));return filtered.length?filtered:unique(u).slice(0,5)
+}};
+draw();
+})();
+</script>
+</body></html>
