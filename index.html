@@ -120,7 +120,7 @@
 .s8-daily-tip{background:#fff8e8;border-radius:10px;padding:8px 12px;margin:10px 0;font-size:.91rem;color:#534526}
 @media(max-width:440px){.s8-seasons{gap:8px}.s8-season{min-height:110px;padding:10px}.s8-season strong{font-size:1rem}}
 </style><style>
-/* Sprint 10 — Learning Path 2.0 */
+/* Sprint 11 — Quality & Motivation (Sprint 10 retained) */
 .s10-learning-path{margin:16px 0 22px;padding:16px;border-radius:20px;background:#f6f9ee;border:1px solid #d9e5d4}
 .s10-path-header,.s10-lesson-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .s10-path-header h3{margin:0 0 5px;font-size:1.24rem}.s10-path-header p{margin:0}
@@ -144,7 +144,13 @@
 .s10-feedback.good{color:#1d7544;font-weight:800}.s10-feedback.bad{color:#a33b32;font-weight:800}
 @media(max-width:480px){.s10-learning-path{padding:11px}.s10-step{padding:11px}.s10-answer-grid{grid-template-columns:1fr}}
 </style>
-</head>
+<style>
+/* Sprint 11: subtle rewards and seasonal badge */
+.s11-celebration{position:fixed;z-index:9999;left:50%;top:18%;transform:translateX(-50%);max-width:min(420px,92vw);padding:18px 26px;background:#fff9dc;color:#61450a;box-shadow:0 12px 44px #153a2a35;border:2px solid #e5bb5c;border-radius:22px;text-align:center;font-size:1.28rem;font-weight:900;pointer-events:none;animation:s11pop .7s both}
+@keyframes s11pop{0%{opacity:0;transform:translate(-50%,24px) scale(.82)}45%{opacity:1;transform:translate(-50%,0) scale(1.04)}100%{opacity:1;transform:translate(-50%,0) scale(1)}}
+.s11-trophy{padding:12px;background:#fff6d8;border:1px solid #e8cf7f;border-radius:14px;text-align:center;font-weight:900;margin-top:12px}
+@media(prefers-reduced-motion:reduce){.s11-celebration{animation:none}}
+</style></head>
 <body><div class="app">
 <header><div><h1>¡Hola, Franek!</h1><p>Hiszpańska przygoda • słuchaj, graj, powtarzaj • v8.0</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
 <main>
@@ -326,9 +332,14 @@ $('markLearned').onclick=()=>markWord('learned');$('markReview').onclick=()=>mar
 $('listen').onclick=()=>speak(units[unit].cards[index][1]);$('repeat').onclick=()=>speak(units[unit].cards[index][1]);$('next').onclick=()=>{index=(index+1)%units[unit].cards.length;render();if($('audioOnly').checked)speak(units[unit].cards[index][1])};
 $('showPronunciation').onclick=()=>{const hint=$('pronunciationHint');hint.hidden=!hint.hidden;$('showPronunciation').setAttribute('aria-expanded',String(!hint.hidden))};
 $('audioOnly').onchange=e=>{document.querySelector('.meaning').style.visibility=e.target.checked?'hidden':'visible';$('pronunciation').style.visibility=e.target.checked?'hidden':'visible';if(e.target.checked)speak(units[unit].cards[index][1])};
-function gameQuestion(){let c=units[unit].cards;question=Math.floor(Math.random()*c.length);let target=c[question];$('gameEmoji').textContent=target[0];$('gameWord').textContent=target[1];$('feedback').textContent='';answered=false;let opts=[target];while(opts.length<Math.min(4,c.length)){let x=c[Math.floor(Math.random()*c.length)];if(!opts.includes(x))opts.push(x)}opts.sort(()=>Math.random()-.5);$('choices').innerHTML='';opts.forEach(o=>{let b=document.createElement('button');b.className='choice';b.textContent=o[2];b.onclick=()=>{if(answered)return;answered=true;saved.quizTotal=(Number(saved.quizTotal)||0)+1;if(o===target){b.classList.add('correct');$('feedback').textContent='¡Muy bien! Świetnie! ⭐';points+=1;saved.quizCorrect=(Number(saved.quizCorrect)||0)+1;saved.words[unit+':'+c.indexOf(target)]='learned'}else{b.classList.add('wrong');saved.words[unit+':'+c.indexOf(target)]='review';$('feedback').textContent='Jeszcze raz! Poprawna odpowiedź: '+target[2];[...$('choices').children].forEach(k=>{if(k.textContent===target[2])k.classList.add('correct')})}recordResult(unit,target,o===target,'quiz');saveProgress()};$('choices').appendChild(b)})}
+function gameQuestion(){let c=units[unit].cards;question=Math.floor(Math.random()*c.length);let target=c[question];$('gameEmoji').textContent=target[0];$('gameWord').textContent=target[1];$('feedback').textContent='';answered=false;let opts=[target];while(opts.length<Math.min(4,c.length)){let x=c[Math.floor(Math.random()*c.length)];if(!opts.includes(x))opts.push(x)}opts.sort(()=>Math.random()-.5);$('choices').innerHTML='';opts.forEach(o=>{let b=document.createElement('button');b.className='choice';b.textContent=o[2];b.onclick=()=>{if(answered)return;answered=true;saved.quizTotal=(Number(saved.quizTotal)||0)+1;if(o===target){frankaPraiseInSpanish(target[1]);b.classList.add('correct');$('feedback').textContent='¡Muy bien! Świetnie! ⭐';points+=1;saved.quizCorrect=(Number(saved.quizCorrect)||0)+1;saved.words[unit+':'+c.indexOf(target)]='learned'}else{b.classList.add('wrong');saved.words[unit+':'+c.indexOf(target)]='review';$('feedback').textContent='Jeszcze raz! Poprawna odpowiedź: '+target[2];[...$('choices').children].forEach(k=>{if(k.textContent===target[2])k.classList.add('correct')})}recordResult(unit,target,o===target,'quiz');saveProgress()};$('choices').appendChild(b)})}
 $('startGame').onclick=()=>{$('game').hidden=false;gameQuestion()};$('nextQuestion').onclick=gameQuestion;document.querySelectorAll('[data-screen]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-screen]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));const labels={cards:'Fiszki i wymowa',quiz:'Quiz obrazkowy',audio:'Audio do samochodu',progress:'Postępy i nagrody'};document.querySelector('.screen-intro').textContent='Wybrany podgląd: '+labels[b.dataset.screen]+'. To makieta planowanej funkcji.';}));document.querySelectorAll('#tabs button').forEach((b,i)=>b.classList.toggle('active',i===unit));render();updateStats();
 
+// Sprint 11: meaningful auditory reinforcement immediately after correct answers.
+function frankaPraiseInSpanish(es){
+ const phrase=String(es||'').trim();if(!phrase)return;
+ try{ if(typeof speak==='function')speak(phrase); }catch(e){console.warn('Spanish voice unavailable',e)}
+}
 // Faza 3: jedno źródło słówek dla gier, fiszek i trybu samochodowego.
 (function(){
 const el=id=>document.getElementById(id);
@@ -354,6 +365,18 @@ const node=(tag,cls='',txt='')=>{const n=document.createElement(tag);n.className
 // Ręcznie opisane kategorie obiektów: wektorowe rysunki SVG, bez sieci i bez czcionek emoji.
 // Dla zdań złożonych tworzona jest ilustracja tematu wypowiedzi.
 const V32_PICTURES=[
+[/\b(?:guantes)\b/i,'gloves'],[/\b(?:chaqueta)\b/i,'jacket'],[/\b(?:pantalones)\b/i,'pants'],[/\b(?:gorro)\b/i,'hat'],[/\b(?:bufanda)\b/i,'scarf'],[/\b(?:sombrero)\b/i,'hat'],
+[/\b(?:ramitas)\b/i,'twigs'],[/\b(?:carbón)\b/i,'coal'],[/\b(?:goma de borrar)\b/i,'eraser'],[/\b(?:tijeras)\b/i,'scissors'],[/\b(?:silla)\b/i,'chair'],[/\b(?:pizarra)\b/i,'blackboard'],[/\b(?:puerta)\b/i,'door'],[/\b(?:ventana)\b/i,'window'],[/\b(?:cama)\b/i,'bed'],[/\b(?:mesa)\b/i,'table'],[/\b(?:cocina)\b/i,'kitchen'],[/\b(?:baño)\b/i,'bathroom'],[/\b(?:salón)\b/i,'sofa'],[/\b(?:lámpara)\b/i,'lamp'],
+[/\b(?:brazo)\b/i,'arm'],[/\b(?:pierna)\b/i,'leg'],[/\b(?:dientes)\b/i,'teeth'],[/\b(?:camiseta)\b/i,'tshirt'],[/\b(?:zapatos)\b/i,'shoes'],[/\b(?:calcetines)\b/i,'socks'],
+[/\b(?:gusanito)\b/i,'worm'],[/\b(?:semilla|semillas)\b/i,'seed'],[/\b(?:planta|plantas)\b/i,'plant'],[/\b(?:jardín)\b/i,'garden'],[/\b(?:columpio)\b/i,'swing'],
+[/\b(?:caballo)\b/i,'horse'],[/\b(?:vaca)\b/i,'cow'],[/\b(?:cerdo)\b/i,'pig'],[/\b(?:gallina)\b/i,'hen'],[/\b(?:ratón)\b/i,'mouse'],[/\b(?:pájaro)\b/i,'birds'],[/\b(?:flor)\b/i,'flower'],[/\b(?:nube)\b/i,'cloud'],[/\b(?:invierno)\b/i,'snow'],[/\b(?:primavera)\b/i,'flower'],[/\b(?:verano)\b/i,'beach'],
+[/\b(?:abuela)\b/i,'grandma'],[/\b(?:abuelo)\b/i,'grandpa'],[/bebé/i,'baby'],
+[/\b(?:dibujar)\b/i,'drawing'],[/\b(?:castaña)\b/i,'nuts'],[/\b(?:bellota)\b/i,'nuts'],
+[/\b(?:cansado)\b/i,'tired'],[/\b(?:estoy bien)\b/i,'happy'],
+[/\b(?:hola)\b/i,'wave'],[/\b(?:adiós|hasta luego)\b/i,'goodbye'],[/\b(?:gracias|de nada)\b/i,'thanks'],[/\b(?:por favor|perdón)\b/i,'please'],[/\b(?:mucho gusto)\b/i,'handshake'],
+[/quién eres|qué te gusta|cómo estás|cómo te llamas|y tú|qué te pones|dónde vives|cuántos años tienes|qué te gusta hacer|qué ves/i,'question'],[/\b(?:me llamo)\b/i,'wave'],[/\b(?:vivo en polonia)\b/i,'house'],[/\b(?:veo, veo)\b/i,'eyes'],
+[/este es mi papá|esta es mi mamá/i,'family'],
+
 [/calabaza/i,'pumpkin'],[/manzana/i,'apple'],[/pera$/i,'pear'],[/uvas/i,'grapes'],[/aguacate/i,'avocado'],[/higos/i,'fig'],[/granadas/i,'pomegranate'],[/moras/i,'berry'],[/nueces|castañas|bellotas/i,'nuts'],[/judías/i,'beans'],[/zanahoria/i,'carrot'],[/coliflor/i,'cauliflower'],[/setas|hongos|champiñones/i,'mushroom'],[/árbol/i,'tree'],[/hojas|otoño/i,'leaves'],[/flores/i,'flower'],[/ardilla/i,'squirrel'],[/erizo/i,'hedgehog'],[/pájaros|pajaritos/i,'birds'],[/búho/i,'owl'],[/paraguas/i,'umbrella'],[/abrigo/i,'coat'],[/botas/i,'boots'],[/noche|noches/i,'night'],[/días|día/i,'day'],[/lluvia|llueve|lloviendo|tiempo/i,'rain'],[/viento/i,'wind'],[/sol|despejado/i,'sun'],[/nubes/i,'cloud'],[/frío/i,'cold'],[/calor/i,'hot'],[/cielo/i,'sky'],[/rojo/i,'red'],[/naranja/i,'orange'],[/marrón|café/i,'brown'],[/amarillo/i,'yellow'],[/verde/i,'green'],[/negro/i,'black'],[/morado/i,'purple'],[/azul/i,'blue'],[/gris/i,'gray'],[/rosa/i,'pink'],[/\b(?:once|doce|trece|catorce|quince|dieciséis|diecisiete|dieciocho|diecinueve|veinte)\b/i,'number'],[/\b(?:perro|perros)\b/i,'dog'],[/\b(?:gato|gatos)\b/i,'cat'],[/\b(?:pez|peces)\b/i,'fish'],[/\b(?:conejo|conejos)\b/i,'rabbit'],[/\b(?:mariposa|mariposas)\b/i,'butterfly'],[/\b(?:caracol|caracoles)\b/i,'snail'],[/\b(?:abeja|abejas)\b/i,'bee'],[/\b(?:mariquita|mariquitas)\b/i,'ladybug'],[/\b(?:plátano|plátanos)\b/i,'banana'],[/\b(?:sandía|sandías)\b/i,'watermelon'],[/\b(?:playa|playas)\b/i,'beach'],[/\b(?:nieve|nieva|nevando|muñeco de nieve)\b/i,'snow'],[/\b(?:libro|cuaderno)\b/i,'book'],[/\b(?:lápiz|lápices|bolígrafo|regla)\b/i,'pencil'],[/\b(?:mochila)\b/i,'bag'],[/\b(?:casa|clase|colegio)\b/i,'house'],[/\b(?:agua|bebo agua|quiero agua)\b/i,'water'],[/\b(?:fútbol|pelota|balón)\b/i,'ball'],[/\b(?:pan|queso|leche|arroz|sopa|huevo)\b/i,'food'],[/\b(?:familia|madre|padre|hermano|hermana)\b/i,'family'],[/\b(?:blanco|blanca)\b/i,'white'],[/\b(?:pies|pie|mano|manos|cabeza|ojos|boca|nariz|orejas)\b/i,'body'],[/\b(?:salto|saltar|tobogán|bici)\b/i,'play'],
 [/uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez/i,'number']
 ];
@@ -426,6 +449,55 @@ function art(card){
  body:'<circle cx="80" cy="27" r="16" fill="#e6b58e"/><path d="M80 43V81M80 54L44 69M80 54L116 69M80 81L55 105M80 81L105 105" stroke="#6eacb2" stroke-width="12" stroke-linecap="round"/>',
  play:'<rect x="20" y="71" width="120" height="11" rx="5" fill="#72b891"/><path d="M47 71L77 27L107 71" stroke="#e9a34b" stroke-width="11" fill="none"/><circle cx="80" cy="19" r="11" fill="#f4d26e"/>',
  white:'<circle cx="80" cy="56" r="38" fill="#ffffff" stroke="#9da9af" stroke-width="4"/>',
+// Sprint 11 illustrative pictograms — offline SVG.
+gloves:'<path d="M37 90V42Q37 32 46 32Q54 32 54 42V27Q54 17 62 19Q69 20 69 30V23Q69 14 77 17Q84 20 84 30V24Q84 17 92 21Q99 25 98 37L100 87Z" fill="#6299d2"/><path d="M115 89V42Q115 34 107 35Q101 37 101 45" fill="none" stroke="#4b7cac" stroke-width="12"/>',
+jacket:'<path d="M59 25L38 35L20 83L43 93L51 75V106H109V75L117 93L140 83L122 35L102 25L80 42Z" fill="#66a9c8" stroke="#467e9e" stroke-width="3"/><path d="M80 41V106" stroke="white" stroke-width="4"/>',
+pants:'<path d="M50 24H110L117 101H88L80 63L71 101H42Z" fill="#567bb1" stroke="#345c8e" stroke-width="3"/>',
+hat:'<path d="M47 70Q51 34 80 34Q109 34 113 70" fill="#e89a56"/><path d="M31 76Q80 91 129 76" fill="none" stroke="#b96c43" stroke-width="9" stroke-linecap="round"/>',
+scarf:'<path d="M49 24Q38 48 52 69Q66 88 99 65" fill="none" stroke="#d97876" stroke-width="21" stroke-linecap="round"/><path d="M96 65L106 105" stroke="#d97876" stroke-width="18"/><path d="M99 94L110 93" stroke="#ffca9e" stroke-width="3"/>',
+twigs:'<path d="M46 95L105 25M52 81L28 45M76 57L119 54M87 44L91 19" stroke="#84603d" stroke-width="8" stroke-linecap="round"/>',
+coal:'<path d="M41 75L56 38L98 32L122 70L106 98L55 100Z" fill="#485057" stroke="#282b34" stroke-width="3"/><path d="M61 47L91 42" stroke="#a5acb1" stroke-width="4"/>',
+eraser:'<g transform="rotate(-18 80 64)"><rect x="38" y="44" width="86" height="38" rx="9" fill="#f4b4c4"/><rect x="38" y="44" width="38" height="38" rx="9" fill="#e9e9ef"/></g>',
+scissors:'<circle cx="56" cy="85" r="13" fill="none" stroke="#dd8e7a" stroke-width="8"/><circle cx="88" cy="85" r="13" fill="none" stroke="#dd8e7a" stroke-width="8"/><path d="M64 76L116 27M82 77L37 24" stroke="#7b96aa" stroke-width="7" stroke-linecap="round"/>',
+chair:'<rect x="48" y="27" width="64" height="51" rx="6" fill="#a97752"/><rect x="43" y="76" width="76" height="11" rx="5" fill="#d29862"/><path d="M51 83V106M109 83V106" stroke="#9c704e" stroke-width="7"/>',
+blackboard:'<rect x="26" y="24" width="108" height="66" rx="4" fill="#3b866f" stroke="#a77d4f" stroke-width="9"/><path d="M48 53H112" stroke="#d8f1d9" stroke-width="4"/><path d="M80 90V107" stroke="#8a614b" stroke-width="8"/>',
+door:'<rect x="51" y="17" width="60" height="91" rx="3" fill="#bf8b61" stroke="#8a634a" stroke-width="6"/><circle cx="99" cy="68" r="5" fill="#ffe18d"/>',
+window:'<rect x="37" y="22" width="87" height="79" rx="6" fill="#9ad9ed" stroke="#b48b64" stroke-width="9"/><path d="M80 22V101M37 64H124" stroke="#f5f5e8" stroke-width="8"/>',
+bed:'<rect x="30" y="58" width="104" height="39" rx="8" fill="#a7c8e6"/><rect x="30" y="44" width="26" height="56" rx="5" fill="#b48a68"/><rect x="42" y="52" width="39" height="21" rx="8" fill="white"/><path d="M33 96V107M130 96V107" stroke="#9c765a" stroke-width="6"/>',
+table:'<rect x="24" y="53" width="112" height="15" rx="5" fill="#c18b56"/><path d="M38 68L32 106M122 68L129 106" stroke="#9f714c" stroke-width="9"/>',
+kitchen:'<rect x="41" y="38" width="80" height="65" rx="6" fill="#d3dae2"/><rect x="52" y="57" width="56" height="40" fill="#f8f8f6"/><circle cx="58" cy="47" r="5" fill="#667e88"/><circle cx="100" cy="47" r="5" fill="#667e88"/>',
+bathroom:'<path d="M34 63H126Q126 101 103 101H58Q34 101 34 63Z" fill="#94cce4"/><path d="M30 63H130" stroke="#688cac" stroke-width="9"/><path d="M58 58V35Q58 20 74 20" stroke="#8597a0" stroke-width="6" fill="none"/>',
+sofa:'<rect x="28" y="57" width="104" height="43" rx="13" fill="#7ab2a4"/><rect x="34" y="39" width="92" height="45" rx="15" fill="#93c6ba"/><path d="M45 97V107M116 97V107" stroke="#56796c" stroke-width="8"/>',
+lamp:'<path d="M61 31H100L118 67H43Z" fill="#f7ca64"/><path d="M80 68V103M55 103H106" stroke="#6b807b" stroke-width="9"/>',
+arm:'<path d="M35 95Q45 67 75 67L103 35Q114 25 122 37Q132 49 118 60L93 95Z" fill="#e1aa83" stroke="#b87f62" stroke-width="3"/>',
+leg:'<path d="M60 19H103L94 71L110 99L86 108L64 77Z" fill="#e7b088" stroke="#c18d69" stroke-width="3"/>',
+teeth:'<path d="M45 26Q80 8 116 26Q127 39 110 85Q101 109 88 89L80 72L72 89Q55 107 47 84Q32 41 45 26Z" fill="#ffffff" stroke="#9cbbc5" stroke-width="4"/>',
+tshirt:'<path d="M54 27L80 34L107 27L136 49L116 70L106 60V104H54V60L44 70L24 49Z" fill="#eaa46a" stroke="#b5754e" stroke-width="3"/>',
+shoes:'<path d="M23 76H67Q74 91 89 91H113V103H23Z" fill="#6b8fc1"/><path d="M72 76H111Q119 90 137 90V103H70Z" fill="#95b6d9"/>',
+socks:'<path d="M47 29H79V75Q80 87 102 87V104H56Q42 104 42 91Z" fill="#e8a2be"/><path d="M86 29H117V75Q117 88 136 88V103H91" fill="#a6b9e2"/>',
+worm:'<path d="M30 88Q45 31 71 67T127 48" fill="none" stroke="#7ab85c" stroke-width="19" stroke-linecap="round"/><circle cx="125" cy="43" r="13" fill="#97cf6a"/><circle cx="129" cy="39" r="2" fill="#294d39"/>',
+seed:'<ellipse cx="80" cy="69" rx="23" ry="32" fill="#9b6944"/><path d="M80 45Q92 65 80 91" stroke="#dcad72" stroke-width="4" fill="none"/>',
+plant:'<path d="M80 100V35" stroke="#6f9f5a" stroke-width="8"/><path d="M79 65Q31 64 46 33Q76 31 79 65M81 52Q125 50 113 22Q82 25 81 52" fill="#7abb66"/>',
+garden:'<path d="M20 92Q80 67 140 92V112H20Z" fill="#a5d27a"/><path d="M50 91V57M80 87V43M110 91V55" stroke="#5caa65" stroke-width="5"/><circle cx="50" cy="52" r="13" fill="#ed9eaa"/><circle cx="80" cy="39" r="12" fill="#f4ce62"/><circle cx="110" cy="51" r="12" fill="#bfa7e7"/>',
+swing:'<path d="M34 106L57 24H106L128 106" fill="none" stroke="#9a7755" stroke-width="8"/><path d="M65 26V75M98 26V75" stroke="#7a8e9a" stroke-width="4"/><rect x="60" y="75" width="43" height="8" rx="3" fill="#e9a05a"/>',
+horse:'<path d="M52 86L42 56L71 43L84 25L103 43L115 43L109 65L97 74V104H78V78Z" fill="#c38a61"/><path d="M56 86V105M108 75V105" stroke="#9b6147" stroke-width="8"/>',
+cow:'<path d="M32 45H112Q133 46 133 70Q133 93 111 93H48Q29 92 32 45Z" fill="white" stroke="#6b7b6c" stroke-width="3"/><path d="M54 49Q73 43 72 64Q56 75 54 49M91 76Q95 57 114 67Q109 89 91 76" fill="#4f5357"/><path d="M47 90V106M113 90V106" stroke="#6b7b6c" stroke-width="8"/>',
+pig:'<ellipse cx="80" cy="71" rx="51" ry="34" fill="#f3a9b6"/><circle cx="117" cy="63" r="16" fill="#f8b6c0"/><ellipse cx="119" cy="73" rx="17" ry="11" fill="#e88da0"/><circle cx="114" cy="71" r="2" fill="#964956"/><circle cx="125" cy="71" r="2" fill="#964956"/>',
+hen:'<ellipse cx="76" cy="73" rx="39" ry="27" fill="#fff1d7"/><circle cx="111" cy="51" r="18" fill="#fff1d7"/><path d="M126 52L145 58L126 64" fill="#eda34d"/><path d="M106 30Q116 13 124 31" stroke="#df595b" stroke-width="8" fill="none"/>',
+mouse:'<ellipse cx="78" cy="77" rx="43" ry="24" fill="#b4aab7"/><circle cx="106" cy="67" r="21" fill="#b4aab7"/><circle cx="95" cy="46" r="13" fill="#d8b6c8"/><path d="M39 80Q6 58 21 43" stroke="#b4aab7" stroke-width="5" fill="none"/>',
+grandma:'<circle cx="81" cy="45" r="24" fill="#edbb99"/><path d="M54 45Q53 7 81 15Q109 9 108 45" fill="#dedcdb"/><path d="M36 107Q40 69 80 71Q124 68 125 107Z" fill="#a18abf"/>',
+grandpa:'<circle cx="81" cy="45" r="24" fill="#edbb99"/><path d="M58 31Q80 10 105 31" stroke="#d4d6d7" stroke-width="12" fill="none"/><path d="M37 107Q40 71 81 71Q122 71 126 107Z" fill="#84a6af"/>',
+baby:'<circle cx="81" cy="48" r="25" fill="#f1c4a1"/><path d="M37 106Q39 75 80 75Q120 75 123 106Z" fill="#a8cce1"/><circle cx="72" cy="45" r="2"/><circle cx="90" cy="45" r="2"/>',
+drawing:'<rect x="43" y="19" width="79" height="89" rx="5" fill="white" stroke="#8b9eac" stroke-width="5"/><path d="M58 86L80 49L108 87" stroke="#68a6cf" stroke-width="6" fill="none"/><circle cx="94" cy="42" r="8" fill="#f4d46d"/>',
+question:'<circle cx="62" cy="74" r="27" fill="#9ccabd"/><path d="M84 34H124Q137 35 137 48V68H117L105 82V68H84Q73 69 73 55V47Q73 34 84 34" fill="#ffe6a6"/><text x="105" y="60" text-anchor="middle" font-size="35" font-weight="900" fill="#6e633b">?</text>',
+wave:'<circle cx="61" cy="49" r="20" fill="#e3b28e"/><path d="M32 102Q34 70 61 70Q92 70 93 102" fill="#77b8c8"/><path d="M113 90L113 35M113 54L103 25M113 54L127 26" stroke="#e4b18b" stroke-width="12" stroke-linecap="round"/>',
+goodbye:'<circle cx="61" cy="49" r="20" fill="#e3b28e"/><path d="M32 102Q34 70 61 70Q92 70 93 102" fill="#92c19c"/><path d="M119 88L120 34M120 53L110 25" stroke="#e4b18b" stroke-width="12" stroke-linecap="round"/><path d="M20 22L42 22" stroke="#6c9abf" stroke-width="6"/>',
+thanks:'<circle cx="63" cy="52" r="22" fill="#eec39c"/><path d="M31 103Q36 72 63 72Q93 72 98 103" fill="#8bbcc8"/><path d="M102 43H136V70H118L111 80V70H102Z" fill="#f6df7c"/><path d="M109 53L116 61L129 48" stroke="#689b62" stroke-width="5" fill="none"/>',
+please:'<circle cx="65" cy="52" r="22" fill="#eec39c"/><path d="M32 105Q36 72 65 72Q93 72 98 105" fill="#d9a0b1"/><path d="M99 53H139V80H105L97 90Z" fill="#fcdfb9"/><circle cx="119" cy="66" r="5" fill="#bb9163"/>',
+handshake:'<path d="M20 67L55 47L80 60L105 47L141 67L101 92L80 78L58 93Z" fill="#e1b894" stroke="#b88667" stroke-width="4"/><path d="M77 58L98 77" stroke="#9d6e50" stroke-width="5"/>',
+happy:'<circle cx="81" cy="54" r="39" fill="#f7d57e"/><circle cx="67" cy="45" r="4" fill="#6a543b"/><circle cx="96" cy="45" r="4" fill="#6a543b"/><path d="M62 64Q81 86 102 64" fill="none" stroke="#6a543b" stroke-width="5"/>',
+tired:'<circle cx="81" cy="54" r="39" fill="#e4c79f"/><path d="M57 46H74M89 46H105" stroke="#806e67" stroke-width="4"/><path d="M74 77Q82 70 92 77" stroke="#806e67" stroke-width="4" fill="none"/>',
+eyes:'<ellipse cx="57" cy="62" rx="29" ry="18" fill="white" stroke="#7998a1" stroke-width="4"/><ellipse cx="105" cy="62" rx="29" ry="18" fill="white" stroke="#7998a1" stroke-width="4"/><circle cx="58" cy="63" r="9" fill="#5b94ac"/><circle cx="106" cy="63" r="9" fill="#5b94ac"/>',
  generic:'<circle cx="80" cy="56" r="35" fill="#a8d5b5"/><path d="M60 55Q80 27 102 55Q80 86 60 55" fill="#5dab7f"/>'
  };
  const palette={red:'#dc4c4f',orange:'#f7a23e',brown:'#8b6147',yellow:'#f7d354',green:'#63ad66',black:'#42434c',purple:'#8d62bd',blue:'#619edb',gray:'#aab4b9',pink:'#e99bc1'};
@@ -458,7 +530,7 @@ function question(audio){
    if(state.locked||state.finished)return;
    state.locked=true;state.moves++;
    const correct=x.id===c.id;recordResult(c.unit,c.raw,correct,state.type);
-   if(correct){state.score++;reward();gameFeedback('✅ ¡Muy bien! Dobra odpowiedź!','good')}
+   if(correct){state.score++;reward();frankaPraiseInSpanish(c.es);gameFeedback('✅ ¡Muy bien! Dobra odpowiedź! 🔊','good')}
    else gameFeedback('❌ Jeszcze raz następnym razem! Poprawnie: '+c.pl,'bad');
    b.classList.add(correct?'is-correct':'is-wrong');
    [...opts.querySelectorAll('.answer-button')].forEach(other=>{if(other.dataset.answer===String(c.id))other.classList.add('is-correct');other.disabled=true});
@@ -551,7 +623,7 @@ function showQuestion(){if(!session)return;const item=session.queue[session.inde
  const howMany=item.data&&item.data.wrong>item.data.right?2:item.data&&item.data.streak>=3?4:3;const choices=shuffle([item.card,...shuffle(distractors).slice(0,howMany-1)]);const box=$('smartReviewChoices');box.replaceChildren();
  choices.forEach(c=>{const b=document.createElement('button');b.className='secondary';b.textContent=c[2];b.onclick=()=>{if(!session||session.answered)return;session.answered=true;const ok=c===item.card;recordResult(item.u,item.card,ok,'smart-review');if(ok){session.correct++;points++;saveProgress()}
  box.querySelectorAll('button').forEach(other=>{other.disabled=true;if(other.textContent===item.card[2])other.classList.add('correct')});if(!ok)b.classList.add('wrong');
- $('smartReviewFeedback').textContent=ok?'✅ ¡Muy bien! Brawo!':'❌ Poprawna odpowiedź: '+item.card[2];$('smartReviewFeedback').className='epic-feedback '+(ok?'good':'bad');
+ if(ok)frankaPraiseInSpanish(item.card[1]);$('smartReviewFeedback').textContent=ok?'✅ ¡Muy bien! Brawo!':'❌ Poprawna odpowiedź: '+item.card[2];$('smartReviewFeedback').className='epic-feedback '+(ok?'good':'bad');
  $('smartNextWrap').hidden=false; $('smartNext').textContent=session.index+1===session.queue.length?'🏁 Zobacz wynik':'➡️ Następne słowo';
  };box.append(b)});
 }
@@ -615,11 +687,11 @@ chat.append(q,a);root.append(chat,translation);
 const controls=mk('div','a1-toolbar');controls.append(button('🔁 Powtórz pytanie',()=>say(d[0]),'secondary'),button('👀 Pokaż odpowiedź',()=>{answer.hidden=!answer.hidden;translation.hidden=answer.hidden},'secondary'),button('🔊 Odsłuchaj odpowiedź',()=>say(d[1]),'a1-speaker'),button('➡️ Następny dialog',()=>{active++;render()},'a1-next'));root.append(controls,mk('p','a1-instruction','Powiedz odpowiedź samodzielnie przed odsłonięciem wzoru. Mikrofon nie jest używany — aplikacja nie ocenia wymowy.'));$('a1Stage').replaceChildren(root)}
 function choicesFor(t,idx){const correct=t.sentences[idx];const others=t.sentences.map((s,i)=>({s,i})).filter(x=>x.i!==idx&&x.s[0]!==correct[0]);for(let i=others.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[others[i],others[j]]=[others[j],others[i]]}const out=[{s:correct,i:idx},...others.slice(0,2)];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
 function listening(){const t=pickTopic(),i=active%t.sentences.length,item=t.sentences[i];answered=false;const root=mk('div','a1-card');common(root,i,t.sentences.length);root.append(mk('h3','','Który obrazek pasuje do zdania?'),mk('p','a1-instruction','Posłuchaj zdania. Następnie wybierz obrazek — nie musisz czytać po hiszpańsku.'));root.append(button('🔊 ODTWÓRZ ZDANIE',()=>say(item[1]),'a1-speaker'));const choices=mk('div','a1-options'),feedback=mk('p','', '');const next=button('➡️ Następne zdanie',()=>{active++;render()},'a1-next');next.hidden=true;
-choicesFor(t,i).forEach(o=>{const b=button('',()=>{if(answered)return;answered=true;const ok=o.i===i;const s=stat(t);s.listeningAttempts++;if(ok)s.listeningCorrect++;save();renderStats();choices.querySelectorAll('button').forEach(x=>{x.disabled=true;if(x.dataset.index===String(i))x.classList.add('good')});if(!ok)b.classList.add('bad');feedback.className=ok?'a1-positive':'a1-negative';feedback.textContent=ok?'✅ ¡Muy bien! Dobra odpowiedź!':'↩️ Poprawny obrazek jest zaznaczony na zielono.';next.hidden=false},'');b.dataset.index=String(o.i);b.append(mk('span','',o.s[0]),mk('span','a1-detail','Obrazek '+(choices.children.length+1)));choices.append(b)});root.append(choices,feedback,next);$('a1Stage').replaceChildren(root)}
+choicesFor(t,i).forEach(o=>{const b=button('',()=>{if(answered)return;answered=true;const ok=o.i===i;const s=stat(t);s.listeningAttempts++;if(ok){s.listeningCorrect++;frankaPraiseInSpanish(item[1])}save();renderStats();choices.querySelectorAll('button').forEach(x=>{x.disabled=true;if(x.dataset.index===String(i))x.classList.add('good')});if(!ok)b.classList.add('bad');feedback.className=ok?'a1-positive':'a1-negative';feedback.textContent=ok?'✅ ¡Muy bien! Dobra odpowiedź!':'↩️ Poprawny obrazek jest zaznaczony na zielono.';next.hidden=false},'');b.dataset.index=String(o.i);b.append(mk('span','',o.s[0]),mk('span','a1-detail','Obrazek '+(choices.children.length+1)));choices.append(b)});root.append(choices,feedback,next);$('a1Stage').replaceChildren(root)}
 function speaking(){const t=pickTopic(),d=t.dialogs[active%t.dialogs.length];const root=mk('div','a1-card');common(root,active%t.dialogs.length,t.dialogs.length);root.append(mk('div','a1-illustration',d[4]),mk('p','a1-choice-prompt',d[0]));root.append(button('🔊 Posłuchaj pytania',()=>say(d[0]),'a1-speaker'));root.append(mk('p','a1-instruction','1. Posłuchaj. 2. Odpowiedz na głos. 3. Odsłoń przykładową odpowiedź i porównaj.'));
 const reveal=mk('div','a1-pl',d[1]);reveal.hidden=true;const translation=mk('p','a1-detail',d[3]);translation.hidden=true;
 root.append(button('👀 Sprawdź przykładową odpowiedź',()=>{reveal.hidden=!reveal.hidden;translation.hidden=reveal.hidden},'secondary'),reveal,translation,button('🔊 Posłuchaj wzoru',()=>say(d[1]),'a1-speaker'));
-const label=mk('p','a1-instruction','Czy spróbowałeś odpowiedzieć na głos?'),rating=mk('div','a1-rating');rating.append(button('✅ Tak, spróbowałem!',()=>{if(answered)return;answered=true;stat(t).spoken++;save();renderStats();label.textContent='⭐ Brawo za próbę!';rating.replaceChildren()},'secondary'),button('➡️ Jeszcze poćwiczę',()=>{label.textContent='Możesz posłuchać pytania i spróbować ponownie.'},'secondary'));root.append(label,rating,button('➡️ Następne pytanie',()=>{active++;render()},'a1-next'));$('a1Stage').replaceChildren(root)}
+const label=mk('p','a1-instruction','Czy spróbowałeś odpowiedzieć na głos?'),rating=mk('div','a1-rating');rating.append(button('✅ Tak, spróbowałem!',()=>{if(answered)return;answered=true;stat(t).spoken++;frankaPraiseInSpanish(d[1]);save();renderStats();label.textContent='⭐ Brawo za próbę!';rating.replaceChildren()},'secondary'),button('➡️ Jeszcze poćwiczę',()=>{label.textContent='Możesz posłuchać pytania i spróbować ponownie.'},'secondary'));root.append(label,rating,button('➡️ Następne pytanie',()=>{active++;render()},'a1-next'));$('a1Stage').replaceChildren(root)}
 function render(){renderStats();if(view==='sentences')sentence();if(view==='dialogues')dialogue();if(view==='listening')listening();if(view==='speaking')speaking()}
 const select=$('a1Topic');topics.forEach((t,i)=>select.add(new Option(t.label,i)));select.value='0';select.onchange=()=>{current=Number(select.value);active=0;render();$('a1SourceLabel').textContent=pickTopic().source};
 document.querySelectorAll('[data-a1-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.a1View)));
@@ -709,7 +781,7 @@ function schoolSource(u,c){const word=c[1].trim().toLocaleLowerCase('es');if(u==
 function isVerified(u,c){return (u===1&&notebookOtono.has(c[1].trim().toLocaleLowerCase('es')))||(u===0&&bookInitial.has(c[1].trim().toLocaleLowerCase('es')))}
 function poolFor(u){const seen=new Set();return (units[u]?.cards||[]).filter(c=>{const key=c[2].toLocaleLowerCase('pl').trim();if(seen.has(key))return false;seen.add(key);return true})}
 // School checkpoints are limited to school chapters. Verified notebook material takes precedence.
-function schoolPool(u){if(![1,2,3,4].includes(u))return [];const source=window.frankaSeasons8.school[u];const seen=new Set();const all=source.filter(c=>{const k=c[2].toLowerCase().trim();if(seen.has(k))return false;seen.add(k);return true});const verified=all.filter(c=>isVerified(u,c)||(u===1&&bookInitial.has(c[1].trim().toLocaleLowerCase('es'))));return verified.length>=4?verified:all}
+function schoolPool(u){if(![1,2,3,4].includes(u))return [];const source=window.frankaSeasons8.school[u];const seen=new Set();const all=source.filter(c=>{const k=c[2].toLowerCase().trim();if(seen.has(k))return false;seen.add(k);return true});const verified=all.filter(c=>isVerified(u,c));return verified.length>=4?verified:all}
 const foundation=window.frankaFoundation;
 const sentences={
  1:[['En otoño llueve.','Jesienią pada deszcz.','🌧️','¿Qué tiempo hace?','Llueve.'],['Las hojas son amarillas.','Liście są żółte.','🍂','¿De qué color son las hojas?','Son amarillas.'],['Veo un árbol.','Widzę drzewo.','🌳','¿Qué ves?','Veo un árbol.'],['Me gusta la manzana.','Lubię jabłko.','🍎','¿Qué te gusta?','Me gusta la manzana.']],
@@ -754,7 +826,7 @@ function showQuestion(){
   if(mode===1){box.append(button('🔊 Odtwórz słowo',()=>say(c[1]),'epic-listen'))}
   const correct=mode===2?c[1]:c[2];let options=shuffle(test.pool.filter(x=>x[1]!==c[1]&&x[2]!==c[2])).slice(0,3).map(x=>mode===2?x[1]:x[2]);options=shuffle([...options,correct]);
   const choices=newNode('div','s6-answers');options.forEach(x=>choices.append(button(x,()=>{
-    if(test.answered)return;test.answered=true;const ok=x===correct;if(ok)test.correct++;else test.incorrect.push(c[1]);recordResult(test.u,c,ok,'school-checkpoint');window.dispatchEvent(new CustomEvent('franka:s7school',{detail:{u:test.u,es:c[1],pl:c[2],correct:ok}}));
+    if(test.answered)return;test.answered=true;const ok=x===correct;if(ok){test.correct++;frankaPraiseInSpanish(c[1])}else test.incorrect.push(c[1]);recordResult(test.u,c,ok,'school-checkpoint');window.dispatchEvent(new CustomEvent('franka:s7school',{detail:{u:test.u,es:c[1],pl:c[2],correct:ok}}));
     choices.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add('s6-good');else if(b.textContent===x&&!ok)b.classList.add('s6-bad')});
     feedback.textContent=ok?'✅ ¡Muy bien!':'❌ Poprawna odpowiedź: '+correct;
     actions.append(button(n===total?'📊 Zobacz wynik':'➡️ Następne pytanie',()=>{test.idx++;showQuestion()},'epic-primary'));
@@ -765,11 +837,11 @@ function showQuestion(){
   if(test.idx%2===0){
     box.append(newNode('p','epic-prompt','🎧 Co usłyszałeś?'),button('🔊 Posłuchaj zdania',()=>say(c[0]),'epic-listen'));
     const choices=newNode('div','s6-answers');const correct=c[1];const alts=shuffle(test.questions.filter(x=>x[1]!==correct)).slice(0,2).map(x=>x[1]);
-    shuffle([correct,...alts]).forEach(x=>choices.append(button(x,()=>{if(test.answered)return;test.answered=true;const ok=x===correct;if(ok)test.correct++;else test.incorrect.push(c[0]);window.dispatchEvent(new CustomEvent('franka:s7sentence',{detail:{u:test.u,es:c[0],pl:c[1],correct:ok,kind:'listening'}}));choices.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add('s6-good');else if(b.textContent===x&&!ok)b.classList.add('s6-bad')});feedback.textContent=ok?'✅ Zgadza się!':'❌ Poprawnie: '+correct;actions.append(button(n===total?'📊 Zobacz wynik':'➡️ Dalej',()=>{test.idx++;showQuestion()},'epic-primary'))})));box.append(choices)
+    shuffle([correct,...alts]).forEach(x=>choices.append(button(x,()=>{if(test.answered)return;test.answered=true;const ok=x===correct;if(ok){test.correct++;frankaPraiseInSpanish(c[0])}else test.incorrect.push(c[0]);window.dispatchEvent(new CustomEvent('franka:s7sentence',{detail:{u:test.u,es:c[0],pl:c[1],correct:ok,kind:'listening'}}));choices.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add('s6-good');else if(b.textContent===x&&!ok)b.classList.add('s6-bad')});feedback.textContent=ok?'✅ Zgadza się!':'❌ Poprawnie: '+correct;actions.append(button(n===total?'📊 Zobacz wynik':'➡️ Dalej',()=>{test.idx++;showQuestion()},'epic-primary'))})));box.append(choices)
   }else{
     box.append(newNode('p','epic-prompt',c[3]),button('🔊 Posłuchaj pytania',()=>say(c[3]),'epic-listen'),newNode('p','small','Powiedz odpowiedź po hiszpańsku, zanim ją odkryjesz.'));
     const example=newNode('p','s6-result',c[4]);example.hidden=true;box.append(button('👀 Pokaż przykładową odpowiedź',()=>{example.hidden=false;say(c[4]);actions.replaceChildren();actions.append(button('✅ Udało mi się odpowiedzieć',()=>rating(true)),button('🔁 Jeszcze ćwiczę',()=>rating(false),'secondary'))}),example);
-    function rating(ok){if(test.answered)return;test.answered=true;if(ok){test.correct++;test.spoken++}else test.incorrect.push(c[0]);window.dispatchEvent(new CustomEvent('franka:s7sentence',{detail:{u:test.u,es:c[0],pl:c[1],correct:ok,kind:'self-reported-speaking'}}));feedback.textContent=ok?'✅ Świetnie, ćwicz dalej!':'👍 Dobrze, że próbujesz — wrócimy do tego zdania.';actions.replaceChildren();actions.append(button(n===total?'📊 Zobacz wynik':'➡️ Dalej',()=>{test.idx++;showQuestion()},'epic-primary'))}
+    function rating(ok){if(test.answered)return;test.answered=true;if(ok){test.correct++;test.spoken++;frankaPraiseInSpanish(c[4])}else test.incorrect.push(c[0]);window.dispatchEvent(new CustomEvent('franka:s7sentence',{detail:{u:test.u,es:c[0],pl:c[1],correct:ok,kind:'self-reported-speaking'}}));feedback.textContent=ok?'✅ Świetnie, ćwicz dalej!':'👍 Dobrze, że próbujesz — wrócimy do tego zdania.';actions.replaceChildren();actions.append(button(n===total?'📊 Zobacz wynik':'➡️ Dalej',()=>{test.idx++;showQuestion()},'epic-primary'))}
   }
  }
  answer.append(box)
@@ -798,7 +870,7 @@ function drawFoundation(){const cards=foundation[cats[fi]],root=$('s6FoundationB
   const c=cards[cardIndex%cards.length];const item=newNode('div','s6-foundation-card');item.append(newNode('div','s6-emoji',c[0]),newNode('strong','',c[1]),newNode('p','',c[2]));
   const controls=newNode('div','s6-actions');controls.append(button('🔊 Posłuchaj',()=>say(c[1]),'epic-listen'),button('➡️ Następne',()=>{cardIndex=(cardIndex+1)%cards.length;drawFoundation()},'epic-primary'));root.append(item,controls);
  }else{
-  const c=cards[cardIndex%cards.length],right=c[2],alts=shuffle(cards.filter(x=>x[2]!==right)).slice(0,3).map(x=>x[2]);const q=newNode('div','s6-question');q.append(newNode('h3','','Co oznacza „'+c[1]+'”?'),button('🔊 Odsłuchaj',()=>say(c[1]),'epic-listen'));const a=newNode('div','s6-answers');shuffle([...alts,right]).forEach(t=>a.append(button(t,()=>{if(q.dataset.answered)return;q.dataset.answered='1';const r=fRecords();r.attempts++;const ok=t===right;if(ok)r.correct++;save();a.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===right)b.classList.add('s6-good');else if(b.textContent===t&&!ok)b.classList.add('s6-bad')});q.append(newNode('p','s6-feedback',ok?'✅ Doskonale!':'❌ Poprawnie: '+right));q.append(button('➡️ Następne',()=>{cardIndex=(cardIndex+1)%cards.length;drawFoundation()},'epic-primary'))})));q.append(a);root.append(q)
+  const c=cards[cardIndex%cards.length],right=c[2],alts=shuffle(cards.filter(x=>x[2]!==right)).slice(0,3).map(x=>x[2]);const q=newNode('div','s6-question');q.append(newNode('h3','','Co oznacza „'+c[1]+'”?'),button('🔊 Odsłuchaj',()=>say(c[1]),'epic-listen'));const a=newNode('div','s6-answers');shuffle([...alts,right]).forEach(t=>a.append(button(t,()=>{if(q.dataset.answered)return;q.dataset.answered='1';const r=fRecords();r.attempts++;const ok=t===right;if(ok){r.correct++;frankaPraiseInSpanish(c[1])}save();a.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===right)b.classList.add('s6-good');else if(b.textContent===t&&!ok)b.classList.add('s6-bad')});q.append(newNode('p','s6-feedback',ok?'✅ Doskonale!':'❌ Poprawnie: '+right));q.append(button('➡️ Następne',()=>{cardIndex=(cardIndex+1)%cards.length;drawFoundation()},'epic-primary'))})));q.append(a);root.append(q)
  }
 }
 document.addEventListener('franka:foundationStart',event=>{
@@ -927,7 +999,7 @@ if(novel){
  const start=b('✅ Zapamiętam — sprawdź mnie',()=>{intro.hidden=true;start.hidden=true;box.hidden=false},'epic-primary');
  box.hidden=true;body.append(intro,start);
 }
-for(const choice of choices){const button=b(choice,()=>{if(!session||session.answered)return;session.answered=true;const ok=choice===item.pl;if(ok)session.ok++;
+for(const choice of choices){const button=b(choice,()=>{if(!session||session.answered)return;session.answered=true;const ok=choice===item.pl;if(ok){session.ok++;frankaPraiseInSpanish(item.es)}
 if(item.kind==='word')recordResult(item.u,units[item.u].cards.find(c=>c[1]===item.es),ok,'daily-session');else reviewSentence(item.u,item.es,item.pl,ok,'daily-listening');
 for(const other of box.querySelectorAll('button')){other.disabled=true;if(other.textContent===item.pl)other.classList.add('good');else if(other===button&&!ok)other.classList.add('bad')}
 $('s7SessionFeedback').textContent=ok?'✅ Świetnie!':'❌ Poprawna odpowiedź: '+item.pl;$('s7NextWrap').hidden=false;$('s7Next').textContent=session.i+1===session.queue.length?'🏆 Zobacz wynik':'➡️ Następne zadanie';},'secondary');box.append(button)}body.append(box);
@@ -940,11 +1012,13 @@ draw();document.querySelectorAll('[data-enter]').forEach(btn=>btn.addEventListen
 window.addEventListener('storage',draw);
 })();
 </script><script>
-/* Sprint 10 — Learning Path 2.0. Independent step results; v9 picture safety inherited. */
+/* Sprint 11 — Quality & Motivation (Sprint 10 retained). Independent step results; v9 picture safety inherited. */
 (function(){
 'use strict';
 const $=id=>document.getElementById(id),STORE='hiszpanskiFrankaPath10V2';
 const SCHOOL=window.frankaSeasons8?.school||{}, ORIGIN=window.frankaSeasons8?.origin||{};
+function celebration(text){const old=document.querySelector('.s11-celebration');if(old)old.remove();const d=document.createElement('div');d.className='s11-celebration';d.setAttribute('role','status');d.textContent=text;document.body.append(d);setTimeout(()=>d.remove(),2000)}
+
 const normal=s=>String(s).normalize('NFC').trim().toLocaleLowerCase('es').replace(/\s+/g,' ');
 const chunks=(xs,n)=>Array.from({length:Math.ceil(xs.length/n)},(_,i)=>xs.slice(i*n,(i+1)*n));
 let data={};try{const obj=JSON.parse(localStorage.getItem(STORE)||'{}');if(obj&&typeof obj==='object')data=obj}catch(e){}
@@ -964,8 +1038,21 @@ while(si<schoolSets.length||ai<a1Sets.length){
  for(let k=0;k<2&&si<schoolSets.length;k++,si++)out.push(entry('school',schoolSets[si],`Szkolne słówka · zestaw ${si+1}`,'Słówka z rozdziału i ćwiczenia', '📚'));
  if(ai<a1Sets.length){out.push(entry('a1',a1Sets[ai],`Rozwijam hiszpański · zestaw ${ai+1}`,'Nowe słowa potrzebne do A1','🌱'));ai++}
 }
+// Reinforcement after each three vocabulary steps; short recap from recently introduced material.
+let vocabularySeen=[],paced=[];
+for(const step of out){paced.push(step);if(step.kind==='school'||step.kind==='a1')vocabularySeen.push(step);
+ if(vocabularySeen.length===3){const reviewed=vocabularySeen.flatMap(x=>x.raw);
+  paced.push(entry('review',reviewed,`Powtórka · zestaw ${paced.filter(x=>x.kind==='review').length+1}`,'Utrwalam słowa z trzech ostatnich lekcji','🔁'));vocabularySeen=[];
+ }
+}
+if(vocabularySeen.length>1)paced.push(entry('review',vocabularySeen.flatMap(x=>x.raw),'Powtórka słówek','Sprawdzam nowe wyrażenia','🔁'));
+out.length=0;out.push(...paced);
 out.push(entry('sentence',sentenceBank[u]||[],'Buduję proste zdania','Rozumiem i powtarzam pełne wypowiedzi','🗣️'));
-out.push({kind:'checkpoint',id:'checkpoint',raw:[],title:'Checkpoint rozdziału',note:'Sprawdzam szkolny materiał',emoji:'🏆'});
+out.push({kind:'checkpoint',id:'checkpoint',raw:[],title:'Checkpoint szkolny',note:'Sprawdzam materiał z rozdziału',emoji:'📋'});
+// The finale tests school material plus short A1 examples, no claims of formal A1 certification.
+const finaleWords=words.slice(0,12);
+const finaleSentences=(sentenceBank[u]||[]).slice(0,4);
+out.push({kind:'finale',id:'finale-v1',raw:[...finaleWords,...finaleSentences],title:'Wielki finał sezonu',note:'Słówka, zdania i słuchanie · puchar sezonu',emoji:'🏆'});
 return out;
 }
 function status(u,s){return data[u]?.[s.id]||null}
@@ -980,7 +1067,7 @@ function complete(u,s,details){data[u]??={};data[u][s.id]={done:true,date:new Da
 }
 function display(){if(!session)return;const x=session,body=$('s10LessonBody');body.replaceChildren();$('s10LessonFeedback').textContent='';$('s10LessonFeedback').className='';
  if(x.pos>=x.list.length){finish();return}
- const row=x.list[x.pos],sentence=x.stage.kind==='sentence',es=sentence?row[0]:row[1],pl=sentence?row[1]:row[2];
+ const row=x.list[x.pos],sentence=x.stage.kind==='sentence'||(x.stage.kind==='finale'&&row.length===2),es=sentence?row[0]:row[1],pl=sentence?row[1]:row[2];
  $('s10LessonHeading').textContent=`${x.stage.emoji} ${x.stage.title} · ${x.pos+1}/${x.list.length}`;
  body.append(h('p','s10-question',sentence?'🎧 Posłuchaj zdania':es));
  const listen=h('div','s10-center');listen.append(button('🔊 Posłuchaj',()=>speak(es),'epic-listen'));body.append(listen);
@@ -990,9 +1077,9 @@ function display(){if(!session)return;const x=session,body=$('s10LessonBody');bo
  const meanings=sentence?(sentenceBank[x.u]||[]).map(c=>c[1]):unique(x.u).map(c=>c[2]);
  const choices=shuffle([pl,...shuffle([...new Set(meanings.filter(v=>v!==pl))]).slice(0,3)]),grid=h('div','s10-answer-grid');answerBlock.append(grid);
  for(const val of choices){grid.append(button(val,()=>{
- if(x.answered)return;x.answered=true;const right=val===pl;if(right)x.correct++;
+ if(x.answered)return;x.answered=true;const right=val===pl;if(right){x.correct++;frankaPraiseInSpanish(es)}
  // Feed the same smart-learning engine used by Memory, checkpoints and daily sessions.
- if(x.stage.kind==='sentence')window.dispatchEvent(new CustomEvent('franka:s7sentence',{detail:{u:x.u,es,pl,correct:right,kind:'learning-path'}}));
+ if(sentence)window.dispatchEvent(new CustomEvent('franka:s7sentence',{detail:{u:x.u,es,pl,correct:right,kind:'learning-path'}}));
  else recordResult(x.u,row,right,'learning-path');
  grid.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===pl)b.classList.add('right');else if(b.textContent===val&&!right)b.classList.add('wrong')});
  const fb=$('s10LessonFeedback');fb.className='s10-feedback '+(right?'good':'bad');fb.textContent=right?'✅ Świetnie!':'❌ Poprawnie: '+pl;
@@ -1004,14 +1091,14 @@ function begin(u,i){const items=stages(u),s=items[i];if(!s||!unlocked(u,i))retur
  if(!s.raw.length){complete(u,s,{empty:true});return}
  session={u,stage:s,list:shuffle(s.raw),pos:0,correct:0,answered:false};$('s10Lesson').hidden=false;display();$('s10Lesson').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-function finish(){if(!session)return;const x=session,ok=x.correct>=Math.ceil(x.list.length*.75),body=$('s10LessonBody');body.replaceChildren();
+function finish(){if(!session)return;const x=session,ok=x.correct>=Math.ceil(x.list.length*(x.stage.kind==='finale'?.85:.75)),body=$('s10LessonBody');body.replaceChildren();
  body.append(h('p','s10-question',ok?'🏆 Etap zaliczony!':'🌱 Poćwiczmy jeszcze trochę'));
  body.append(h('p','',`Poprawne odpowiedzi: ${x.correct}/${x.list.length}. ${ok?'Odblokowany jest kolejny etap.':'Możesz powtórzyć ten zestaw.'}`));
- if(ok)complete(x.u,x.stage,{correct:x.correct,total:x.list.length});
+ if(ok){complete(x.u,x.stage,{correct:x.correct,total:x.list.length});if(x.stage.kind==='finale')celebration('🏆 ¡Bravo! Mistrz '+({1:'Otoño',2:'Invierno',3:'Primavera',4:'Verano'}[x.u]||'sezonu')+'!');else celebration('⭐ Brawo! Nowy etap odblokowany!');} 
  const wrap=h('div','s10-center');wrap.append(button(ok?'🏠 Wróć do ścieżki':'🔁 Powtórz zestaw',()=>{if(ok){$('s10Lesson').hidden=true;session=null;draw()}else begin(x.u,stages(x.u).findIndex(s=>s.id===x.stage.id))},'epic-primary'));body.append(wrap);session=null;
 }
 function draw(){const u=Number($('uxUnit')?.value||1),root=$('s10Steps');if(!root)return;const all=stages(u),completed=all.filter(s=>done(u,s)).length,next=all.findIndex(s=>!done(u,s));
- $('s10PathProgress').textContent=`${completed}/${all.length} etapów`;
+ $('s10PathProgress').textContent=`${completed}/${all.length} etapów`+(done(u,all[all.length-1])?' · 🏆 Mistrz sezonu':'');
  root.replaceChildren();
  const visible=all.map((s,i)=>i).filter(i=>showAll||i<=3||i>=Math.max(0,next-1)&&i<=next+2);
  for(const i of visible){const s=all[i],passed=done(u,s),open=unlocked(u,i),item=button('',()=>begin(u,i),'s10-step'+(passed?' done':open?' active':''));item.disabled=!open;
@@ -1022,7 +1109,7 @@ function draw(){const u=Number($('uxUnit')?.value||1),root=$('s10Steps');if(!roo
 $('s10LessonClose').onclick=()=>{$('s10Lesson').hidden=true;session=null};
 $('uxUnit').addEventListener('change',()=>{$('s10Lesson').hidden=true;session=null;showAll=false;draw()});
 window.addEventListener('franka:s8checkpoint',e=>{const x=e.detail,u=Number(x?.u);if(x?.type==='school'&&[1,2,3,4].includes(u)){
- const s=stages(u).at(-1);if(x.percent>=85)complete(u,s,{score:x.percent});else draw();
+ const s=stages(u).find(s=>s.kind==='checkpoint');if(x.percent>=85)complete(u,s,{score:x.percent});else draw();
 }});
 window.frankaPath10={stages,draw,dailyCards(u){const list=stages(u),set=new Set();for(let i=0;i<list.length;i++){const s=list[i];if(!unlocked(u,i)||s.kind==='checkpoint'||s.kind==='sentence')continue;for(const c of s.raw)set.add(normal(c[1]))}
  const filtered=unique(u).filter(c=>set.has(normal(c[1])));return filtered.length?filtered:unique(u).slice(0,5)
