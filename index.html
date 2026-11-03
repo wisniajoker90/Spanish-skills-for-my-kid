@@ -106,19 +106,32 @@
 </style><style>
 /* Sprint 7: focused learning inside existing trainer, no new top-level section */
 .s7-daily,.s7-insights{margin:18px 0 10px;padding:16px;border:1px solid #d3e6d9;border-radius:17px;background:#f5faf3}.s7-daily-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.s7-daily h3,.s7-insights h3{margin:0 0 6px}.s7-plan{display:grid;gap:8px;margin-top:12px}.s7-plan-row{background:white;border:1px solid #e0e9dd;border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;gap:10px;align-items:center}.s7-plan-row small{color:#557162}.s7-session{border:2px solid #b4ddc3;background:#fff;border-radius:16px;margin-top:14px;padding:14px}.s7-progress-line{display:flex;align-items:center;justify-content:space-between;gap:8px}.s7-answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.s7-answers button{min-height:55px}.s7-answers button.good{background:#c7f1d4!important;color:#135d37!important;border:3px solid #1b9653}.s7-answers button.bad{background:#ffe0da!important;color:#853122!important;border:3px solid #db4c43}.s7-next{text-align:center;margin:16px 0}.s7-next button{min-height:50px}.s7-topic-list{display:grid;gap:8px}.s7-topic{background:white;border-radius:10px;padding:10px 12px;border:1px solid #e1e9dd}.s7-topic strong{display:block}.s7-topic small{display:block;color:#617467;margin-top:4px}.s7-illustration{font-size:3.2rem;text-align:center}.s7-question{font-size:1.2rem;text-align:center;font-weight:800}.s7-help{text-align:center;color:#5a7060}.s7-session button:disabled{opacity:.6}@media(max-width:520px){.s7-daily,.s7-insights{padding:12px}.s7-answers{grid-template-columns:1fr}.s7-daily-head>button{width:100%}}
+</style>
+<style>
+/* Sprint 8 — four-season journey */
+.s8-seasons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0 4px}
+.s8-season{min-height:130px;text-align:left;background:#f9fbf8;color:#173e34;border:2px solid #dae7db;border-radius:16px;padding:15px;display:flex;flex-direction:column;gap:7px}
+.s8-season.selected{border-color:#16816e;background:#e9f6ed;box-shadow:0 0 0 2px #c4e9d6}
+.s8-season .s8-emoji{font-size:2rem}.s8-season strong{font-size:1.2rem}.s8-season small{font-size:.83rem;color:#46645b}
+.s8-meter{height:9px;background:#dce9dd;border-radius:9px;overflow:hidden;width:100%;margin-top:auto}.s8-fill{height:100%;background:#208d74;transition:width .25s}
+.s8-season:focus-visible{outline:3px solid #167f6b;outline-offset:3px}
+#uxUnit{display:none}#s6Tracking{display:none!important}#smartProgress{display:none!important}.stats,.smart-counters{display:none!important}
+.s8-single{border:1px solid #c8dfd0;background:#f3f9f2;border-radius:14px;padding:12px 15px;margin-top:12px}
+.s8-daily-tip{background:#fff8e8;border-radius:10px;padding:8px 12px;margin:10px 0;font-size:.91rem;color:#534526}
+@media(max-width:440px){.s8-seasons{gap:8px}.s8-season{min-height:110px;padding:10px}.s8-season strong{font-size:1rem}}
 </style></head>
 <body><div class="app">
-<header><div><h1>¡Hola, Franek!</h1><p>Hiszpańska przygoda • słuchaj, graj, powtarzaj • v7.0</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
+<header><div><h1>¡Hola, Franek!</h1><p>Hiszpańska przygoda • słuchaj, graj, powtarzaj • v8.0</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
 <main>
-<section class="home-screen panel" id="homeScreen"><h2>¡Vamos, Franek! 🇪🇸</h2><p>Jak chcesz się dzisiaj uczyć?</p><div class="home-tiles"><button data-enter="car">🚗<strong>Tryb samochodowy</strong><span>Słucham i powtarzam — bez patrzenia w ekran</span></button><button data-enter="learn">🎮<strong>Centrum nauki</strong><span>Fiszki, quizy i pięć gier</span></button></div></section><div hidden="" id="workArea"><nav class="home-nav"><button class="secondary" id="backHome">🏠 Menu główne</button><span id="modeLabel"></span></nav><div id="carArea"><section aria-labelledby="carTitle" class="car-mode"><h2 id="carTitle">🚗 Tryb samochodowy — 10 minut</h2><p>Aktywna nauka przez słuchanie: Franek usłyszy słowo lub zwrot po hiszpańsku, chwilę na odpowiedź i odpowiedź po polsku. Nie trzeba patrzeć na ekran ani niczego dotykać w trakcie jazdy.</p><label for="carUnit"><strong>Rozdział do słuchania</strong></label><br/><select id="carUnit"></select><div class="car-controls"><button id="carStart">▶ Rozpocznij 10 minut</button><button class="secondary" disabled="" id="carPause">⏸ Pauza</button><button class="secondary" disabled="" id="carStop">■ Zakończ</button></div><div aria-live="polite" class="car-status" id="carStatus" role="status">Gotowe do rozpoczęcia. Wybierz rozdział.</div><div aria-label="Postęp sesji" class="car-progress"><span id="carProgress"></span></div><p class="small" id="carClock">Pozostało: 10:00</p><div class="car-note"><strong>Bezpieczeństwo:</strong> kierowca nie powinien obsługiwać ekranu. Uruchom sesję przed ruszeniem lub poproś pasażera. Quiz z przyciskami jest dostępny wyłącznie po zaznaczeniu, że samochód stoi — aplikacja nie wykrywa ruchu pojazdu.</div><label class="mode" style="margin-top:12px"><input id="carParked" type="checkbox"/> Samochód stoi bezpiecznie — odblokuj quiz ekranowy</label><div class="car-controls"><button class="secondary" disabled="" id="carQuiz">🎯 Quiz (tylko na postoju)</button></div></section></div><div id="learnArea"><div class="notice ux-source-note"><strong>Opracowane rozdziały: Otoño, Invierno i Primavera.</strong> Lekcje jesienna, zimowa i wiosenna zostały opracowane na podstawie przesłanych stron z podręcznika Colorín Colorado mini. Unidad Inicial i Verano zawierają przykładowe treści demonstracyjne — nie traktuj ich jako materiału z podręcznika.</div>
+<section class="home-screen panel" id="homeScreen"><h2>¡Vamos, Franek! 🇪🇸</h2><p>Jak chcesz się dzisiaj uczyć?</p><div class="home-tiles"><button data-enter="car">🚗<strong>Tryb samochodowy</strong><span>Słucham i powtarzam — bez patrzenia w ekran</span></button><button data-enter="learn">🎮<strong>Centrum nauki</strong><span>Fiszki, quizy i pięć gier</span></button></div></section><div hidden="" id="workArea"><nav class="home-nav"><button class="secondary" id="backHome">🏠 Menu główne</button><span id="modeLabel"></span></nav><div id="carArea"><section aria-labelledby="carTitle" class="car-mode"><h2 id="carTitle">🚗 Tryb samochodowy — 10 minut</h2><p>Aktywna nauka przez słuchanie: Franek usłyszy słowo lub zwrot po hiszpańsku, chwilę na odpowiedź i odpowiedź po polsku. Nie trzeba patrzeć na ekran ani niczego dotykać w trakcie jazdy.</p><label for="carUnit"><strong>Rozdział do słuchania</strong></label><br/><select id="carUnit"></select><div class="car-controls"><button id="carStart">▶ Rozpocznij 10 minut</button><button class="secondary" disabled="" id="carPause">⏸ Pauza</button><button class="secondary" disabled="" id="carStop">■ Zakończ</button></div><div aria-live="polite" class="car-status" id="carStatus" role="status">Gotowe do rozpoczęcia. Wybierz rozdział.</div><div aria-label="Postęp sesji" class="car-progress"><span id="carProgress"></span></div><p class="small" id="carClock">Pozostało: 10:00</p><div class="car-note"><strong>Bezpieczeństwo:</strong> kierowca nie powinien obsługiwać ekranu. Uruchom sesję przed ruszeniem lub poproś pasażera. Quiz z przyciskami jest dostępny wyłącznie po zaznaczeniu, że samochód stoi — aplikacja nie wykrywa ruchu pojazdu.</div><label class="mode" style="margin-top:12px"><input id="carParked" type="checkbox"/> Samochód stoi bezpiecznie — odblokuj quiz ekranowy</label><div class="car-controls"><button class="secondary" disabled="" id="carQuiz">🎯 Quiz (tylko na postoju)</button></div></section></div><div id="learnArea"><div class="notice ux-source-note"><strong>📚 Szkoła najpierw, potem droga do A1.</strong> Cztery etapy odpowiadają porom roku. Rozszerzenia A1 są dodatkowymi ćwiczeniami; nie przypisujemy ich podręcznikowi. Verano nadal wymaga potwierdzenia materiału szkolnego.</div>
 <div class="stats"><span class="pill">⭐ Punkty: <span id="points">0</span></span><span class="pill">✅ Umiem: <span id="learnedCount">0</span></span><span class="pill">🔁 Do powtórki: <span id="reviewCount">0</span></span><span class="pill">💾 Postępy zapisują się na tym urządzeniu</span></div>
 <section class="panel smart-panel" id="smartPanel">
-<div class="smart-heading"><div><h2>🧠 Mój trener słówek</h2><p class="small">Aplikacja zapamiętuje odpowiedzi i proponuje powtórki. Nie musisz ćwiczyć wszystkiego naraz.</p></div><span class="pill">Smart Learning 2.0</span></div>
+<div class="smart-heading"><div><h2>🧠 Mój trener słówek</h2><p class="small">Aplikacja zapamiętuje odpowiedzi i proponuje powtórki. Nie musisz ćwiczyć wszystkiego naraz.</p></div><span class="pill">Smart Learning 3.0</span></div>
 <div class="smart-counters"><div><strong id="smartMastered">0</strong><small>Opanowane</small></div><div><strong id="smartDue">0</strong><small>Do powtórki dziś</small></div><div><strong id="smartTricky">0</strong><small>Trudniejsze</small></div><div><strong id="smartAttempts">0</strong><small>Odpowiedzi</small></div></div>
 <div class="smart-actions"><label>Rozdział <select id="smartUnit"></select></label><button id="smartStart">🎯 Powtórz trudne słówka</button><button class="secondary" id="smartDueStart">📆 Dzisiejsza powtórka</button></div>
 <div class="s7-daily" id="s7Daily" aria-labelledby="s7DailyHeading">
-<div class="s7-daily-head"><div><h3 id="s7DailyHeading">⭐ Moja nauka na dziś</h3><p class="small">Krótki plan na podstawie wyników Franka. Najpierw szkoła, potem zdania i zabawa.</p></div><button id="s7DailyStart" type="button">▶ Zacznij krótką sesję</button></div>
-<div class="s7-plan" id="s7Plan" aria-live="polite"></div>
+<div class="s7-daily-head"><div><h3 id="s7DailyHeading">⭐ Moja nauka na dziś</h3><p class="small">Krótka sesja łączy nowe słówka, powtórki i zdania z wybranego rozdziału.</p></div><button id="s7DailyStart" type="button">▶ Zacznij krótką sesję</button></div>
+<label for="s8FocusSeason" class="small">Dziś ćwiczę: <select id="s8FocusSeason"><option value="1">🍂 Otoño</option><option value="2">❄️ Invierno</option><option value="3">🌸 Primavera</option><option value="4">☀️ Verano</option></select></label><div id="s8DailyTip" class="s8-daily-tip"></div><div class="s7-plan" id="s7Plan" aria-live="polite"></div>
 <div class="s7-session" hidden id="s7Session"><div class="s7-progress-line"><strong id="s7SessionProgress"></strong><button class="secondary" type="button" id="s7SessionClose">✕ Zakończ</button></div><div id="s7SessionBody"></div><p id="s7SessionFeedback" aria-live="polite"></p><div class="s7-next" hidden id="s7NextWrap"><button type="button" id="s7Next">➡️ Dalej</button></div></div>
 </div>
 <div class="s7-insights" id="s7Insights"><h3>📋 Co warto powtórzyć w szkole?</h3><div id="s7WeakTopics" class="s7-topic-list"></div><p class="small">Wskazówki bazują na odpowiedziach w aplikacji; nie zastępują szkolnych ocen ani rozmowy z nauczycielem.</p></div><div aria-live="polite" class="smart-progress" id="smartProgress"></div>
@@ -126,7 +139,8 @@
 <div class="smart-review" hidden="" id="smartReview"><h3 id="smartReviewTitle">Powtórka</h3><p id="smartReviewCounter"></p><p class="epic-prompt" id="smartReviewPrompt"></p><div class="smart-review-btns"><button class="epic-listen" id="smartListen">🔊 Posłuchaj</button><button class="secondary" id="smartQuit">✕ Zakończ</button></div><div class="epic-choices" id="smartReviewChoices"></div><p aria-live="polite" class="epic-feedback" id="smartReviewFeedback"></p><div class="epic-action-row" hidden="" id="smartNextWrap"><button class="epic-primary" id="smartNext">➡️ Następne słowo</button></div></div>
 </section>
 <section class="panel ux-continue" hidden="" id="uxContinue"><div><strong>▶️ Kontynuuj naukę</strong><p class="small" id="uxContinueLabel"></p></div><button id="uxResume" type="button">Wracam do nauki →</button></section><section aria-labelledby="a1LabTitle" class="panel a1-panel" id="communicationLab">
-<div class="a1-heading"><div><span class="a1-eyebrow">🌱 Sprint 5 · Rozwijamy znane słówka</span><h2 id="a1LabTitle">🗣️ Mówię po hiszpańsku</h2><p>Najpierw szkolne słówka. Potem proste zdania, rozmowy i zabawa z hiszpańskim.</p></div><span class="pill">Cel: A1 · czerwiec 2027</span></div>
+<div class="a1-heading"><div><span class="a1-eyebrow">🌱 Cztery etapy · Jedna droga do A1</span><h2 id="a1LabTitle">🗣️ Mówię po hiszpańsku</h2><p>W każdym rozdziale poznajesz cały dostępny materiał szkolny i uczysz się używać go w życiu.</p></div><span class="pill">Cel: A1 · czerwiec 2027</span></div>
+<div class="s8-single" id="s8JourneySummary" aria-live="polite">🌱 Wybierz porę roku, aby zobaczyć postęp.</div>
 <div aria-label="Rodzaj ćwiczenia" class="a1-nav" hidden="" role="group"><button class="active" data-a1-view="sentences">📚 Proste zdania</button><button data-a1-view="dialogues">💬 Mini-dialogi</button><button data-a1-view="listening">🎧 Rozumiem zdania</button><button data-a1-view="speaking">🎤 Odpowiadam na głos</button></div>
 <div class="a1-setup" hidden=""><label for="a1Topic">Temat <select id="a1Topic"></select></label><div class="a1-note" id="a1SourceLabel">Wybierz temat. Rozdziały szkolne są oddzielone od materiałów dodatkowych.</div></div>
 
@@ -134,7 +148,7 @@
 
 <div class="ux-learning-chooser" id="uxChooser">
 <label class="ux-label" for="uxUnit">1. Czego się dziś uczymy?</label>
-<select class="ux-select" id="uxUnit"><optgroup label="📚 Materiał szkolny"><option value="0">👋 Unidad Inicial</option><option selected="" value="1">🍂 Otoño</option><option value="2">❄️ Invierno</option><option value="3">🌷 Primavera</option><option value="4">☀️ Verano</option></optgroup><optgroup label="💬 Dodatkowe ćwiczenia"><option value="5">💬 Daily chat</option><option value="6">👋 Poznajmy się — A1</option><option value="7">👨‍👩‍👦 Rodzina — A1</option></optgroup></select>
+<select class="ux-select" id="uxUnit" aria-label="Wybierz porę roku"><option value="1">🍂 Otoño</option><option value="2">❄️ Invierno</option><option value="3">🌸 Primavera</option><option value="4">☀️ Verano</option></select><div id="s8SeasonGrid" class="s8-seasons" role="group" aria-label="Cztery etapy nauki"></div>
 <p class="small ux-source" id="uxSource">Wybierz temat szkolny lub dodatkowy.</p>
 <div class="ux-label">2. Jak chcesz ćwiczyć?</div>
 <div aria-label="Wybór aktywności" class="ux-activity-grid" role="group">
@@ -165,7 +179,7 @@
 </div></section>
 <section class="panel s6-panel" id="s6TestingPanel" hidden><div class="s6-head"><h2 id="s6TestTitle">📋 Checkpoint szkolny</h2><button class="secondary" id="s6TestClose">← Wróć do nauki</button></div><p id="s6TestSource" class="small"></p><div id="s6TestBody"></div><p class="s6-feedback" id="s6TestFeedback" aria-live="polite"></p><div class="s6-actions" id="s6TestActions"></div><div id="s6TestHistory" class="small"></div></section>
 
-<section class="panel s6-panel" id="s6Tracking"><h2>📊 Szkoła i droga do A1 — osobne wyniki</h2><p class="small">Checkpointy szkolne nie są ocenami z dziennika. Zadania A1 pokazują postęp w ćwiczeniach, nie certyfikują znajomości języka.</p><div id="s6TrackingBody"></div></section>
+<section class="panel s6-panel" id="s6Tracking" hidden><h2>📊 Szkoła i droga do A1 — osobne wyniki</h2><p class="small">Checkpointy szkolne nie są ocenami z dziennika. Zadania A1 pokazują postęp w ćwiczeniach, nie certyfikują znajomości języka.</p><div id="s6TrackingBody"></div></section>
 <div class="tabs" hidden="" id="tabs"><button class="active" data-unit="0">Unidad Inicial</button><button data-unit="1">Otoño</button><button data-unit="2">Invierno</button><button data-unit="3">Primavera</button><button data-unit="4">Verano</button><button data-unit="5">💬 Daily chat</button></div>
 
 
@@ -174,7 +188,7 @@
 <section class="panel epic-games" hidden="" id="epicGames"><button class="secondary" id="uxCloseGames" type="button">← Wróć do wyboru ćwiczenia</button><h2>🎮 Gry edukacyjne</h2><p class="small">Wybierz rozdział, grę i poziom trudności.</p><div class="game-setup"><label>Rozdział <select id="epicUnit"></select></label><label>Poziom <select id="epicLevel"><option value="easy">⭐ Łatwy</option><option value="medium">⭐⭐ Średni</option><option value="hard">⭐⭐⭐ Trudny</option></select></label></div><div class="game-menu" id="epicMenu"><button data-epic="memory">🧠 Memory z ilustracjami</button><button data-epic="audio">🎧 Zgadnij ze słuchu</button><button data-epic="match">🎯 Dopasuj pary</button><button data-epic="letters">🔤 Rozsypanka liter</button><button data-epic="timed">⏱️ Wyzwanie 60 sekund</button></div><div class="junior-setup"><label><input checked="" id="juniorMode" type="checkbox"/> 🌟 Rozsypanka Junior: obrazek, odsłuch i pomoc</label><p class="small">Dotyczy rozsypanki. Odznacz, aby grać w klasyczną wersję.</p></div><div class="epic-stage" hidden="" id="epicStage"><div class="stage-top"><h3 id="epicTitle"></h3><button class="secondary" id="epicExit">← Wybierz grę</button></div><p class="small" id="epicScore"></p><div id="epicContent"></div><p aria-live="polite" class="feedback" id="epicFeedback"></p></div></section><section class="parent-notes panel" id="parentNotes"><details><summary>ℹ️ Dla rodzica · urządzenia i informacje techniczne</summary><div class="crossplatform"><h3>Jedna aplikacja na wszystkie urządzenia</h3><p style="margin:0 0 12px">Aplikacja działa w przeglądarce na komputerze i urządzeniach mobilnych. Instalacja jako PWA i pełna praca offline to planowane funkcje, a nie obecny stan.</p><div class="platforms"><span>🖥️ Windows / Mac</span><span>🤖 Android</span><span>📱 iPhone / iPad</span></div><p class="small" style="margin:12px 0 0">Publikacja w App Store i Google Play to osobny etap; prototyp nie jest jeszcze opublikowaną aplikacją.</p></div><p class="small">Postępy są zapisane lokalnie w tej przeglądarce. Dostępność głosu hiszpańskiego zależy od urządzenia i połączenia.</p></details></section><footer>Wymowa zależy od głosu hiszpańskiego dostępnego na urządzeniu. Przycisk audio korzysta z wbudowanego syntezatora mowy, więc głos i działanie offline mogą różnić się między urządzeniami. W tej wersji nie ma jeszcze oryginalnych nagrań z podręcznika.</footer>
 </div></div></main></div>
 <script>
-(()=>{const $=id=>document.getElementById(id);let running=false,paused=false,remaining=600,cycleTimer=null,tickTimer=null,sessionUnit=1,sessionIndex=0;const format=n=>`${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`;function status(s){$('carStatus').textContent=s}function clearTimers(){clearTimeout(cycleTimer);clearInterval(tickTimer);cycleTimer=null;tickTimer=null}function stopSpeech(){if('speechSynthesis'in window)speechSynthesis.cancel()}function updateClock(){$('carClock').textContent='Pozostało: '+format(remaining);$('carProgress').style.width=((600-remaining)/600*100)+'%'}function speakLine(text,done){if(!('speechSynthesis'in window)){status('To urządzenie nie obsługuje syntezatora mowy.');return}const u=new SpeechSynthesisUtterance(text);u.lang='es-ES';u.rate=.82;const voices=speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.toLowerCase().startsWith('es'));if(voice)u.voice=voice;u.onend=()=>{if(running&&!paused&&done)done()};speechSynthesis.speak(u)}function nextCard(){if(!running||paused)return;if(remaining<=0){finish('Sesja zakończona! ¡Muy bien, Franek!');return}const cards=sessionUnit===-1?units.flatMap(u=>u.cards):units[sessionUnit].cards;const card=cards[sessionIndex%cards.length];sessionIndex++;status('Słuchaj, powtórz na głos i odpowiedz, zanim usłyszysz tłumaczenie.');speakLine(card[1],()=>{cycleTimer=setTimeout(()=>{if(!running||paused)return;speakLine('¿Qué significa '+card[1]+'?',()=>{cycleTimer=setTimeout(()=>{if(!running||paused)return;speakLine(card[2],()=>{cycleTimer=setTimeout(nextCard,2500)})},4500)})},1600)});cycleTimer=setTimeout(()=>{if(running&&!paused&&!speechSynthesis.speaking)nextCard()},18000)}function finish(message){clearTimers();stopSpeech();running=false;paused=false;$('carStart').disabled=false;$('carPause').disabled=true;$('carStop').disabled=true;$('carPause').textContent='⏸ Pauza';status(message);if(remaining<=0){remaining=0;updateClock()}}function start(){clearTimers();stopSpeech();sessionUnit=Number($('carUnit').value);sessionIndex=0;remaining=600;running=true;paused=false;$('carStart').disabled=true;$('carPause').disabled=false;$('carStop').disabled=false;$('carPause').textContent='⏸ Pauza';updateClock();status('Sesja rozpoczęta: '+(sessionUnit===-1?'Wszystkie rozdziały':units[sessionUnit].title));tickTimer=setInterval(()=>{if(!running||paused)return;remaining--;updateClock();if(remaining<=0)finish('Sesja zakończona! ¡Muy bien, Franek!')},1000);nextCard()}$('carStart').addEventListener('click',start);$('carPause').addEventListener('click',()=>{if(!running)return;if(!paused){paused=true;clearTimeout(cycleTimer);stopSpeech();$('carPause').textContent='▶ Wznów';status('Pauza. Naciśnij „Wznów”, aby kontynuować.')}else{paused=false;$('carPause').textContent='⏸ Pauza';status('Wracamy do słuchania.');nextCard()}});$('carStop').addEventListener('click',()=>finish('Sesja zakończona wcześniej. Możesz rozpocząć ją ponownie.'));$('carParked').addEventListener('change',e=>{$('carQuiz').disabled=!e.target.checked;if(!e.target.checked&& !$('game').hidden)$('game').hidden=true});$('carQuiz').addEventListener('click',()=>{if(!$('carParked').checked){status('Quiz jest dostępny tylko po potwierdzeniu postoju.');return}if(running)finish('Sesja audio zatrzymana przed quizem.');$('startGame').click();$('game').scrollIntoView({behavior:'smooth',block:'start'})});updateClock()})();
+(()=>{const $=id=>document.getElementById(id);let running=false,paused=false,remaining=600,cycleTimer=null,tickTimer=null,sessionUnit=1,sessionIndex=0;const format=n=>`${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`;function status(s){$('carStatus').textContent=s}function clearTimers(){clearTimeout(cycleTimer);clearInterval(tickTimer);cycleTimer=null;tickTimer=null}function stopSpeech(){if('speechSynthesis'in window)speechSynthesis.cancel()}function updateClock(){$('carClock').textContent='Pozostało: '+format(remaining);$('carProgress').style.width=((600-remaining)/600*100)+'%'}function speakLine(text,done){if(!('speechSynthesis'in window)){status('To urządzenie nie obsługuje syntezatora mowy.');return}const u=new SpeechSynthesisUtterance(text);u.lang='es-ES';u.rate=.82;const voices=speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.toLowerCase().startsWith('es'));if(voice)u.voice=voice;u.onend=()=>{if(running&&!paused&&done)done()};speechSynthesis.speak(u)}function nextCard(){if(!running||paused)return;if(remaining<=0){finish('Sesja zakończona! ¡Muy bien, Franek!');return}const cards=sessionUnit===-1?[1,2,3,4].flatMap(i=>units[i].cards):units[sessionUnit].cards;const card=cards[sessionIndex%cards.length];sessionIndex++;status('Słuchaj, powtórz na głos i odpowiedz, zanim usłyszysz tłumaczenie.');speakLine(card[1],()=>{cycleTimer=setTimeout(()=>{if(!running||paused)return;speakLine('¿Qué significa '+card[1]+'?',()=>{cycleTimer=setTimeout(()=>{if(!running||paused)return;speakLine(card[2],()=>{cycleTimer=setTimeout(nextCard,2500)})},4500)})},1600)});cycleTimer=setTimeout(()=>{if(running&&!paused&&!speechSynthesis.speaking)nextCard()},18000)}function finish(message){clearTimers();stopSpeech();running=false;paused=false;$('carStart').disabled=false;$('carPause').disabled=true;$('carStop').disabled=true;$('carPause').textContent='⏸ Pauza';status(message);if(remaining<=0){remaining=0;updateClock()}}function start(){clearTimers();stopSpeech();sessionUnit=Number($('carUnit').value);sessionIndex=0;remaining=600;running=true;paused=false;$('carStart').disabled=true;$('carPause').disabled=false;$('carStop').disabled=false;$('carPause').textContent='⏸ Pauza';updateClock();status('Sesja rozpoczęta: '+(sessionUnit===-1?'Wszystkie rozdziały':units[sessionUnit].title));tickTimer=setInterval(()=>{if(!running||paused)return;remaining--;updateClock();if(remaining<=0)finish('Sesja zakończona! ¡Muy bien, Franek!')},1000);nextCard()}$('carStart').addEventListener('click',start);$('carPause').addEventListener('click',()=>{if(!running)return;if(!paused){paused=true;clearTimeout(cycleTimer);stopSpeech();$('carPause').textContent='▶ Wznów';status('Pauza. Naciśnij „Wznów”, aby kontynuować.')}else{paused=false;$('carPause').textContent='⏸ Pauza';status('Wracamy do słuchania.');nextCard()}});$('carStop').addEventListener('click',()=>finish('Sesja zakończona wcześniej. Możesz rozpocząć ją ponownie.'));$('carParked').addEventListener('change',e=>{$('carQuiz').disabled=!e.target.checked;if(!e.target.checked&& !$('game').hidden)$('game').hidden=true});$('carQuiz').addEventListener('click',()=>{if(!$('carParked').checked){status('Quiz jest dostępny tylko po potwierdzeniu postoju.');return}if(running)finish('Sesja audio zatrzymana przed quizem.');$('startGame').click();$('game').scrollIntoView({behavior:'smooth',block:'start'})});updateClock()})();
 </script>
 <script>
 
@@ -186,6 +200,57 @@ const units=[
 {title:"Verano — lato",sub:"Miejsce na słownictwo z rozdziału Verano",cards:[["☀️","Verano","Lato","berano"],["🏖️","Playa","Plaża","plaja"],["🍉","Sandía","Arbuz","sandija"]]},
 {title:"💬 Daily chat — codzienne zwroty",sub:"Dodatkowy materiał • proste rozmowy na co dzień",cards:[["👋","¡Hola!","Cześć!","ola"],["🙂","¿Cómo te llamas?","Jak masz na imię?","komo te jamas"],["😊","Me llamo Franek.","Mam na imię Franek.","me jamo franek"],["🤝","Mucho gusto.","Miło mi cię poznać.","muczo gusto"],["💬","¿Cómo estás?","Jak się masz?","komo estas"],["😄","Estoy bien, gracias.","Mam się dobrze, dziękuję.","estoj bjen grasjas"],["🙂","¿Y tú?","A ty?","i tu"],["😴","Estoy cansado.","Jestem zmęczony. (chłopiec)","estoj kansado"],["👨‍👩‍👦","Esta es mi familia.","To jest moja rodzina.","esta es mi familia"],["👨","Este es mi papá.","To jest mój tata.","este es mi papa"],["👩","Esta es mi mamá.","To jest moja mama.","esta es mi mama"],["👦","Este es mi hermano.","To jest mój brat.","este es mi hermano"],["❤️","Quiero a mi familia.","Kocham moją rodzinę.","kiero a mi familia"],["🏠","¿Dónde vives?","Gdzie mieszkasz?","donde bibes"],["🏡","Vivo en Polonia.","Mieszkam w Polsce.","bibo en polonia"],["🎂","¿Cuántos años tienes?","Ile masz lat?","kuantos anios tjenes"],["7️⃣","Tengo siete años.","Mam siedem lat.","tengo sjete anios"],["⚽","Me gusta el fútbol.","Lubię piłkę nożną.","me gusta el futbol"],["🎮","¿Qué te gusta hacer?","Co lubisz robić?","ke te gusta aser"],["🎨","Me gusta dibujar.","Lubię rysować.","me gusta dibuhar"],["🙏","Por favor.","Proszę.","por fabor"],["😊","Gracias.","Dziękuję.","grasjas"],["🙏","De nada.","Nie ma za co.","de nada"],["🙋","Perdón.","Przepraszam / wybacz.","perdon"],["👋","¡Hasta luego!","Do zobaczenia później!","asta luego"]]}
 ];
+
+// Sprint 8: one four-season content catalog. School items stay tagged separately
+// from authored A1 extensions. No saved progress is read for the new journey.
+const S8_FOUNDATION={
+ '🔢 Liczby 1–20':[['1️⃣','Uno','Jeden'],['2️⃣','Dos','Dwa'],['3️⃣','Tres','Trzy'],['4️⃣','Cuatro','Cztery'],['5️⃣','Cinco','Pięć'],['6️⃣','Seis','Sześć'],['7️⃣','Siete','Siedem'],['8️⃣','Ocho','Osiem'],['9️⃣','Nueve','Dziewięć'],['🔟','Diez','Dziesięć'],['🔢','Once','Jedenaście'],['🔢','Doce','Dwanaście'],['🔢','Trece','Trzynaście'],['🔢','Catorce','Czternaście'],['🔢','Quince','Piętnaście'],['🔢','Dieciséis','Szesnaście'],['🔢','Diecisiete','Siedemnaście'],['🔢','Dieciocho','Osiemnaście'],['🔢','Diecinueve','Dziewiętnaście'],['🔢','Veinte','Dwadzieścia']],
+ '🎨 Kolory':[['🔴','Rojo','Czerwony'],['🔵','Azul','Niebieski'],['🟢','Verde','Zielony'],['🟡','Amarillo','Żółty'],['⚫','Negro','Czarny'],['⚪','Blanco','Biały'],['🟠','Naranja','Pomarańczowy'],['🟣','Morado','Fioletowy'],['🌸','Rosa','Różowy'],['🟤','Marrón','Brązowy'],['🌫️','Gris','Szary']],
+ '🐶 Zwierzęta':[['🐶','Perro','Pies'],['🐱','Gato','Kot'],['🐟','Pez','Ryba'],['🐦','Pájaro','Ptak'],['🐰','Conejo','Królik'],['🐭','Ratón','Mysz'],['🐴','Caballo','Koń'],['🐮','Vaca','Krowa'],['🐷','Cerdo','Świnia'],['🐔','Gallina','Kura'],['🦋','Mariposa','Motyl'],['🐝','Abeja','Pszczoła']],
+ '✏️ Przedmioty szkolne':[['📘','Libro','Książka'],['📓','Cuaderno','Zeszyt'],['✏️','Lápiz','Ołówek'],['🖊️','Bolígrafo','Długopis'],['🧽','Goma de borrar','Gumka do mazania'],['🎒','Mochila','Plecak'],['📏','Regla','Linijka'],['✂️','Tijeras','Nożyczki'],['🪑','Silla','Krzesło'],['🖼️','Pizarra','Tablica'],['🖍️','Lápices de colores','Kredki'],['📚','Clase','Lekcja / klasa']],
+ '👨‍👩‍👦 Rodzina':[['👩','Madre','Mama'],['👨','Padre','Tata'],['👦','Hermano','Brat'],['👧','Hermana','Siostra'],['👵','Abuela','Babcia'],['👴','Abuelo','Dziadek'],['👶','Bebé','Niemowlę'],['👨‍👩‍👦','Familia','Rodzina']],
+ '🍎 Jedzenie i picie':[['🍎','Manzana','Jabłko'],['🍌','Plátano','Banan'],['🍐','Pera','Gruszka'],['🍞','Pan','Chleb'],['🧀','Queso','Ser'],['🥛','Leche','Mleko'],['💧','Agua','Woda'],['🍚','Arroz','Ryż'],['🥚','Huevo','Jajko'],['🍲','Sopa','Zupa'],['🍊','Naranja','Pomarańcza (owoc)']],
+ '🏠 Dom i przedmioty':[['🏠','Casa','Dom'],['🚪','Puerta','Drzwi'],['🪟','Ventana','Okno'],['🛏️','Cama','Łóżko'],['🪑','Mesa','Stół'],['🪑','Silla','Krzesło'],['🍳','Cocina','Kuchnia'],['🚿','Baño','Łazienka'],['🛋️','Salón','Salon'],['💡','Lámpara','Lampa']],
+ '🧍 Części ciała':[['🙂','Cabeza','Głowa'],['👀','Ojos','Oczy'],['👂','Orejas','Uszy'],['👃','Nariz','Nos'],['👄','Boca','Usta'],['🖐️','Mano','Dłoń'],['💪','Brazo','Ramię'],['🦵','Pierna','Noga'],['🦶','Pie','Stopa'],['🦷','Dientes','Zęby']],
+ '👕 Ubrania':[['👕','Camiseta','Koszulka'],['👖','Pantalones','Spodnie'],['👟','Zapatos','Buty'],['🧦','Calcetines','Skarpetki'],['🧥','Chaqueta','Kurtka'],['🧣','Bufanda','Szalik'],['🧤','Guantes','Rękawiczki'],['🧢','Gorro','Czapka']],
+ '🌤️ Pogoda i pory roku':[['☀️','Sol','Słońce'],['🌧️','Lluvia','Deszcz'],['❄️','Nieve','Śnieg'],['💨','Viento','Wiatr'],['🌱','Primavera','Wiosna'],['☀️','Verano','Lato'],['🍂','Otoño','Jesień'],['❄️','Invierno','Zima'],['☁️','Nube','Chmura']],
+ '👋 Powitania':[['👋','Hola','Cześć'],['👋','Adiós','Do widzenia'],['🙏','Gracias','Dziękuję'],['😊','De nada','Nie ma za co'],['🙂','Por favor','Proszę'],['🤝','Mucho gusto','Miło mi'],['🗣️','¿Cómo estás?','Jak się masz?'],['😊','Estoy bien','Mam się dobrze']]
+};
+window.frankaFoundation=S8_FOUNDATION;
+const S8_SEASONS=[1,2,3,4];
+const S8_NAMES={1:'🍂 Otoño',2:'❄️ Invierno',3:'🌸 Primavera',4:'☀️ Verano'};
+const S8_SCHOOL={1:[...units[0].cards,...units[1].cards],2:[...units[2].cards],3:[...units[3].cards],4:[...units[4].cards]};
+const S8_ORIGINAL_COUNTS={1:S8_SCHOOL[1].length,2:S8_SCHOOL[2].length,3:S8_SCHOOL[3].length,4:S8_SCHOOL[4].length};
+const S8_LEXICON={1:[],2:[],3:[],4:[]};
+const sf=Object.entries(S8_FOUNDATION);
+function seasonAdd(u,arr){S8_LEXICON[u].push(...arr);}
+// Progressive A1 expansion: easy notions first, daily-life communication later.
+seasonAdd(1,sf[0][1].slice(0,10)); seasonAdd(2,sf[0][1].slice(10));
+seasonAdd(1,sf[1][1]);seasonAdd(1,sf[2][1].slice(0,6));seasonAdd(3,sf[2][1].slice(6));
+seasonAdd(2,sf[3][1]);seasonAdd(1,sf[4][1]);seasonAdd(3,sf[5][1]);
+seasonAdd(2,sf[6][1]);seasonAdd(2,sf[7][1]);seasonAdd(2,sf[8][1]);
+seasonAdd(4,sf[9][1]);seasonAdd(1,sf[10][1]);
+seasonAdd(1,units[5].cards.slice(0,8));
+seasonAdd(2,units[5].cards.slice(8,16));
+seasonAdd(3,units[5].cards.slice(16,23));
+seasonAdd(4,units[5].cards.slice(23));
+const S8_ORIGIN={};
+for(const u of S8_SEASONS){
+ const seen=new Set(units[u].cards.map(c=>c[1].toLowerCase().trim()));
+ for(const c of S8_SCHOOL[u]){
+  const k=c[1].toLowerCase().trim();
+  S8_ORIGIN[u+'|'+k]='szkoła / materiał z dostarczonych stron lub wcześniejsza baza';
+  if(!seen.has(k)){seen.add(k);units[u].cards.push(c)}
+ }
+ for(const c of S8_LEXICON[u]){
+  const k=c[1].toLowerCase().trim();
+  if(!seen.has(k)){seen.add(k);units[u].cards.push(c)}
+  if(!S8_ORIGIN[u+'|'+k])S8_ORIGIN[u+'|'+k]='rozszerzenie A1';
+ }
+ units[u].sub+=' · Szkoła + praktyczne A1 (treści dodatkowe oznaczone w danych)';
+}
+window.frankaSeasons8={ids:S8_SEASONS,names:S8_NAMES,school:S8_SCHOOL,origin:S8_ORIGIN};
+
 const chatTopics=["Poznajmy się","Jak się czujesz?","Moja rodzina","O mnie","Uprzejme zwroty"];
 function renderDailyChat(){const root=document.getElementById('chatGroups');if(!root)return;root.innerHTML='';const cards=units[5].cards;for(let g=0;g<chatTopics.length;g++){const section=document.createElement('div');section.className='chat-group';const heading=document.createElement('h3');heading.textContent=chatTopics[g];section.appendChild(heading);cards.slice(g*5,g*5+5).forEach(card=>{const line=document.createElement('div');line.className='chat-line';const es=document.createElement('div');es.className='chat-es';es.textContent=card[1];const pl=document.createElement('div');pl.className='chat-pl';pl.textContent=card[2];const listen=document.createElement('button');listen.className='secondary chat-say';listen.textContent='🔊 Posłuchaj';listen.addEventListener('click',()=>speak(card[1]));line.append(es,pl,listen);section.appendChild(line)});root.appendChild(section)}}
 let unit=0,index=0,points=0,question=0,answered=false;
@@ -240,7 +305,7 @@ const el=id=>document.getElementById(id);
 const lessonNames=['Unidad Inicial','Otoño','Invierno','Primavera','Verano','Daily chat'];
 const car=el('carUnit'),epicUnit=el('epicUnit');
 car.innerHTML='<option value="-1">🌍 Wszystkie rozdziały</option>';
-units.forEach((u,i)=>{const name=lessonNames[i];car.add(new Option(name,i));epicUnit.add(new Option(name,i))});
+[1,2,3,4].forEach(i=>{car.add(new Option(lessonNames[i],i));epicUnit.add(new Option(lessonNames[i],i))});
 car.value='1';epicUnit.value='1';
 function enter(mode){el('homeScreen').hidden=true;el('workArea').hidden=false;el('carArea').hidden=mode!=='car';el('learnArea').hidden=mode!=='learn';el('modeLabel').textContent=mode==='car'?'🚗 Tryb samochodowy':'🎮 Centrum nauki';window.scrollTo(0,0)}
 document.querySelectorAll('[data-enter]').forEach(b=>b.addEventListener('click',()=>enter(b.dataset.enter)));
@@ -380,16 +445,16 @@ function letters(){
 const $=id=>document.getElementById(id);
 const sel=$('smartUnit');
 sel.add(new Option('🌍 Wszystkie rozdziały','all'));
-units.forEach((u,i)=>sel.add(new Option(u.title,i)));
+[1,2,3,4].forEach(i=>sel.add(new Option(units[i].title,i)));
 let session=null;
-function entries(){return units.flatMap((u,i)=>u.cards.map(card=>({u:i,card,key:trainingKey(i,card[1]),data:trainingState(i,card)})))}
+function entries(){return [1,2,3,4].flatMap(i=>units[i].cards.map(card=>({u:i,card,key:trainingKey(i,card[1]),data:trainingState(i,card)})))}
 function selectedEntries(){const u=sel.value;return entries().filter(e=>u==='all'||e.u===Number(u))}
 function renderStats(){
  const all=entries(),known=all.filter(e=>isMastered(e.data)),due=all.filter(e=>dueNow(e.data)),tricky=all.filter(e=>isTricky(e.data));
  $('smartMastered').textContent=known.length;$('smartDue').textContent=due.length;$('smartTricky').textContent=tricky.length;
  $('smartAttempts').textContent=Object.values(masteryMap()).reduce((n,r)=>n+(Number(r.right)||0)+(Number(r.wrong)||0),0);
  const out=$('smartProgress');out.replaceChildren();
- units.forEach((u,i)=>{const items=all.filter(e=>e.u===i);const count=items.filter(e=>isMastered(e.data)).length;
+ [1,2,3,4].forEach(i=>{const u=units[i];const items=all.filter(e=>e.u===i);const count=items.filter(e=>isMastered(e.data)).length;
  const row=document.createElement('div');row.className='smart-progress-row';
  const label=document.createElement('span');label.textContent=u.title.replace('💬 ','').split(' — ')[0];
  const meter=document.createElement('div');meter.className='smart-meter';meter.setAttribute('role','progressbar');meter.setAttribute('aria-valuemin','0');meter.setAttribute('aria-valuemax',String(items.length));meter.setAttribute('aria-valuenow',String(count));
@@ -459,6 +524,15 @@ const topics=[
   ['👩','Esta es mi mamá.','To jest moja mama.'],['👨','Este es mi papá.','To jest mój tata.'],['👦','Este es mi hermano.','To jest mój brat.'],['❤️','Quiero a mi familia.','Kocham moją rodzinę.'],['👨‍👩‍👦','Esta es mi familia.','To jest moja rodzina.']],dialogs:[
   ['¿Quién es?','Es mi hermano.','Kto to jest?','To mój brat.','👦'],['¿Es tu papá?','Sí, es mi papá.','Czy to twój tata?','Tak, to mój tata.','👨']]}
 ];
+
+// Sprint 8: A1 dialogue exercises share the same four-season journey.
+topics[0].sentences.push(...topics[3].sentences,...topics[4].sentences);
+topics[0].dialogs.push(...topics[3].dialogs,...topics[4].dialogs);
+topics[1].sentences.push(['✏️','Tengo un lápiz.','Mam ołówek.'],['🏠','Esta es mi casa.','To jest mój dom.'],['👀','Tengo dos ojos.','Mam dwoje oczu.']);
+topics[1].dialogs.push(['¿Qué tienes?','Tengo un libro.','Co masz?','Mam książkę.','📘'],['¿Dónde estás?','Estoy en casa.','Gdzie jesteś?','Jestem w domu.','🏠']);
+topics[2].sentences.push(['🍎','Me gusta la fruta.','Lubię owoce.'],['🥛','Quiero agua, por favor.','Poproszę wodę.'],['⚽','Mi deporte favorito es el fútbol.','Mój ulubiony sport to piłka nożna.']);
+topics[2].dialogs.push(['¿Qué quieres beber?','Agua, por favor.','Czego chcesz się napić?','Poproszę wodę.','💧'],['¿Qué te gusta?','Me gusta el fútbol.','Co lubisz?','Lubię piłkę nożną.','⚽']);
+topics.push({id:'verano_a1',label:'☀️ Verano — komunikacja A1',school:false,source:'Dodatkowe proste wypowiedzi A1. Treści podręcznika Verano niezweryfikowane.',sentences:[['☀️','En verano hace calor.','Latem jest gorąco.'],['🏖️','Voy a la playa.','Idę na plażę.'],['💧','Bebo agua.','Piję wodę.'],['⚽','Me gusta jugar al fútbol.','Lubię grać w piłkę nożną.'],['👋','Hola, me llamo Franek.','Cześć, mam na imię Franek.']],dialogs:[['¿Adónde vas?','Voy a la playa.','Dokąd idziesz?','Idę na plażę.','🏖️'],['¿Qué bebes?','Bebo agua.','Co pijesz?','Piję wodę.','💧'],['¿Cómo te llamas?','Me llamo Franek.','Jak masz na imię?','Mam na imię Franek.','👋']]});
 let view='sentences',current=0,active=0,answered=false,randomChoices=[];
 const savedKey='hiszpanskiFrankaA1ProgressV1';let progress={};
 try{const raw=JSON.parse(localStorage.getItem(savedKey)||'{}');if(raw&&typeof raw==='object'&&!Array.isArray(raw))progress=raw}catch(e){}
@@ -497,18 +571,18 @@ const $=id=>document.getElementById(id);
 const choice=$('uxUnit'), activities=[...document.querySelectorAll('[data-ux-activity]')];
 const getUnit=()=>Number(choice.value);
 const display={words:'Słówka',sentences:'Zdania',dialogues:'Dialogi',listening:'Słuchanie',speaking:'Mówienie'};
-const topicIndex={1:0,2:1,3:2,6:3,7:4};
+const topicIndex={1:0,2:1,3:2,4:5};
 const isFoundation=u=>u>=100&&u<111;
 const uxKey='hiszpanskiFrankaLastActivityV1';
 let selected='words';
-function supported(unit,kind){return isFoundation(unit)?kind==='words':kind==='words'?unit<6:unit in topicIndex}
+function supported(unit,kind){return [1,2,3,4].includes(unit)}
 function choose(unit,kind){
  choice.value=String(unit);const valid=supported(unit,kind);
  selected=valid?kind:'words';
  activities.forEach(b=>{b.disabled=!supported(unit,b.dataset.uxActivity);b.classList.toggle('active',b.dataset.uxActivity===selected);b.setAttribute('aria-pressed',String(b.dataset.uxActivity===selected))});
  const label=choice.options[choice.selectedIndex].text;
- $('uxActivityNote').textContent=isFoundation(unit)?'Dodatkowy temat A1: fiszki i quiz tematyczny.':unit===0||unit===4||unit===5?'Ten rozdział ma na razie słówka i gry; ćwiczenia zdań będą dodawane stopniowo.':unit>=6?'Dodatkowy materiał A1 — zdania, dialogi, słuchanie i mówienie.':'Wybierz ulubioną aktywność i rozpocznij.';
- $('uxSource').textContent=isFoundation(unit)?'Rozszerzenie A1 — poza materiałem szkolnym.':unit===0||unit===4?'Materiał demonstracyjny — sprawdź zgodność z zeszytem i podręcznikiem.':unit===5||unit>=6?'Materiał dodatkowy, poza szkolnym podręcznikiem.':'Ćwiczenia oparte na znanym rozdziale szkolnym. Zdania są przykładami ułożonymi specjalnie do nauki.';
+ $('uxActivityNote').textContent='📚 Materiał szkolny i dodatkowy A1 w jednej ścieżce. Wybierz ćwiczenie.';
+ $('uxSource').textContent=unit===4?'☀️ Verano — materiały szkolne jeszcze do weryfikacji; dodatkowe ćwiczenia A1.':'Szkoła + rozszerzenia A1. Rozdział szkolny ma osobny zakres kontrolny.';
  // Keep one chosen lesson across flashcards, games, and dialogue engine.
  if(unit<6){const tab=document.querySelector('#tabs button[data-unit="'+unit+'"]');if(tab)tab.click();$('epicUnit').value=String(unit);if($('smartUnit'))$('smartUnit').value=String(unit)}
  if(unit in topicIndex){const a1=$('a1Topic');a1.value=String(topicIndex[unit]);a1.dispatchEvent(new Event('change',{bubbles:true}))}
@@ -547,7 +621,7 @@ function openGames(startMemory){
 $('uxCloseGames').onclick=()=>{$('epicGames').hidden=true;$('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
 $('uxGames').onclick=()=>openGames(false);
 $('uxMemory').onclick=()=>openGames(true);
-const initial=Math.min(5,Math.max(0,Number((()=>{try{return JSON.parse(localStorage.getItem('hiszpanskiFrankaProgressV1')||'{}').unit||1}catch(e){return 1}})())||1));
+const initial=1; // Sprint 8 starts a new journey; no migration of earlier progress.
 window.frankaRefreshResume=refreshResume;choose(initial,'words');refreshResume();
 })();
 </script><script>
@@ -572,20 +646,8 @@ function schoolSource(u,c){const word=c[1].trim().toLocaleLowerCase('es');if(u==
 function isVerified(u,c){return (u===1&&notebookOtono.has(c[1].trim().toLocaleLowerCase('es')))||(u===0&&bookInitial.has(c[1].trim().toLocaleLowerCase('es')))}
 function poolFor(u){const seen=new Set();return (units[u]?.cards||[]).filter(c=>{const key=c[2].toLocaleLowerCase('pl').trim();if(seen.has(key))return false;seen.add(key);return true})}
 // School checkpoints are limited to school chapters. Verified notebook material takes precedence.
-function schoolPool(u){if(u===0||u===5)return [];const all=poolFor(u);const verified=all.filter(c=>isVerified(u,c));return verified.length>=4?verified:all}
-const foundation={
- '🔢 Liczby 1–20':[['1️⃣','Uno','Jeden'],['2️⃣','Dos','Dwa'],['3️⃣','Tres','Trzy'],['4️⃣','Cuatro','Cztery'],['5️⃣','Cinco','Pięć'],['6️⃣','Seis','Sześć'],['7️⃣','Siete','Siedem'],['8️⃣','Ocho','Osiem'],['9️⃣','Nueve','Dziewięć'],['🔟','Diez','Dziesięć'],['🔢','Once','Jedenaście'],['🔢','Doce','Dwanaście'],['🔢','Trece','Trzynaście'],['🔢','Catorce','Czternaście'],['🔢','Quince','Piętnaście'],['🔢','Dieciséis','Szesnaście'],['🔢','Diecisiete','Siedemnaście'],['🔢','Dieciocho','Osiemnaście'],['🔢','Diecinueve','Dziewiętnaście'],['🔢','Veinte','Dwadzieścia']],
- '🎨 Kolory':[['🔴','Rojo','Czerwony'],['🔵','Azul','Niebieski'],['🟢','Verde','Zielony'],['🟡','Amarillo','Żółty'],['⚫','Negro','Czarny'],['⚪','Blanco','Biały'],['🟠','Naranja','Pomarańczowy'],['🟣','Morado','Fioletowy'],['🌸','Rosa','Różowy'],['🟤','Marrón','Brązowy'],['🌫️','Gris','Szary']],
- '🐶 Zwierzęta':[['🐶','Perro','Pies'],['🐱','Gato','Kot'],['🐟','Pez','Ryba'],['🐦','Pájaro','Ptak'],['🐰','Conejo','Królik'],['🐭','Ratón','Mysz'],['🐴','Caballo','Koń'],['🐮','Vaca','Krowa'],['🐷','Cerdo','Świnia'],['🐔','Gallina','Kura'],['🦋','Mariposa','Motyl'],['🐝','Abeja','Pszczoła']],
- '✏️ Przedmioty szkolne':[['📘','Libro','Książka'],['📓','Cuaderno','Zeszyt'],['✏️','Lápiz','Ołówek'],['🖊️','Bolígrafo','Długopis'],['🧽','Goma de borrar','Gumka do mazania'],['🎒','Mochila','Plecak'],['📏','Regla','Linijka'],['✂️','Tijeras','Nożyczki'],['🪑','Silla','Krzesło'],['🖼️','Pizarra','Tablica'],['🖍️','Lápices de colores','Kredki'],['📚','Clase','Lekcja / klasa']],
- '👨‍👩‍👦 Rodzina':[['👩','Madre','Mama'],['👨','Padre','Tata'],['👦','Hermano','Brat'],['👧','Hermana','Siostra'],['👵','Abuela','Babcia'],['👴','Abuelo','Dziadek'],['👶','Bebé','Niemowlę'],['👨‍👩‍👦','Familia','Rodzina']],
- '🍎 Jedzenie i picie':[['🍎','Manzana','Jabłko'],['🍌','Plátano','Banan'],['🍐','Pera','Gruszka'],['🍞','Pan','Chleb'],['🧀','Queso','Ser'],['🥛','Leche','Mleko'],['💧','Agua','Woda'],['🍚','Arroz','Ryż'],['🥚','Huevo','Jajko'],['🍲','Sopa','Zupa'],['🍊','Naranja','Pomarańcza (owoc)']],
- '🏠 Dom i przedmioty':[['🏠','Casa','Dom'],['🚪','Puerta','Drzwi'],['🪟','Ventana','Okno'],['🛏️','Cama','Łóżko'],['🪑','Mesa','Stół'],['🪑','Silla','Krzesło'],['🍳','Cocina','Kuchnia'],['🚿','Baño','Łazienka'],['🛋️','Salón','Salon'],['💡','Lámpara','Lampa']],
- '🧍 Części ciała':[['🙂','Cabeza','Głowa'],['👀','Ojos','Oczy'],['👂','Orejas','Uszy'],['👃','Nariz','Nos'],['👄','Boca','Usta'],['🖐️','Mano','Dłoń'],['💪','Brazo','Ramię'],['🦵','Pierna','Noga'],['🦶','Pie','Stopa'],['🦷','Dientes','Zęby']],
- '👕 Ubrania':[['👕','Camiseta','Koszulka'],['👖','Pantalones','Spodnie'],['👟','Zapatos','Buty'],['🧦','Calcetines','Skarpetki'],['🧥','Chaqueta','Kurtka'],['🧣','Bufanda','Szalik'],['🧤','Guantes','Rękawiczki'],['🧢','Gorro','Czapka']],
- '🌤️ Pogoda i pory roku':[['☀️','Sol','Słońce'],['🌧️','Lluvia','Deszcz'],['❄️','Nieve','Śnieg'],['💨','Viento','Wiatr'],['🌱','Primavera','Wiosna'],['☀️','Verano','Lato'],['🍂','Otoño','Jesień'],['❄️','Invierno','Zima'],['☁️','Nube','Chmura']],
- '👋 Powitania':[['👋','Hola','Cześć'],['👋','Adiós','Do widzenia'],['🙏','Gracias','Dziękuję'],['😊','De nada','Nie ma za co'],['🙂','Por favor','Proszę'],['🤝','Mucho gusto','Miło mi'],['🗣️','¿Cómo estás?','Jak się masz?'],['😊','Estoy bien','Mam się dobrze']]
-};
+function schoolPool(u){if(![1,2,3,4].includes(u))return [];const source=window.frankaSeasons8.school[u];const seen=new Set();const all=source.filter(c=>{const k=c[2].toLowerCase().trim();if(seen.has(k))return false;seen.add(k);return true});const verified=all.filter(c=>isVerified(u,c)||(u===1&&bookInitial.has(c[1].trim().toLocaleLowerCase('es'))));return verified.length>=4?verified:all}
+const foundation=window.frankaFoundation;
 const sentences={
  1:[['En otoño llueve.','Jesienią pada deszcz.','🌧️','¿Qué tiempo hace?','Llueve.'],['Las hojas son amarillas.','Liście są żółte.','🍂','¿De qué color son las hojas?','Son amarillas.'],['Veo un árbol.','Widzę drzewo.','🌳','¿Qué ves?','Veo un árbol.'],['Me gusta la manzana.','Lubię jabłko.','🍎','¿Qué te gusta?','Me gusta la manzana.']],
  2:[['Hoy hace frío.','Dziś jest zimno.','🥶','¿Qué tiempo hace hoy?','Hace frío.'],['Llevo una bufanda.','Mam na sobie szalik.','🧣','¿Qué llevas?','Llevo una bufanda.'],['Veo nieve.','Widzę śnieg.','❄️','¿Qué ves?','Veo nieve.']],
@@ -652,7 +714,7 @@ function showQuestion(){
 function finishTest(){
  const n=test.questions.length,pct=Math.round(100*test.correct/n);const kind=test.type;const u=test.u;
  const record={time:new Date().toISOString(),right:test.correct,total:n,percent:pct,incorrect:unique(test.incorrect),spoken:test.spoken||0};
- const section=kind==='school'?state.school:state.a1;const old=section[u]||{history:[]};old.history=[record,...(old.history||[])].slice(0,15);old.incorrect=record.incorrect;section[u]=old;save();
+ const section=kind==='school'?state.school:state.a1;const old=section[u]||{history:[]};old.history=[record,...(old.history||[])].slice(0,15);old.incorrect=record.incorrect;section[u]=old;save();window.dispatchEvent(new CustomEvent('franka:s8checkpoint',{detail:{u,type:kind,percent:pct}}));
  answer.replaceChildren();answer.append(newNode('div','s6-result',`🏆 Wynik: ${test.correct}/${n} (${pct}%)`),newNode('p','',kind==='school'?(pct>=85?'Świetnie opanowany materiał!':'Zobacz błędne odpowiedzi i poćwicz je ponownie.'):'To wynik ćwiczeń — nie jest formalną oceną A1.'));
  if(record.incorrect.length)answer.append(newNode('p','small','Do powtórki: '+record.incorrect.join(', ')));
  feedback.textContent='';actions.replaceChildren();
@@ -665,8 +727,7 @@ $('s6A1Start').addEventListener('click',()=>{const u=Number($('uxUnit').value);o
 $('s6TestClose').onclick=()=>{hideGame();$('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
 // A1 fundamental lexicon: distinct from source-verified school data.
 const fSelect=$('uxUnit');let fi=0,cardIndex=0,fmode='cards';const cats=Object.keys(foundation);
-const fGroup=document.createElement('optgroup');fGroup.label='🧱 Dodatkowe tematy A1 — słówka';
-cats.forEach((k,i)=>fGroup.append(new Option(k,String(100+i))));fSelect.append(fGroup);
+// A1 categories are already woven into the four seasons; no additional menu entries.
 if(typeof window.frankaRefreshResume==='function')window.frankaRefreshResume();
 function fRecords(){const key=cats[fi];return state.foundation[key]||(state.foundation[key]={correct:0,attempts:0})}
 function drawFoundation(){const cards=foundation[cats[fi]],root=$('s6FoundationBody');root.replaceChildren();$('s6FoundationStats').textContent=`${cards.length} haseł · ${fRecords().correct}/${fRecords().attempts} poprawnych odpowiedzi w quizach`;
@@ -701,6 +762,39 @@ updateCheckpointLabel();
 window.addEventListener('storage',drawDashboard);
 })();
 </script><script>
+/* Sprint 8: independent progress for a unified four-stage learning journey. */
+(function(){
+ const STORE='hiszpanskiFrankaJourney8V1';let data={entries:{},checkpoints:{}};
+ try{const v=JSON.parse(localStorage.getItem(STORE)||'null');if(v&&v.entries&&v.checkpoints)data=v}catch(e){}
+ const key=(u,k,es)=>`${u}|${k}|${es.normalize('NFC').trim().toLocaleLowerCase('es').replace(/\s+/g,' ')}`;
+ const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(data))}catch(e){}};
+ function get(u,k,es){return data.entries[key(u,k,es)]||null}
+ function result(u,k,es,ok){if(![1,2,3,4].includes(Number(u)))return;const id=key(u,k,es),r=data.entries[id]||{u,k,es,right:0,wrong:0,streak:0,next:0,days:[]};r.right+=ok?1:0;r.wrong+=ok?0:1;r.streak=ok?r.streak+1:0;const date=new Date().toISOString().slice(0,10);if(!r.days.includes(date))r.days.push(date);r.next=Date.now()+(ok?Math.min(14,Math.max(1,r.streak*2))*86400000:0);data.entries[id]=r;save();draw()}
+ function checkpoint(u,ok){if(![1,2,3,4].includes(Number(u)))return;const old=data.checkpoints[u]||{school:0,a1:0};old[ok.type]=Math.max(old[ok.type]||0,ok.percent);data.checkpoints[u]=old;save();draw()}
+ function progress(u){
+  const cards=units[u].cards,seen=new Set();const words=cards.filter(c=>{const id=c[1].toLowerCase().trim();if(seen.has(id))return false;seen.add(id);return true});
+  const wordCredits=words.reduce((a,c)=>{const r=get(u,'word',c[1]);if(!r)return a;return a+(r.right>=2&&r.right>=r.wrong*2?1:r.right>=1&&r.right>=r.wrong?.35:0)},0);
+  const wordRight=words.filter(c=>{const r=get(u,'word',c[1]);return r&&r.right>=2&&r.right>=r.wrong*2}).length;
+  const patterns={1:['En otoño llueve.','Las hojas son amarillas.','Me llamo Franek.'],2:['Hoy hace frío.','Tengo un libro.','Llevo una bufanda.'],3:['Veo una mariposa.','Me gusta jugar al fútbol.','Quiero agua, por favor.'],4:['En verano hace calor.','Bebo agua.','Voy a la playa.']}[u];
+  const sentenceCredits=patterns.reduce((a,es)=>{const r=get(u,'sentence',es);return a+(r?(r.right>=2&&r.right>=r.wrong*2?1:r.right>=1&&r.right>=r.wrong?.35:0):0)},0);
+  const sentenceRight=patterns.filter(es=>{const r=get(u,'sentence',es);return r&&r.right>=2&&r.right>=r.wrong*2}).length;
+  const check=data.checkpoints[u]||{school:0,a1:0};
+  const pct=Math.min(100,Math.round(70*wordCredits/Math.max(1,words.length)+20*sentenceCredits/patterns.length+10*((check.school||0)>=85?1:0)));
+  return {pct,wordRight,total:words.length,sentenceRight,words:70*wordCredits/Math.max(1,words.length),sentences:20*sentenceCredits/patterns.length,checkpoint:check.school||0};
+ }
+ function draw(){const grid=document.getElementById('s8SeasonGrid');if(!grid)return;const active=Number(document.getElementById('uxUnit').value)||1;grid.replaceChildren();for(const u of [1,2,3,4]){const p=progress(u),b=document.createElement('button');b.type='button';b.className='s8-season'+(u===active?' selected':'');b.setAttribute('aria-pressed',String(u===active));b.innerHTML='<span class="s8-emoji">'+({1:'🍂',2:'❄️',3:'🌸',4:'☀️'}[u])+'</span><strong>'+({1:'Otoño',2:'Invierno',3:'Primavera',4:'Verano'}[u])+'</strong><small>'+({1:'1 · Start i podstawy',2:'2 · Zdania i dom',3:'3 · Codzienne rozmowy',4:'4 · Utrwalanie A1'}[u])+'</small><div class="s8-meter"><div class="s8-fill" style="width:'+p.pct+'%"></div></div><small>'+p.pct+'% rozdziału</small>';b.onclick=()=>{const sel=document.getElementById('uxUnit');sel.value=u;sel.dispatchEvent(new Event('change',{bubbles:true}));draw();const daily=document.getElementById('s8FocusSeason');daily.value=u;daily.dispatchEvent(new Event('change'))};grid.append(b)}
+ const p=progress(active),dest=document.getElementById('s8JourneySummary');dest.textContent=`🌱 ${window.frankaSeasons8.names[active]} · ${p.pct}% opanowania rozdziału · ${p.wordRight}/${p.total} słówek dobrze utrwalonych. Jeden wspólny postęp dla materiału szkolnego i A1. (Sprawdzian szkolny jest oceniany osobno tylko wewnętrznie.)`;
+ }
+ window.frankaJourney8={get,result,checkpoint,progress,draw};
+ // Hook existing learning paths; do not read/migrate legacy performance into journey percentages.
+ const oldResult=recordResult;recordResult=function(u,card,ok,source){oldResult(u,card,ok,source);if(card?.[1])result(u,'word',card[1],ok)};
+ window.addEventListener('franka:s7sentence',e=>{const x=e.detail;if(x?.es)result(x.u,'sentence',x.es,!!x.correct)});
+ window.addEventListener('franka:s8checkpoint',e=>{const x=e.detail;if(x)checkpoint(x.u,x)});
+ document.getElementById('uxUnit').addEventListener('change',draw);
+ draw();
+})();
+</script>
+<script>
 /* Sprint 7 — Smart Learning 2.0: additive, compatible with previous progress keys. */
 (function(){
 'use strict';
@@ -718,43 +812,64 @@ function reviewSentence(u,es,pl,correct,kind){const key=id(u,es),now=Date.now();
 window.addEventListener('franka:s7sentence',e=>{const x=e.detail;if(!x||!x.es)return;reviewSentence(x.u,x.es,x.pl,!!x.correct,x.kind||'listening')});
 window.addEventListener('franka:s7school',e=>{const x=e.detail;if(!x||!x.es)return;const key=id(x.u,x.es),r=data.schoolTopics[key]||{u:x.u,es:x.es,pl:x.pl,right:0,wrong:0};r.right+=x.correct?1:0;r.wrong+=x.correct?0:1;r.last=Date.now();data.schoolTopics[key]=r;store();draw()});
 function allSchool(){return Object.values(data.schoolTopics)}
-function schoolWords(){const memory=load(MAIN).mastery||{};const out=[];
- // Keep school chapters first; never mistake extra A1 as confirmed school content.
- for(let u=1;u<=4;u++){for(const c of units[u]?.cards||[]){const key=id(u,c[1]);const r=memory[key];const sr=data.schoolTopics[key];if(((sr?.wrong>0)&&(!r||r.streak<2)) || (r?.wrong>0&&r?.source==='school-checkpoint'&&r.streak<2) || (r&&r.due<=Date.now()))out.push({kind:'word',u,es:c[1],pl:c[2],icon:c[0],due:r?.due||0,weight:(sr?.wrong||0)*3+(r?.wrong||0),source:sr?'checkpoint':'powtórka'})}}
- return out.sort((a,b)=>(b.weight-a.weight)||(a.due-b.due));
+
+function buildPlan(){
+ const u=Number($('s8FocusSeason')?.value||$('uxUnit').value||1),J=window.frankaJourney8,all=units[u].cards;
+ const normalize=x=>x.normalize('NFC').trim().toLocaleLowerCase('es').replace(/\s+/g,' ');
+ const rows=all.map(c=>({kind:'word',u,es:c[1],pl:c[2],icon:c[0],status:J?.get(u,'word',c[1])}));
+ const pending=rows.filter(x=>x.status&&(x.status.wrong>x.status.right||x.status.next<=Date.now())).sort((a,b)=>(b.status.wrong-b.status.right)||(a.status.next-b.status.next));
+ const fresh=rows.filter(x=>!x.status);
+ const today=Math.floor(Date.now()/86400000);
+ const rotate=(arr,n)=>arr.length?arr.slice(n%arr.length).concat(arr.slice(0,n%arr.length)):[];
+ const schoolFirst=arr=>arr.sort((a,b)=>(window.frankaSeasons8.origin[u+'|'+normalize(a.es)]==='rozszerzenie A1')-(window.frankaSeasons8.origin[u+'|'+normalize(b.es)]==='rozszerzenie A1'));
+ const freshBySchool=schoolFirst([...fresh]);
+ const sentences=newSentences().filter(x=>x.u===u);
+ const newSentence=sentences.filter(x=>!J?.get(u,'sentence',x.es));
+ const oldSentence=sentences.filter(x=>{const r=J?.get(u,'sentence',x.es);return r&&(r.wrong>r.right||r.next<=Date.now())});
+ const queue=[],seen=new Set();function add(arr,n){for(const x of arr){const k=x.kind+'|'+normalize(x.es);if(!seen.has(k)){seen.add(k);queue.push(x);if(--n<=0)break}}}
+ add(pending,2);add(rotate(freshBySchool,today),3);
+ if(queue.filter(x=>x.kind==='word').length<5)add(rows.filter(x=>!seen.has(x.kind+'|'+normalize(x.es))),5-queue.filter(x=>x.kind==='word').length);
+ add(oldSentence,1);add(rotate(newSentence,today),1);
+ if(queue.filter(x=>x.kind==='sentence').length<2)add(rotate(sentences,today),2-queue.filter(x=>x.kind==='sentence').length);
+ return queue.slice(0,7);
 }
-function pendingSentences(){return Object.values(data.sentences).filter(r=>r.wrong>0||r.due<=Date.now()).sort((a,b)=>(b.wrong-a.wrong)||(a.due-b.due))}
-function newSentences(){// Only sample phrases already shipped as learning exercises in the accepted version.
-return [
-[1,'En otoño llueve.','Jesienią pada deszcz.','🌧️'],[1,'Las hojas son amarillas.','Liście są żółte.','🍂'],[1,'Veo un árbol.','Widzę drzewo.','🌳'],
-[2,'Hoy hace frío.','Dziś jest zimno.','🥶'],[2,'Llevo una bufanda.','Mam na sobie szalik.','🧣'],
-[3,'Veo una mariposa.','Widzę motyla.','🦋'],[3,'Me gusta jugar al fútbol.','Lubię grać w piłkę nożną.','⚽'],
-[4,'En verano hace calor.','Latem jest gorąco.','☀️'],[4,'Bebo agua.','Piję wodę.','💧']].map(([u,es,pl,icon])=>({kind:'sentence',u,es,pl,icon,due:0,wrong:0}))}
-function freshWords(){const mem=load(MAIN).mastery||{};const all=[];for(let u=1;u<=4;u++)for(const c of units[u]?.cards||[]){if(!mem[id(u,c[1])])all.push({kind:'word',u,es:c[1],pl:c[2],icon:c[0],due:0,weight:0,source:'nowe'})}return all}
-function buildPlan(){const w=schoolWords(),s=pendingSentences(),fresh=freshWords();const sentenceAll=newSentences();let sent=[...s.map(x=>({...x,kind:'sentence'})),...sentenceAll.filter(x=>!data.sentences[id(x.u,x.es)])];const unique=new Set(),queue=[];function add(arr,n){for(const x of arr){const k=x.kind+id(x.u,x.es);if(!unique.has(k)){unique.add(k);queue.push(x);if(--n===0)break}}}
- add(w,4);if(queue.filter(x=>x.kind==='word').length<4)add(fresh,4-queue.filter(x=>x.kind==='word').length);
- add(sent,2);return queue.slice(0,6)}
+function newSentences(){return [
+[1,'En otoño llueve.','Jesienią pada deszcz.','🌧️'],[1,'Las hojas son amarillas.','Liście są żółte.','🍂'],[1,'Me llamo Franek.','Mam na imię Franek.','👋'],
+[2,'Hoy hace frío.','Dziś jest zimno.','🥶'],[2,'Tengo un libro.','Mam książkę.','📘'],[2,'Llevo una bufanda.','Mam na sobie szalik.','🧣'],
+[3,'Veo una mariposa.','Widzę motyla.','🦋'],[3,'Me gusta jugar al fútbol.','Lubię grać w piłkę nożną.','⚽'],[3,'Quiero agua, por favor.','Poproszę wodę.','💧'],
+[4,'En verano hace calor.','Latem jest gorąco.','☀️'],[4,'Bebo agua.','Piję wodę.','💧'],[4,'Voy a la playa.','Idę na plażę.','🏖️']].map(([u,es,pl,icon])=>({kind:'sentence',u,es,pl,icon}))}
 const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b};
 function n(tag,cl,content){const e=document.createElement(tag);if(cl)e.className=cl;if(content!==undefined)e.textContent=content;return e}
 function b(text,onclick,cls='secondary'){const x=n('button',cls,text);x.type='button';x.onclick=onclick;return x}
 let session=null;
-function draw(){const plan=buildPlan(),root=$('s7Plan');root.replaceChildren();const words=plan.filter(x=>x.kind==='word'),ss=plan.filter(x=>x.kind==='sentence');const school=allSchool().filter(x=>x.wrong>0);
-const desc=[['📚',`${words.length} słówka`,school.length?'W tym trudności ze szkolnych sprawdzianów':'Powtórki i nowe słówka'],['🗣️',`${ss.length} krótkie zdania`,'Rozumiem całe wypowiedzi'],['🎮','Memory na koniec','Ulubiona gra po sesji']];for(const [ic,t,sub] of desc){const row=n('div','s7-plan-row');const left=n('div');left.append(n('strong','',ic+' '+t),n('small','',sub));row.append(left);root.append(row)}
-$('s7DailyStart').disabled=!plan.length;$('s7DailyStart').textContent='▶ Zacznij krótką sesję';
-const weak=$('s7WeakTopics');weak.replaceChildren();const grouped={};for(const x of allSchool()){if(!grouped[x.u])grouped[x.u]=[];grouped[x.u].push(x)}
-let found=false;for(const u of [1,2,3,4]){const entries=grouped[u]||[];if(!entries.length)continue;found=true;const mem=load(MAIN).mastery||{};const wrong=entries.filter(x=>x.wrong>0&&(mem[id(u,x.es)]?.streak||0)<2).sort((a,b)=>b.wrong-a.wrong);const last=load(S6).school?.[u]?.history?.[0];const row=n('div','s7-topic');row.append(n('strong','',(units[u]?.title||'Rozdział')+' — '+(last?last.percent+'% w ostatnim teście':'ćwiczone słowa')));row.append(n('small','',wrong.length?'Do przećwiczenia: '+wrong.slice(0,4).map(x=>x.pl).join(', '):'Brak błędnych odpowiedzi w zapisanych wynikach.'));weak.append(row)}
-if(!found){weak.append(n('p','small','Rozwiąż szkolny checkpoint, a tutaj zobaczysz trudniejsze słowa i zagadnienia. Wcześniejszych wyników nie odgadujemy.'))}
+
+function draw(){const plan=buildPlan(),root=$('s7Plan');root.replaceChildren();const words=plan.filter(x=>x.kind==='word'),ss=plan.filter(x=>x.kind==='sentence'),fresh=words.filter(x=>!x.status);
+ const desc=[['🆕',`${fresh.length} nowe słówka`,'Poznaj i wypowiedz na głos'],['🔁',`${words.length-fresh.length} powtórki`,'Przypomnij wcześniejsze słowa'],['🗣️',`${ss.length} krótkie zdania`,'Rozumienie ze słuchu'],['🎮','Memory na zakończenie','Zagraj w ulubioną grę']];
+ for(const [ic,t,sub] of desc){const row=n('div','s7-plan-row'),left=n('div');left.append(n('strong','',ic+' '+t),n('small','',sub));row.append(left);root.append(row)}
+ $('s7DailyStart').disabled=!plan.length;
+ const u=Number($('s8FocusSeason').value),sum=window.frankaJourney8?.progress(u);
+ $('s8DailyTip').textContent=`${window.frankaSeasons8.names[u]} · ${sum?sum.pct:0}% postępu. Najpierw materiał szkolny, następnie nowe słowa A1.`;
+ const weak=$('s7WeakTopics');weak.replaceChildren();const difficult=(units[u]?.cards||[]).filter(c=>{const r=window.frankaJourney8?.get(u,'word',c[1]);return r&&r.wrong>r.right}).slice(0,5);
+ weak.append(n('p','small',difficult.length?'Do powtórki: '+difficult.map(c=>c[2]).join(', '):'Nie ma obecnie trudniejszych słówek w tym rozdziale. Możesz poznać nowe!'));
 }
 function show(){if(!session)return;const item=session.queue[session.i];$('s7SessionFeedback').textContent='';$('s7NextWrap').hidden=true;const body=$('s7SessionBody');body.replaceChildren();if(!item){const correct=session.ok;const total=session.queue.length;body.append(n('h3','','🏆 Brawo, Franek!'),n('p','',`Ukończone zadania: ${total}. Poprawne odpowiedzi: ${correct}.`));$('s7SessionProgress').textContent='Sesja zakończona';const next=b('🧠 Zagraj w Memory',()=>{$('s7Session').hidden=true;$('uxMemory').click()});body.append(next);data.dailyHistory.unshift({day:new Date().toISOString().slice(0,10),correct,total});data.dailyHistory=data.dailyHistory.slice(0,30);store();draw();session=null;return}
 session.answered=false;$('s7SessionProgress').textContent=`Zadanie ${session.i+1} z ${session.queue.length} · ${item.kind==='word'?'Słówko':'Zdanie'}`;
 const pic=n('div','s7-illustration',item.icon||'💬');const question=n('p','s7-question',item.kind==='sentence'?'🎧 Posłuchaj całego zdania':item.es);body.append(pic,question,b('🔊 Posłuchaj',()=>speak(item.es),'epic-listen'));
 const possible=item.kind==='word'?(units[item.u]?.cards||[]).map(x=>x[2]):newSentences().map(x=>x.pl);
-const alts=[...new Set(possible.filter(x=>x!==item.pl))];const m=load(MAIN).mastery?.[id(item.u,item.es)];const choicesCount=item.kind==='sentence'?3:(m?.wrong>m?.right?2:m?.streak>=3?4:3);const choices=shuffle([item.pl,...shuffle(alts).slice(0,choicesCount-1)]);
-const box=n('div','s7-answers');for(const choice of choices){const button=b(choice,()=>{if(!session||session.answered)return;session.answered=true;const ok=choice===item.pl;if(ok)session.ok++;
+const alts=[...new Set(possible.filter(x=>x!==item.pl))];const m=window.frankaJourney8?.get(item.u,item.kind,item.es);const choicesCount=item.kind==='sentence'?3:(m?.wrong>m?.right?2:m?.streak>=3?4:3);const choices=shuffle([item.pl,...shuffle(alts).slice(0,choicesCount-1)]);
+const box=n('div','s7-answers');
+const novel=!window.frankaJourney8?.get(item.u,item.kind,item.es);
+if(novel){
+ const intro=n('div','s8-daily-tip',`🆕 Nowy materiał: ${item.es} — ${item.pl}. Posłuchaj i powtórz na głos, potem spróbuj quizu.`);
+ const start=b('✅ Zapamiętam — sprawdź mnie',()=>{intro.hidden=true;start.hidden=true;box.hidden=false},'epic-primary');
+ box.hidden=true;body.append(intro,start);
+}
+for(const choice of choices){const button=b(choice,()=>{if(!session||session.answered)return;session.answered=true;const ok=choice===item.pl;if(ok)session.ok++;
 if(item.kind==='word')recordResult(item.u,units[item.u].cards.find(c=>c[1]===item.es),ok,'daily-session');else reviewSentence(item.u,item.es,item.pl,ok,'daily-listening');
 for(const other of box.querySelectorAll('button')){other.disabled=true;if(other.textContent===item.pl)other.classList.add('good');else if(other===button&&!ok)other.classList.add('bad')}
 $('s7SessionFeedback').textContent=ok?'✅ Świetnie!':'❌ Poprawna odpowiedź: '+item.pl;$('s7NextWrap').hidden=false;$('s7Next').textContent=session.i+1===session.queue.length?'🏆 Zobacz wynik':'➡️ Następne zadanie';},'secondary');box.append(button)}body.append(box);
 }
+$('s8FocusSeason').onchange=()=>{draw()};
 $('s7DailyStart').onclick=()=>{const queue=buildPlan();if(!queue.length)return;session={queue,i:0,ok:0,answered:false};$('s7Session').hidden=false;show();$('s7Session').scrollIntoView({behavior:'smooth',block:'start'})};
 $('s7Next').onclick=()=>{if(!session||!session.answered)return;session.i++;show()};
 $('s7SessionClose').onclick=()=>{session=null;$('s7Session').hidden=true;draw()};
