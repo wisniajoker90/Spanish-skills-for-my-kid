@@ -155,6 +155,12 @@
 @media(max-width:530px){.s12-memory-picture{font-size:2.2rem}.s12-memory-word{font-size:.76rem}}
 </style><style id="s13-style">
 .s13-exam{margin:12px 0;border:1px solid #d4e3d3;border-radius:13px;padding:11px 13px;background:#f8fbf5}.s13-exam summary{font-weight:800;cursor:pointer}.s13-exam-controls{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin:12px 0}.s13-exam-controls label{display:flex;flex-direction:column;gap:5px;font-weight:700;font-size:.92rem}.s13-exam-controls input{font:inherit;padding:9px;border:1px solid #accdbb;border-radius:9px;background:#fff}.s13-exam button{min-height:40px}.s13-due{color:#286851;font-weight:700}
+</style><style id="s14-style">
+.s14-next{border:2px solid #e5cb84;background:#fff9e8;border-radius:15px;padding:13px 16px;margin:12px 0;font-size:.95rem}.s14-next strong{color:#735116}.s14-next p{margin:5px 0}.s14-next .s14-goal{font-weight:700;color:#805d23}
+.s14-showcase,.s14-week{border:1px solid #cfe2d6;border-radius:15px;padding:13px 15px;margin:12px 0;background:#f8fbf8}.s14-showcase summary,.s14-week summary{font-weight:850;cursor:pointer;padding:3px 0}.s14-showcase h4{margin:15px 0 9px}
+.s14-badges{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:13px}.s14-badge{border-radius:13px;border:1px solid #d8e2d8;background:#fff;padding:13px 9px;text-align:center;display:grid;gap:5px;align-content:start}.s14-badge.locked{background:#f4f4f1;color:#6a746c}.s14-badge .s14-emoji{font-size:2rem}.s14-badge strong{font-size:.91rem}.s14-badge small{font-size:.78rem;line-height:1.3}.s14-badge progress{width:100%;accent-color:#208e67}.s14-trophies{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.s14-trophy{text-align:center;padding:12px 4px;border-radius:12px;background:#fff;border:1px solid #e0e6d9;font-size:.86rem}.s14-trophy span{display:block;font-size:1.8rem}.s14-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:13px}.s14-stat{border-radius:12px;background:#eaf4ea;text-align:center;padding:10px 5px}.s14-stat strong{display:block;font-size:1.35rem;color:#24684e}.s14-stat small{display:block;font-size:.75rem}.s14-celebrate{animation:s14Pop .6s ease-out}.s14-toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1b6a4e;color:white;padding:14px 19px;border-radius:15px;z-index:10000;max-width:90vw;text-align:center;font-weight:850;box-shadow:0 5px 19px #0003}@keyframes s14Pop{0%{transform:scale(.9)}65%{transform:scale(1.04)}100%{transform:scale(1)}}
+@media(max-width:550px){.s14-badges{grid-template-columns:repeat(2,minmax(0,1fr))}.s14-trophies{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.s14-celebrate{animation:none}}
 </style></head>
 <body><div class="app">
 <header><div><h1>¡Hola, Franek!</h1><p>Hiszpańska przygoda • słuchaj, graj, powtarzaj • v13.0</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
@@ -179,6 +185,10 @@
 <div class="s8-single" id="s8JourneySummary" aria-live="polite">🌱 Wybierz porę roku, aby zobaczyć postęp.</div>
 <section class="s10-learning-path" aria-labelledby="s10PathTitle">
  <div class="s10-path-header"><div><h3 id="s10PathTitle">🧭 Moja droga krok po kroku</h3><p class="small">Najpierw słówka ze szkoły, potem nowe zdania i A1. Możesz też zawsze wybrać gry poniżej.</p></div><span class="pill" id="s10PathProgress">0/5 etapów</span></div>
+ <div class="s14-next" id="s14Next" aria-live="polite"></div>
+ <details class="s14-showcase" id="s14Showcase"><summary>🏅 Moje odznaki i puchary <span id="s14BadgeCount"></span></summary>
+ <p class="small">Odznaki zdobywasz za naukę i wytrwałość. Nie tracisz ich za przerwę.</p><div id="s14Badges" class="s14-badges"></div><h4>🏆 Puchary sezonów</h4><div id="s14Trophies" class="s14-trophies"></div></details>
+ <details class="s14-week" id="s14Week"><summary>📅 Mój tydzień z hiszpańskim</summary><div id="s14Weekly"></div></details>
  <div id="s10Steps" class="s10-steps" aria-label="Kolejne etapy rozdziału"></div>
  <div class="s10-lesson" id="s10Lesson" hidden><div class="s10-lesson-head"><strong id="s10LessonHeading"></strong><button class="secondary" type="button" id="s10LessonClose">✕ Zamknij</button></div><div id="s10LessonBody"></div><p id="s10LessonFeedback" aria-live="polite"></p></div>
  </section>
@@ -313,7 +323,7 @@ function recordResult(unitIndex,card,correct,source){
  r.level=correct?Math.min(5,(Number(r.level)||0)+1):0;
  const intervals=[0,1,3,7,14,30];
  r.due=now+(correct?intervals[r.level]*86400000:10*60000);
- r.last=now;r.source=source;map[key]=r;saveProgress();refreshSmart();
+ r.last=now;r.source=source;map[key]=r;saveProgress();window.dispatchEvent(new CustomEvent("franka:s14word",{detail:{correct:!!correct,source}}));refreshSmart();
 }
 function trainingState(u,card){
  const r=masteryMap()[trainingKey(u,card[1])];
@@ -697,7 +707,7 @@ try{const raw=JSON.parse(localStorage.getItem(savedKey)||'{}');if(raw&&typeof ra
 function save(){try{localStorage.setItem(savedKey,JSON.stringify(progress))}catch(e){}}
 function stat(topic){if(!progress[topic.id])progress[topic.id]={listeningCorrect:0,listeningAttempts:0,spoken:0};return progress[topic.id]}
 function newStat(t){const v=stat(t);if(!v.dialogs||typeof v.dialogs!=='object')v.dialogs={};if(!v.speaking||typeof v.speaking!=='object')v.speaking={};return v}
-function recordDialogue(t,d,quality){const st=newStat(t),key=d[0]+'|'+d[1],x=st.dialogs[key]||{practised:0,confident:0,needsHelp:0};x.practised++;if(quality==='yes')x.confident++;else x.needsHelp++;st.dialogs[key]=x;save();if(window.s12RefreshSkills)window.s12RefreshSkills()}
+function recordDialogue(t,d,quality){const st=newStat(t),key=d[0]+'|'+d[1],x=st.dialogs[key]||{practised:0,confident:0,needsHelp:0};x.practised++;if(quality==='yes')x.confident++;else x.needsHelp++;st.dialogs[key]=x;save();window.dispatchEvent(new CustomEvent("franka:s14dialogue",{detail:{quality,question:d[0]}}));if(window.s12RefreshSkills)window.s12RefreshSkills()}
 function saveSpeaking(t,d){const st=newStat(t),key=d[0]+'|'+d[1],x=st.speaking[key]||{attempts:0};x.attempts++;st.speaking[key]=x;save();if(window.s12RefreshSkills)window.s12RefreshSkills()}
 function escapeText(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function renderSkills(){const root=$('s12SkillsBody');if(!root)return;const real=topics.filter((t,i)=>i===0||i===1||i===2||i===5);const defs=[
@@ -1037,7 +1047,7 @@ function draw(){
  weak.append(n('p','small',difficult.length?'Do powtórki: '+difficult.map(c=>c[2]).join(', '):'Na razie brak trudnych słówek — można poznawać kolejne!'));
  const date=$('s13ExamDate'),status=$('s13ExamStatus');date.value=examData[u]||'';status.textContent=exam?`✅ Przygotowanie aktywne do ${exam.date}. ${exam.days} dni do sprawdzianu.`:examData[u]?'Termin minął — ustaw nowy albo wyłącz przygotowanie.':'Tryb wyłączony. Codzienna nauka obejmuje szkołę i dodatkowe A1.';
 }
-function show(){if(!session)return;const item=session.queue[session.i];$('s7SessionFeedback').textContent='';$('s7NextWrap').hidden=true;const body=$('s7SessionBody');body.replaceChildren();if(!item){const correct=session.ok;const total=session.queue.length;body.append(n('h3','','🏆 Brawo, Franek!'),n('p','',`Ukończone zadania: ${total}. Poprawne odpowiedzi: ${correct}.`));$('s7SessionProgress').textContent='Sesja zakończona';const next=b('🧠 Zagraj w Memory',()=>{$('s7Session').hidden=true;$('uxMemory').click()});body.append(next);data.dailyHistory.unshift({day:new Date().toISOString().slice(0,10),correct,total});data.dailyHistory=data.dailyHistory.slice(0,30);store();draw();session=null;return}
+function show(){if(!session)return;const item=session.queue[session.i];$('s7SessionFeedback').textContent='';$('s7NextWrap').hidden=true;const body=$('s7SessionBody');body.replaceChildren();if(!item){const correct=session.ok;const total=session.queue.length;body.append(n('h3','','🏆 Brawo, Franek!'),n('p','',`Ukończone zadania: ${total}. Poprawne odpowiedzi: ${correct}.`));$('s7SessionProgress').textContent='Sesja zakończona';const next=b('🧠 Zagraj w Memory',()=>{$('s7Session').hidden=true;$('uxMemory').click()});body.append(next);data.dailyHistory.unshift({day:new Date().toISOString().slice(0,10),correct,total});data.dailyHistory=data.dailyHistory.slice(0,30);store();window.dispatchEvent(new CustomEvent("franka:s14daily",{detail:{correct,total}}));draw();session=null;return}
 session.answered=false;$('s7SessionProgress').textContent=`Zadanie ${session.i+1} z ${session.queue.length} · ${item.kind==='word'?'Słówko':'Zdanie'}`;
 const pic=n('div','s7-illustration',item.icon||'💬');const question=n('p','s7-question',item.kind==='sentence'?'🎧 Posłuchaj całego zdania':item.es);body.append(pic,question,b('🔊 Posłuchaj',()=>speak(item.es),'epic-listen'));
 const possible=item.kind==='word'?(units[item.u]?.cards||[]).map(x=>x[2]):newSentences().map(x=>x.pl);
@@ -1115,7 +1125,7 @@ let session=null,showAll=false;
 function h(tag,cl,txt){const e=document.createElement(tag);if(cl)e.className=cl;if(txt!==undefined)e.textContent=txt;return e}
 function button(txt,onClick,cl='secondary'){const b=h('button',cl,txt);b.type='button';b.onclick=onClick;return b}
 function shuffle(a){const x=[...a];for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x}
-function complete(u,s,details){data[u]??={};data[u][s.id]={done:true,date:new Date().toISOString().slice(0,10),...details};save();draw();
+function complete(u,s,details){data[u]??={};data[u][s.id]={done:true,date:new Date().toISOString().slice(0,10),...details};save();window.dispatchEvent(new CustomEvent("franka:s14stage",{detail:{u,kind:s.kind,id:s.id}}));draw();
  const focus=$('s8FocusSeason');if(focus&&Number(focus.value)===Number(u))focus.dispatchEvent(new Event('change'));
 }
 function display(){if(!session)return;const x=session,body=$('s10LessonBody');body.replaceChildren();$('s10LessonFeedback').textContent='';$('s10LessonFeedback').className='';
@@ -1168,6 +1178,50 @@ window.frankaPath10={stages,draw,dailyCards(u){const list=stages(u),set=new Set(
  const filtered=unique(u).filter(c=>set.has(normal(c[1])));return filtered.length?filtered:unique(u).slice(0,5)
 }};
 draw();
+})();
+</script>
+<script>
+/* Sprint 14 — Level Up: achievements from real learning results; independent storage. */
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const KEY='hiszpanskiFrankaLevel14V1',PATH='hiszpanskiFrankaPath10V2',MAIN='hiszpanskiFrankaProgressV1',A1='hiszpanskiFrankaA1ProgressV1',S7='hiszpanskiFrankaSmart7V1';
+function read(k){try{return JSON.parse(localStorage.getItem(k)||'{}')||{}}catch(e){return {}}}
+let state=read(KEY);if(!state||typeof state!=='object'||Array.isArray(state))state={};
+if(!Array.isArray(state.events))state.events=[];if(!state.badges||typeof state.badges!=='object')state.badges={};
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function evt(kind){const day=today();state.events.push({day,kind});state.events=state.events.slice(-700);save();render()}
+const names={1:'Otoño',2:'Invierno',3:'Primavera',4:'Verano'};
+const icons={1:'🍂',2:'❄️',3:'🌸',4:'☀️'};
+function allStages(){const progress=read(PATH),out=[];for(const u of [1,2,3,4]){const v=progress[u]||{};for(const [k,r] of Object.entries(v)){if(r&&r.done)out.push({u,k,kind:k.split(':')[0],date:r.date})}}return out}
+function mastered(){const p=read(MAIN),m=p.mastery||{};return Object.values(m).filter(r=>r&&r.right>=3&&r.right/(Math.max(1,r.right+r.wrong))>=.8&&r.streak>=2).length}
+function confident(){const p=read(A1);let n=0;for(const x of Object.values(p)){if(!x||!x.dialogs)continue;for(const d of Object.values(x.dialogs))if(d&&d.confident>0)n++}return n}
+function weekStart(d){const c=new Date(d.getFullYear(),d.getMonth(),d.getDate());c.setDate(c.getDate()-(c.getDay()+6)%7);return c}
+function daysThisWeek(){const mon=weekStart(new Date()),end=new Date(mon);end.setDate(end.getDate()+7);const seen=new Set();const add=s=>{if(!/^\d{4}-\d\d-\d\d$/.test(s||''))return;const d=new Date(s+'T12:00:00');if(d>=mon&&d<end)seen.add(s)};
+state.events.forEach(e=>add(e.day));allStages().forEach(s=>add(s.date));const p=read(S7);(p.dailyHistory||[]).forEach(s=>add(s.day));return seen.size}
+const definitions=[
+{id:'first',icon:'👣',name:'Pierwsze kroki',text:'Zalicz pierwszą lekcję',target:1,count:()=>allStages().filter(x=>x.kind==='school'||x.kind==='a1').length},
+{id:'words',icon:'📚',name:'Mistrz słówek',text:'Utrwal 25 słówek',target:25,count:mastered},
+{id:'memory',icon:'🧠',name:'Superpamięć',text:'Zalicz 10 etapów powtórkowych',target:10,count:()=>allStages().filter(x=>x.kind==='review').length},
+{id:'talk',icon:'🗣️',name:'Mały rozmówca',text:'Odpowiedz samodzielnie na 5 różnych pytań',target:5,count:confident},
+{id:'habit',icon:'🌟',name:'Systematyczny uczeń',text:'Ucz się w 3 różne dni jednego tygodnia',target:3,count:daysThisWeek},
+{id:'cup',icon:'🏆',name:'Mistrz sezonu',text:'Zdobądź pierwszy puchar sezonowy',target:1,count:()=>allStages().filter(x=>x.k==='finale-v1').length}
+];
+function node(tag,cls,txt){const el=document.createElement(tag);if(cls)el.className=cls;if(txt!==undefined)el.textContent=txt;return el}
+function trophy(u){return allStages().some(x=>x.u===u&&x.k==='finale-v1')}
+function unlock(){let changed=false;for(const def of definitions){if(!state.badges[def.id]&&def.count()>=def.target){state.badges[def.id]={date:today()};changed=true;if(state.initialized){const title='🏅 Odznaka: '+def.name+'! ¡Muy bien!';{const pop=node('div','s14-toast s14-celebrate',title);pop.setAttribute('role','status');document.body.append(pop);setTimeout(()=>pop.remove(),3200)}}}}if(!state.initialized){state.initialized=true;changed=true}if(changed)save()}
+function render(){if(!$('s14Badges'))return;unlock();const medals=$('s14Badges');medals.replaceChildren();let total=0;for(const def of definitions){const won=!!state.badges[def.id];if(won)total++;const card=node('div','s14-badge'+(won?'':' locked'));card.append(node('span','s14-emoji',won?def.icon:'🔒'),node('strong','',def.name),node('small','',def.text));const count=Math.min(def.target,def.count());card.append(node('small','',won?'✅ Zdobyta '+state.badges[def.id].date:`${count}/${def.target}`));if(!won){const bar=node('progress');bar.max=def.target;bar.value=count;bar.setAttribute('aria-label',def.name);card.append(bar)}medals.append(card)}
+$('s14BadgeCount').textContent=`(${total}/6)`;
+const cups=$('s14Trophies');cups.replaceChildren();for(const u of [1,2,3,4]){const won=trophy(u),d=node('div','s14-trophy');d.append(node('span','',won?'🏆':'🔒'),node('strong','',`${icons[u]} ${names[u]}`));cups.append(d)}
+const stages=window.frankaPath10?.stages;const u=Number($('uxUnit')?.value||1);if(stages){const list=stages(u),pathData=read(PATH)[u]||{};const idx=list.findIndex(s=>!pathData[s.id]?.done),next=$('s14Next');next.replaceChildren();if(idx<0){next.append(node('strong','',`🏆 ${names[u]} — sezon ukończony!`),node('p','','Możesz wracać do gier i powtórek.'))}else{const s=list[idx];next.append(node('strong','',`🎯 Najbliższy cel: ${s.emoji} ${s.title}`),node('p','',`Etap ${idx+1} z ${list.length}. ${s.note}.`));const preview=list.slice(idx+1,idx+3);if(preview.length)next.append(node('p','s14-goal','Dalej: '+preview.map(x=>x.emoji+' '+x.title).join(' · ')))}const missing=definitions.filter(d=>!state.badges[d.id]).sort((a,b)=>(b.count()/b.target)-(a.count()/a.target))[0];if(missing)next.append(node('p','s14-goal',`🏅 Następna odznaka: ${missing.name} (${Math.min(missing.target,missing.count())}/${missing.target})`))}
+const mon=weekStart(new Date()),iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;const end=new Date(mon);end.setDate(end.getDate()+7);
+const thisWeek=d=>{if(!/^\d{4}-\d\d-\d\d$/.test(d||''))return false;const v=new Date(d+'T12:00:00');return v>=mon&&v<end};
+const p=read(S7),daily=(p.dailyHistory||[]).filter(x=>thisWeek(x.day));const lessons=allStages().filter(x=>thisWeek(x.date)&&x.kind!=='finale'&&x.kind!=='checkpoint').length;const reviews=allStages().filter(x=>thisWeek(x.date)&&x.kind==='review').length;const w=$('s14Weekly');w.replaceChildren();const stats=node('div','s14-stats');for(const [v,t] of [[daysThisWeek(),'Dni nauki'],[lessons,'Zaliczone etapy'],[reviews,'Powtórki etapowe']]){const block=node('div','s14-stat');block.append(node('strong','',String(v)),node('small','',t));stats.append(block)}w.append(stats,node('p','small',`Ukończone sesje codzienne: ${daily.length}. Liczymy zapisane zdarzenia i ukończone etapy; pojedyncze kliknięcia nie są punktami.`),node('p','small','¡Muy bien! Każdy powrót do nauki się liczy. Nie tracisz żadnych nagród za przerwę.'));
+}
+for(const [name,kind] of [['franka:s14stage','stage'],['franka:s14dialogue','dialogue'],['franka:s14word','word'],['franka:s14daily','daily']])window.addEventListener(name,()=>evt(kind));
+$('uxUnit')?.addEventListener('change',render);window.addEventListener('storage',render);render();
+window.frankaLevel14={render,definitions,weekStart};
 })();
 </script>
 </body></html>
