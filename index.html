@@ -184,7 +184,7 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style></head>
 <body><div class="app">
-<header><div><h1>🇪🇸 Hiszpański Franka</h1><p>Małe kroki. Wielka przygoda. · v15.0</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
+<header><div><h1>🇪🇸 Hiszpański Franka</h1><p>Małe kroki. Wielka przygoda. · v15.1</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
 <main>
 <section class="home-screen panel" id="homeScreen"><h2>¡Vamos, Franek! 🇪🇸</h2><p>Jak chcesz się dzisiaj uczyć?</p><div class="home-tiles"><button data-enter="car">🚗<strong>Tryb samochodowy</strong><span>Słucham i powtarzam — bez patrzenia w ekran</span></button><button data-enter="learn">🎮<strong>Centrum nauki</strong><span>Fiszki, quizy i pięć gier</span></button></div></section><div hidden="" id="workArea"><nav class="home-nav"><button class="secondary" id="backHome">🏠 Menu główne</button><span id="modeLabel"></span></nav><div id="carArea"><section aria-labelledby="carTitle" class="car-mode"><h2 id="carTitle">🚗 Tryb samochodowy — 10 minut</h2><p>Aktywna nauka przez słuchanie: Franek usłyszy słowo lub zwrot po hiszpańsku, chwilę na odpowiedź i odpowiedź po polsku. Nie trzeba patrzeć na ekran ani niczego dotykać w trakcie jazdy.</p><label for="carUnit"><strong>Rozdział do słuchania</strong></label><br/><select id="carUnit"></select><div class="car-controls"><button id="carStart">▶ Rozpocznij 10 minut</button><button class="secondary" disabled="" id="carPause">⏸ Pauza</button><button class="secondary" disabled="" id="carStop">■ Zakończ</button></div><div aria-live="polite" class="car-status" id="carStatus" role="status">Gotowe do rozpoczęcia. Wybierz rozdział.</div><div aria-label="Postęp sesji" class="car-progress"><span id="carProgress"></span></div><p class="small" id="carClock">Pozostało: 10:00</p><div class="car-note"><strong>Bezpieczeństwo:</strong> kierowca nie powinien obsługiwać ekranu. Uruchom sesję przed ruszeniem lub poproś pasażera. Quiz z przyciskami jest dostępny wyłącznie po zaznaczeniu, że samochód stoi — aplikacja nie wykrywa ruchu pojazdu.</div><label class="mode" style="margin-top:12px"><input id="carParked" type="checkbox"/> Samochód stoi bezpiecznie — odblokuj quiz ekranowy</label><div class="car-controls"><button class="secondary" disabled="" id="carQuiz">🎯 Quiz (tylko na postoju)</button></div></section></div><div id="learnArea"><div class="notice ux-source-note"><strong>📚 Szkoła najpierw, potem droga do A1.</strong> Cztery etapy odpowiadają porom roku. Rozszerzenia A1 są dodatkowymi ćwiczeniami; nie przypisujemy ich podręcznikowi. Verano nadal wymaga potwierdzenia materiału szkolnego.</div>
 <div class="stats"><span class="pill">⭐ Punkty: <span id="points">0</span></span><span class="pill">✅ Umiem: <span id="learnedCount">0</span></span><span class="pill">🔁 Do powtórki: <span id="reviewCount">0</span></span><span class="pill">💾 Postępy zapisują się na tym urządzeniu</span></div>
@@ -252,7 +252,7 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 <section class="panel epic-games" hidden="" id="epicGames"><button class="secondary" id="uxCloseGames" type="button">← Wróć do wyboru ćwiczenia</button><h2>🎮 Gry edukacyjne</h2><p class="small">Wybierz rozdział, grę i poziom trudności.</p><div class="game-setup"><label>Rozdział <select id="epicUnit"></select></label><label>Poziom <select id="epicLevel"><option value="easy">⭐ Łatwy</option><option value="medium">⭐⭐ Średni</option><option value="hard">⭐⭐⭐ Trudny</option></select></label></div><div class="game-menu" id="epicMenu"><button data-epic="memory">🧠 Memory z ilustracjami</button><button data-epic="sentence-memory">🗣️ Memory ze zdaniami</button><button data-epic="audio">🎧 Zgadnij ze słuchu</button><button data-epic="match">🎯 Dopasuj pary</button><button data-epic="letters">🔤 Rozsypanka liter</button><button data-epic="timed">⏱️ Wyzwanie 60 sekund</button></div><div class="junior-setup"><label><input checked="" id="juniorMode" type="checkbox"/> 🌟 Rozsypanka Junior: obrazek, odsłuch i pomoc</label><p class="small">Dotyczy rozsypanki. Odznacz, aby grać w klasyczną wersję.</p></div><div class="epic-stage" hidden="" id="epicStage"><div class="stage-top"><h3 id="epicTitle"></h3><button class="secondary" id="epicExit">← Wybierz grę</button></div><p class="small" id="epicScore"></p><div id="epicContent"></div><p aria-live="polite" class="feedback" id="epicFeedback"></p></div></section><section class="parent-notes panel" id="parentNotes"><details><summary>ℹ️ Dla rodzica · urządzenia i informacje techniczne</summary><div class="crossplatform"><h3>Jedna aplikacja na wszystkie urządzenia</h3><p style="margin:0 0 12px">Aplikacja działa w przeglądarce na komputerze i urządzeniach mobilnych. Instalacja jako PWA i pełna praca offline to planowane funkcje, a nie obecny stan.</p><div class="platforms"><span>🖥️ Windows / Mac</span><span>🤖 Android</span><span>📱 iPhone / iPad</span></div><p class="small" style="margin:12px 0 0">Publikacja w App Store i Google Play to osobny etap; prototyp nie jest jeszcze opublikowaną aplikacją.</p></div><p class="small">Postępy są zapisane lokalnie w tej przeglądarce. Dostępność głosu hiszpańskiego zależy od urządzenia i połączenia.</p></details></section><footer>Wymowa zależy od głosu hiszpańskiego dostępnego na urządzeniu. Przycisk audio korzysta z wbudowanego syntezatora mowy, więc głos i działanie offline mogą różnić się między urządzeniami. W tej wersji nie ma jeszcze oryginalnych nagrań z podręcznika.</footer>
 </div></div></main></div>
 <script>
-(()=>{const $=id=>document.getElementById(id);let running=false,paused=false,remaining=600,cycleTimer=null,tickTimer=null,sessionUnit=1,sessionIndex=0;const format=n=>`${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`;function status(s){$('carStatus').textContent=s}function clearTimers(){clearTimeout(cycleTimer);clearInterval(tickTimer);cycleTimer=null;tickTimer=null}function stopSpeech(){if('speechSynthesis'in window)speechSynthesis.cancel()}function updateClock(){$('carClock').textContent='Pozostało: '+format(remaining);$('carProgress').style.width=((600-remaining)/600*100)+'%'}function speakLine(text,done){if(!('speechSynthesis'in window)){status('To urządzenie nie obsługuje syntezatora mowy.');return}const u=new SpeechSynthesisUtterance(text);u.lang='es-ES';u.rate=.82;const voices=speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.toLowerCase().startsWith('es'));if(voice)u.voice=voice;u.onend=()=>{if(running&&!paused&&done)done()};speechSynthesis.speak(u)}function nextCard(){if(!running||paused)return;if(remaining<=0){finish('Sesja zakończona! ¡Muy bien, Franek!');return}const cards=sessionUnit===-1?[1,2,3,4].flatMap(i=>units[i].cards):units[sessionUnit].cards;const card=cards[sessionIndex%cards.length];sessionIndex++;status('Słuchaj, powtórz na głos i odpowiedz, zanim usłyszysz tłumaczenie.');speakLine(card[1],()=>{cycleTimer=setTimeout(()=>{if(!running||paused)return;speakLine('¿Qué significa '+card[1]+'?',()=>{cycleTimer=setTimeout(()=>{if(!running||paused)return;speakLine(card[2],()=>{cycleTimer=setTimeout(nextCard,2500)})},4500)})},1600)});cycleTimer=setTimeout(()=>{if(running&&!paused&&!speechSynthesis.speaking)nextCard()},18000)}function finish(message){clearTimers();stopSpeech();running=false;paused=false;$('carStart').disabled=false;$('carPause').disabled=true;$('carStop').disabled=true;$('carPause').textContent='⏸ Pauza';status(message);if(remaining<=0){remaining=0;updateClock()}}function start(){clearTimers();stopSpeech();sessionUnit=Number($('carUnit').value);sessionIndex=0;remaining=600;running=true;paused=false;$('carStart').disabled=true;$('carPause').disabled=false;$('carStop').disabled=false;$('carPause').textContent='⏸ Pauza';updateClock();status('Sesja rozpoczęta: '+(sessionUnit===-1?'Wszystkie rozdziały':units[sessionUnit].title));tickTimer=setInterval(()=>{if(!running||paused)return;remaining--;updateClock();if(remaining<=0)finish('Sesja zakończona! ¡Muy bien, Franek!')},1000);nextCard()}$('carStart').addEventListener('click',start);$('carPause').addEventListener('click',()=>{if(!running)return;if(!paused){paused=true;clearTimeout(cycleTimer);stopSpeech();$('carPause').textContent='▶ Wznów';status('Pauza. Naciśnij „Wznów”, aby kontynuować.')}else{paused=false;$('carPause').textContent='⏸ Pauza';status('Wracamy do słuchania.');nextCard()}});$('carStop').addEventListener('click',()=>finish('Sesja zakończona wcześniej. Możesz rozpocząć ją ponownie.'));$('carParked').addEventListener('change',e=>{$('carQuiz').disabled=!e.target.checked;if(!e.target.checked&& !$('game').hidden)$('game').hidden=true});$('carQuiz').addEventListener('click',()=>{if(!$('carParked').checked){status('Quiz jest dostępny tylko po potwierdzeniu postoju.');return}if(running)finish('Sesja audio zatrzymana przed quizem.');$('startGame').click();$('game').scrollIntoView({behavior:'smooth',block:'start'})});updateClock()})();
+(()=>{const $=id=>document.getElementById(id);let running=false,paused=false,remaining=600,cycleTimer=null,tickTimer=null,sessionUnit=1,sessionIndex=0;const format=n=>`${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`;function status(s){$('carStatus').textContent=s}function clearTimers(){clearTimeout(cycleTimer);clearInterval(tickTimer);cycleTimer=null;tickTimer=null}function stopSpeech(){if('speechSynthesis'in window)speechSynthesis.cancel()}function updateClock(){$('carClock').textContent='Pozostało: '+format(remaining);$('carProgress').style.width=((600-remaining)/600*100)+'%'}function speakLine(text,done){if(!('speechSynthesis'in window)){status('To urządzenie nie obsługuje syntezatora mowy.');return}const u=new SpeechSynthesisUtterance(text);u.lang='es-ES';u.rate=.82;const voices=speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.toLowerCase().startsWith('es'));if(voice)u.voice=voice;u.onend=()=>{if(running&&!paused&&done)done()};speechSynthesis.speak(u)}function nextCard(){if(!running||paused)return;if(remaining<=0){finish('Sesja zakończona! ¡Muy bien, Franek!');return}const cards=sessionUnit===-1?[1,2,3,4].flatMap(i=>units[i].cards):units[sessionUnit].cards;const card=cards[sessionIndex%cards.length];sessionIndex++;status('Słuchaj, powtórz na głos i odpowiedz, zanim usłyszysz tłumaczenie.');speakLine(card[1],()=>{cycleTimer=setTimeout(()=>{if(!running||paused)return;speakLine('¿Qué significa '+card[1]+'?',()=>{cycleTimer=setTimeout(()=>{if(!running||paused)return;speakLine(card[2],()=>{cycleTimer=setTimeout(nextCard,2500)})},4500)})},1600)});cycleTimer=setTimeout(()=>{if(running&&!paused&&!speechSynthesis.speaking)nextCard()},18000)}function finish(message){clearTimers();stopSpeech();running=false;paused=false;$('carStart').disabled=false;$('carPause').disabled=true;$('carStop').disabled=true;$('carPause').textContent='⏸ Pauza';status(message);if(remaining<=0){remaining=0;updateClock()}}function start(){clearTimers();stopSpeech();sessionUnit=Number($('carUnit').value);sessionIndex=0;remaining=600;running=true;paused=false;$('carStart').disabled=true;$('carPause').disabled=false;$('carStop').disabled=false;$('carPause').textContent='⏸ Pauza';updateClock();status('Sesja rozpoczęta: '+(sessionUnit===-1?'Wszystkie rozdziały':units[sessionUnit].title));tickTimer=setInterval(()=>{if(!running||paused)return;remaining--;updateClock();if(remaining<=0)finish('Sesja zakończona! ¡Muy bien, Franek!')},1000);nextCard()}$('carStart').addEventListener('click',start);$('carPause').addEventListener('click',()=>{if(!running)return;if(!paused){paused=true;clearTimeout(cycleTimer);stopSpeech();$('carPause').textContent='▶ Wznów';status('Pauza. Naciśnij „Wznów”, aby kontynuować.')}else{paused=false;$('carPause').textContent='⏸ Pauza';status('Wracamy do słuchania.');nextCard()}});$('carStop').addEventListener('click',()=>finish('Sesja zakończona wcześniej. Możesz rozpocząć ją ponownie.'));$('carParked').addEventListener('change',e=>{$('carQuiz').disabled=!e.target.checked;if(!e.target.checked&& !$('game').hidden)$('game').hidden=true});$('carQuiz').addEventListener('click',()=>{if(!$('carParked').checked){status('Quiz jest dostępny tylko po potwierdzeniu postoju.');return}if(running)finish('Sesja audio zatrzymana przed quizem.');$('startGame').click();window.frankaNav15_2?.go('carQuiz') || $('game').scrollIntoView({behavior:'smooth',block:'start'})});updateClock()})();
 </script>
 <script>
 
@@ -647,7 +647,7 @@ function begin(kind){const candidates=chooseCandidates(kind);if(!candidates.leng
  $('smartReview').hidden=true;
  alert(kind==='tricky'?'Na razie nie ma trudnych słówek. Ćwicz w grach, a aplikacja je wykryje.':'Nie ma dziś zaplanowanych powtórek w tym rozdziale. Świetna robota!');return}
  session={queue:candidates,index:0,answered:false,correct:0};$('smartReview').hidden=false;
- $('smartReviewTitle').textContent=kind==='tricky'?'🎯 Moje trudne słówka':'📆 Dzisiejsza powtórka';showQuestion();$('smartReview').scrollIntoView({behavior:'smooth',block:'start'})
+ $('smartReviewTitle').textContent=kind==='tricky'?'🎯 Moje trudne słówka':'📆 Dzisiejsza powtórka';showQuestion();window.frankaNav15_2?.go('review') || $('smartReview').scrollIntoView({behavior:'smooth',block:'start'})
 }
 function showQuestion(){if(!session)return;const item=session.queue[session.index];if(!item){
  $('smartReviewCounter').textContent='Powtórka zakończona';$('smartReviewPrompt').textContent=`Brawo! Poprawne odpowiedzi: ${session.correct}/${session.queue.length}`;
@@ -790,7 +790,7 @@ function showLearning(){
  if(isFoundation(unit)){document.dispatchEvent(new CustomEvent('franka:foundationStart',{detail:{index:unit-100}}))}
  if(kind!=='words'){const button=document.querySelector('[data-a1-view="'+kind+'"]');if(button)button.click()}
  try{localStorage.setItem(uxKey,JSON.stringify({unit,kind}))}catch(e){}
- refreshResume();$('uxLearningStage').scrollIntoView({behavior:'smooth',block:'start'});
+ refreshResume();window.frankaNav15_2?.go('learningStage') || $('uxLearningStage').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function refreshResume(){
  let v=null;try{v=JSON.parse(localStorage.getItem(uxKey)||'null')}catch(e){}
@@ -801,16 +801,16 @@ function refreshResume(){
 choice.onchange=()=>{choose(getUnit(),selected);$('uxLearningStage').hidden=true;$('epicGames').hidden=true};
 activities.forEach(b=>b.onclick=()=>{choose(getUnit(),b.dataset.uxActivity);$('uxLearningStage').hidden=true;$('epicGames').hidden=true});
 $('uxStart').onclick=showLearning;
-$('uxBackToChoice').onclick=()=>{$('uxLearningStage').hidden=true;$('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
+$('uxBackToChoice').onclick=()=>{$('uxLearningStage').hidden=true;window.frankaNav15_2?.go('chooser') || $('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
 $('uxResume').onclick=()=>{let v;try{v=JSON.parse(localStorage.getItem(uxKey)||'null')}catch(e){}if(v&&supported(v.unit,v.kind)){choose(v.unit,v.kind);showLearning()}};
 function openGames(startMemory){
  const n=getUnit();
  if(n>=6){$('uxActivityNote').textContent='Gry Memory i pozostałe gry są obecnie dostępne dla rozdziałów szkolnych i Daily chat. Dla wybranego tematu A1 wybierz Fiszki lub Quiz tematyczny.';return}
  $('epicUnit').value=String(n);$('epicGames').hidden=false;
  if(startMemory){const exit=$('epicExit');if(!$('epicStage').hidden)exit.click();const b=document.querySelector('[data-epic="memory"]');if(b)b.click()}
- $('epicGames').scrollIntoView({behavior:'smooth',block:'start'});
+ window.frankaNav15_2?.go('games') || $('epicGames').scrollIntoView({behavior:'smooth',block:'start'});
 }
-$('uxCloseGames').onclick=()=>{$('epicGames').hidden=true;$('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
+$('uxCloseGames').onclick=()=>{$('epicGames').hidden=true;window.frankaNav15_2?.go('chooser') || $('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
 $('uxGames').onclick=()=>openGames(false);
 $('uxMemory').onclick=()=>openGames(true);
 const initial=1; // Sprint 8 starts a new journey; no migration of earlier progress.
@@ -869,7 +869,7 @@ function openGame(type,u,incorrectOnly=false){
   $('s6TestTitle').textContent='🗣️ Wyzwanie A1: '+units[u].title;
   $('s6TestSource').textContent=(u===4?'⚠️ Verano: dodatkowe ćwiczenia komunikacyjne A1, niezweryfikowane jako materiał szkolny. ':'')+'Przykładowe zdania A1 opracowane do nauki, nie cytat z książki. Odpowiedź ustną oceń samodzielnie lub z rodzicem.';
  }
- showQuestion();s6Panel.scrollIntoView({behavior:'smooth',block:'start'});
+ showQuestion();window.frankaNav15_2?.go('checkpoint') || s6Panel.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function showQuestion(){
  feedback.textContent='';actions.replaceChildren();answer.replaceChildren();if(!test)return;
@@ -916,7 +916,7 @@ function finishTest(){
 }
 $('s6SchoolStart').addEventListener('click',()=>{const u=Number($('uxUnit').value);if(u===0||u===5||u>=6){$('s6SchoolNote').textContent='Checkpointy szkolne: Otoño, Invierno, Primavera. Verano: test ćwiczeniowy z niezweryfikowanego materiału.';return}openGame('school',u)});
 $('s6A1Start').addEventListener('click',()=>{const u=Number($('uxUnit').value);openGame('a1',u)});
-$('s6TestClose').onclick=()=>{hideGame();$('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
+$('s6TestClose').onclick=()=>{hideGame();window.frankaNav15_2?.go('chooser') || $('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
 // A1 fundamental lexicon: distinct from source-verified school data.
 const fSelect=$('uxUnit');let fi=0,cardIndex=0,fmode='cards';const cats=Object.keys(foundation);
 // A1 categories are already woven into the four seasons; no additional menu entries.
@@ -1060,7 +1060,7 @@ function draw(){
  weak.append(n('p','small',difficult.length?'Do powtórki: '+difficult.map(c=>c[2]).join(', '):'Na razie brak trudnych słówek — można poznawać kolejne!'));
  const date=$('s13ExamDate'),status=$('s13ExamStatus');date.value=examData[u]||'';status.textContent=exam?`✅ Przygotowanie aktywne do ${exam.date}. ${exam.days} dni do sprawdzianu.`:examData[u]?'Termin minął — ustaw nowy albo wyłącz przygotowanie.':'Tryb wyłączony. Codzienna nauka obejmuje szkołę i dodatkowe A1.';
 }
-function show(){if(!session)return;const item=session.queue[session.i];$('s7SessionFeedback').textContent='';$('s7NextWrap').hidden=true;const body=$('s7SessionBody');body.replaceChildren();if(!item){const correct=session.ok;const total=session.queue.length;body.append(n('h3','','🏆 Brawo, Franek!'),n('p','',`Ukończone zadania: ${total}. Poprawne odpowiedzi: ${correct}.`));$('s7SessionProgress').textContent='Sesja zakończona';const next=b('🧠 Zagraj w Memory',()=>{$('s7Session').hidden=true;$('uxMemory').click()});body.append(next);data.dailyHistory.unshift({day:new Date().toISOString().slice(0,10),correct,total});data.dailyHistory=data.dailyHistory.slice(0,30);store();window.dispatchEvent(new CustomEvent("franka:s14daily",{detail:{correct,total}}));draw();session=null;return}
+function show(){if(!session)return;const item=session.queue[session.i];$('s7SessionFeedback').textContent='';$('s7NextWrap').hidden=true;const body=$('s7SessionBody');body.replaceChildren();if(!item){const correct=session.ok;const total=session.queue.length;body.append(n('h3','','🏆 Brawo, Franek!'),n('p','',`Ukończone zadania: ${total}. Poprawne odpowiedzi: ${correct}.`));$('s7SessionProgress').textContent='Sesja zakończona';const next=b('🧠 Zagraj w Memory',()=>{$('s7Session').hidden=true;if(window.frankaUX15?.startDailyMemory){window.frankaUX15.startDailyMemory()}else{$('uxMemory').click()}});body.append(next);data.dailyHistory.unshift({day:new Date().toISOString().slice(0,10),correct,total});data.dailyHistory=data.dailyHistory.slice(0,30);store();window.dispatchEvent(new CustomEvent("franka:s14daily",{detail:{correct,total}}));draw();session=null;return}
 session.answered=false;$('s7SessionProgress').textContent=`Zadanie ${session.i+1} z ${session.queue.length} · ${item.kind==='word'?'Słówko':'Zdanie'}`;
 const pic=n('div','s7-illustration',item.icon||'💬');const question=n('p','s7-question',item.kind==='sentence'?'🎧 Posłuchaj całego zdania':item.es);body.append(pic,question,b('🔊 Posłuchaj',()=>speak(item.es),'epic-listen'));
 const possible=item.kind==='word'?(units[item.u]?.cards||[]).map(x=>x[2]):newSentences().map(x=>x.pl);
@@ -1081,7 +1081,7 @@ $('s8FocusSeason').onchange=()=>{draw()};
 $('s13ExamDate').onchange=()=>{const u=Number($('s8FocusSeason').value),date=$('s13ExamDate').value;if(date){examData[u]=date}else delete examData[u];try{localStorage.setItem(EXAM_STORE,JSON.stringify(examData))}catch(e){}draw()};
 $('s13ExamClear').onclick=()=>{const u=Number($('s8FocusSeason').value);delete examData[u];try{localStorage.setItem(EXAM_STORE,JSON.stringify(examData))}catch(e){}draw()};
 $('s13ExamTest').onclick=()=>{const u=Number($('s8FocusSeason').value),sel=$('uxUnit');sel.value=String(u);sel.dispatchEvent(new Event('change',{bubbles:true}));$('s6SchoolStart').click()};
-$('s7DailyStart').onclick=()=>{const queue=buildPlan();if(!queue.length)return;session={queue,i:0,ok:0,answered:false};$('s7Session').hidden=false;show();$('s7Session').scrollIntoView({behavior:'smooth',block:'start'})};
+$('s7DailyStart').onclick=()=>{const queue=buildPlan();if(!queue.length)return;session={queue,i:0,ok:0,answered:false};$('s7Session').hidden=false;show();window.frankaNav15_2?.go('daily') || $('s7Session').scrollIntoView({behavior:'smooth',block:'start'})};
 $('s7Next').onclick=()=>{if(!session||!session.answered)return;session.i++;show()};
 $('s7SessionClose').onclick=()=>{session=null;$('s7Session').hidden=true;draw()};
 draw();document.querySelectorAll('[data-enter]').forEach(btn=>btn.addEventListener('click',()=>{if(btn.dataset.enter==='learn')draw()}));
@@ -1165,13 +1165,13 @@ function display(){if(!session)return;const x=session,body=$('s10LessonBody');bo
 function begin(u,i){const items=stages(u),s=items[i];if(!s||!unlocked(u,i))return;
  if(s.kind==='checkpoint'){$('s10Lesson').hidden=true;$('s6SchoolStart').click();return}
  if(!s.raw.length){complete(u,s,{empty:true});return}
- session={u,stage:s,list:shuffle(s.raw),pos:0,correct:0,answered:false};$('s10Lesson').hidden=false;display();$('s10Lesson').scrollIntoView({behavior:'smooth',block:'nearest'});
+ session={u,stage:s,list:shuffle(s.raw),pos:0,correct:0,answered:false};$('s10Lesson').hidden=false;display();window.frankaNav15_2?.go('lesson') || $('s10Lesson').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function finish(){if(!session)return;const x=session,ok=x.correct>=Math.ceil(x.list.length*(x.stage.kind==='finale'?.85:.75)),body=$('s10LessonBody');body.replaceChildren();
  body.append(h('p','s10-question',ok?'🏆 Etap zaliczony!':'🌱 Poćwiczmy jeszcze trochę'));
  body.append(h('p','',`Poprawne odpowiedzi: ${x.correct}/${x.list.length}. ${ok?'Odblokowany jest kolejny etap.':'Możesz powtórzyć ten zestaw.'}`));
  if(ok){complete(x.u,x.stage,{correct:x.correct,total:x.list.length});if(x.stage.kind==='finale')celebration('🏆 ¡Bravo! Mistrz '+({1:'Otoño',2:'Invierno',3:'Primavera',4:'Verano'}[x.u]||'sezonu')+'!');else celebration('⭐ Brawo! Nowy etap odblokowany!');} 
- const wrap=h('div','s10-center');wrap.append(button(ok?'🏠 Wróć do ścieżki':'🔁 Powtórz zestaw',()=>{if(ok){$('s10Lesson').hidden=true;session=null;draw()}else begin(x.u,stages(x.u).findIndex(s=>s.id===x.stage.id))},'epic-primary'));body.append(wrap);session=null;
+ const wrap=h('div','s10-center');wrap.append(button(ok?'🏠 Wróć do ścieżki':'🔁 Powtórz zestaw',()=>{if(ok){$('s10Lesson').hidden=true;session=null;draw();window.frankaNav15_2?.go('path')}else begin(x.u,stages(x.u).findIndex(s=>s.id===x.stage.id))},'epic-primary'));body.append(wrap);session=null;
 }
 function draw(){const u=Number($('uxUnit')?.value||1),root=$('s10Steps');if(!root)return;const all=stages(u),completed=all.filter(s=>done(u,s)).length,next=all.findIndex(s=>!done(u,s));
  $('s10PathProgress').textContent=`${completed}/${all.length} etapów`+(done(u,all[all.length-1])?' · 🏆 Mistrz sezonu':'');
@@ -1182,7 +1182,7 @@ function draw(){const u=Number($('uxUnit')?.value||1),root=$('s10Steps');if(!roo
  if(all.length>visible.length)root.append(button(`📖 ${showAll?'Pokaż mniej':'Pokaż wszystkie etapy'} (${all.length})`,()=>{showAll=!showAll;draw()},'secondary'));
  else if(showAll&&all.length>5)root.append(button('📖 Pokaż mniej',()=>{showAll=false;draw()},'secondary'));
 }
-$('s10LessonClose').onclick=()=>{$('s10Lesson').hidden=true;session=null};
+$('s10LessonClose').onclick=()=>{$('s10Lesson').hidden=true;session=null;window.frankaNav15_2?.go('path')};
 $('uxUnit').addEventListener('change',()=>{$('s10Lesson').hidden=true;session=null;showAll=false;draw()});
 window.addEventListener('franka:s8checkpoint',e=>{const x=e.detail,u=Number(x?.u);if(x?.type==='school'&&[1,2,3,4].includes(u)){
  const s=stages(u).find(s=>s.kind==='checkpoint');if(x.percent>=85)complete(u,s,{score:x.percent});else draw();
@@ -1276,7 +1276,7 @@ window.frankaLevel14={render,definitions,weekStart};
  if(oldHome)oldHome.hidden=true;if(oldWork)oldWork.hidden=false;if(learnArea)learnArea.hidden=false;
  const labels=['','Otoño','Invierno','Primavera','Verano'],icons=['','🍁','⛄','🌷','☀️'];
  let view='today',mode='lessons';
- function viewTo(next){view=next;[['today',today],['learning',learning],['progress',progress]].forEach(([key,el])=>el.classList.toggle('s15-active',key===next));dock.querySelectorAll('button').forEach(b=>{const active=b.dataset.s15View===next;b.classList.toggle('s15-current',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});if(next==='progress'){try{window.frankaLevel14?.render()}catch(e){}refreshProgress()}if(next==='learning')refreshSeasons();window.scrollTo({top:0,behavior:'smooth'})}
+ function viewTo(next){view=next;[['today',today],['learning',learning],['progress',progress]].forEach(([key,el])=>el.classList.toggle('s15-active',key===next));dock.querySelectorAll('button').forEach(b=>{const active=b.dataset.s15View===next;b.classList.toggle('s15-current',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});if(next==='progress'){try{window.frankaLevel14?.render()}catch(e){}refreshProgress()}if(next==='learning')refreshSeasons();window.scrollTo({top:0,behavior:'instant'})}
  function modeTo(next){mode=next;learning.dataset.mode=next;learning.querySelectorAll('[data-s15-mode]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.s15Mode===next)));if(next==='games'){if($('epicGames')?.hidden)$('uxGames')?.click();}if(next==='dialogues'){$('s15ChooserDetails').open=true;$('uxChooser')?.querySelector('[data-ux-activity="dialogues"]')?.click();}if(next==='car'){$('carArea').hidden=false;}viewTo('learning')}
  function pick(u){if(!$('uxUnit'))return;$('uxUnit').value=String(u);$('uxUnit').dispatchEvent(new Event('change',{bubbles:true}));if($('s8FocusSeason')){$('s8FocusSeason').value=String(u);$('s8FocusSeason').dispatchEvent(new Event('change',{bubbles:true}))}if($('epicUnit')){$('epicUnit').value=String(u);$('epicUnit').dispatchEvent(new Event('change',{bubbles:true}))}refreshSeasons()}
  function read(k){try{return JSON.parse(localStorage.getItem(k)||'{}')||{}}catch(e){return {}}}
@@ -1284,15 +1284,70 @@ window.frankaLevel14={render,definitions,weekStart};
  function refreshSeasons(){const goal=$('s15TodayGoal');if(goal){const source=$('s14Next')?.querySelector('strong');goal.textContent=source?source.textContent:'Wybierz sezon w zakładce Nauka, aby zobaczyć kolejne cele.'}const target=$('s15Seasons');if(!target)return;target.replaceChildren();const u=Number($('uxUnit')?.value||1);for(let i=1;i<=4;i++){const a=stats(i),b=make('button',`s15-season s15-season--${i}`+(i===u?' s15-selected':''));b.type='button';b.setAttribute('aria-label',`${labels[i]}, ukończono ${a.done} z ${a.total} etapów`);b.innerHTML=`<span class="s15-season-art" aria-hidden="true">${icons[i]}</span><span class="s15-season-copy"><strong>${labels[i]}</strong><small>Słowa · Zdania · Checkpoint</small><span class="s15-season-progress"><span style="width:${a.pct}%"></span></span><span class="s15-season-pct">${a.pct}% · ${a.done}/${a.total} etapów</span></span><span class="s15-chevron" aria-hidden="true">›</span>`;b.onclick=()=>{pick(i);modeTo('lessons')};target.append(b)}}
  function refreshProgress(){const b=read('hiszpanskiFrankaLevel14V1').badges||{};const total=Object.keys(b).length;$('s15BadgeTotal').textContent=`${total}/6`;const nums=[1,2,3,4].map(i=>stats(i));$('s15SeasonDone').textContent=String(nums.reduce((v,x)=>v+x.done,0));let cups=0;const states=read('hiszpanskiFrankaPath10V2');for(let i=1;i<=4;i++){const stages=window.frankaPath10?.stages?.(i)||[];if(stages.some(s=>s.kind==='finale'&&states[i]?.[s.id]?.done||s.id==='finale-v1'&&states[i]?.[s.id]?.done))cups++} // Alternative verified trophy DOM after render.
  const domCups=$('s14Trophies')?.querySelectorAll('.s14-trophy');if(domCups?.length)cups=[...domCups].filter(x=>x.textContent.includes('🏆')).length;$('s15CupTotal').textContent=`${cups}/4`}
- function showExam(){viewTo('today');$('s15ExamSlot').classList.add('s15-show-exam');$('s13ExamDetails').open=true;$('s13ExamDetails').scrollIntoView({behavior:'smooth',block:'center'})}
+ function startDailyMemory(){
+  // Daily mission lives under Dziś, while its final Memory game lives under Nauka.
+  // Set the correct season, reveal the destination, then start and focus the game.
+  const season=Number($('s8FocusSeason')?.value||$('uxUnit')?.value||1);
+  const u=[1,2,3,4].includes(season)?season:1;
+  pick(u);
+  modeTo('games');
+  const memory=learning.querySelector('[data-epic="memory"]');
+  const stage=$('epicStage');
+  if(stage&&!stage.hidden)$('epicExit')?.click();
+  if(memory)memory.click();
+  const destination=stage&&!stage.hidden?stage:$('epicGames');
+  if(destination){
+   requestAnimationFrame(()=>destination.scrollIntoView({behavior:'smooth',block:'start'}));
+  }
+ }
+
+ // Sprint 15.2: one navigation gateway for every legacy engine and redesigned screen.
+ // Routing always reveals the view and the containing details BEFORE scrolling or focusing.
+ function go(destination,opts={}){
+  const chooser=$('s15ChooserDetails'), daily=$('s15DailyDetails'), coach=$('s15CoachDetails');
+  let target=null;
+  const reveal=(v,m)=>{if(m)modeTo(m);else viewTo(v)};
+  switch(destination){
+   case 'today':reveal('today');target=$('s15DailyGo');break;
+   case 'learning':reveal('learning','lessons');target=$('s15Seasons');break;
+   case 'path':reveal('learning','lessons');target=$('s10Steps');break;
+   case 'lesson':reveal('learning','lessons');target=$('s10Lesson');break;
+   case 'chooser':reveal('learning','lessons');if(chooser)chooser.open=true;target=$('uxChooser');break;
+   case 'learningStage':reveal('learning','lessons');if(chooser)chooser.open=true;target=$('uxLearningStage');break;
+   case 'games':reveal('learning','games');if($('epicGames')?.hidden)$('uxGames')?.click();target=$('epicGames');break;
+   case 'memory':startDailyMemory();return true;
+   case 'dialogues':reveal('learning','dialogues');target=$('communicationLab');break;
+   case 'checkpoint':reveal('learning','lessons');if(chooser)chooser.open=true;target=$('s6TestingPanel');break;
+   case 'daily':reveal('today');if(daily)daily.open=true;target=$('s7Session');break;
+   case 'review':reveal('today');if(coach)coach.open=true;target=$('smartReview');break;
+   case 'exam':reveal('today');$('s15ExamSlot').classList.add('s15-show-exam');$('s13ExamDetails').open=true;target=$('s13ExamDetails');break;
+   case 'awards':reveal('progress');if($('s14Showcase'))$('s14Showcase').open=true;target=$('s14Showcase');break;
+   case 'car':reveal('learning','car');target=$('carArea');break;
+   case 'carQuiz':reveal('learning','car');target=$('game');break;
+   default:return false;
+  }
+  if(target){
+   requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    if(!target.isConnected || target.hidden || !target.getClientRects().length)return;
+    target.scrollIntoView({behavior:'instant',block:'start'});
+    if(opts.focus!==false){const focus=target.querySelector('button:not([disabled]), input, select, summary')||target;
+     if(!focus.hasAttribute('tabindex') && !/^(BUTTON|INPUT|SELECT|SUMMARY)$/.test(focus.tagName))focus.setAttribute('tabindex','-1');
+     try{focus.focus({preventScroll:true})}catch(e){}
+    }
+   }));
+  }
+  return true;
+ }
+ function showExam(){go('exam')}
+
  dock.querySelectorAll('button').forEach(b=>b.onclick=()=>viewTo(b.dataset.s15View));learning.querySelectorAll('[data-s15-mode]').forEach(b=>b.onclick=()=>modeTo(b.dataset.s15Mode));
- $('s15DailyGo').onclick=()=>{$('s15DailyDetails').open=true;$('s7DailyStart')?.click();$('s15DailyDetails').scrollIntoView({behavior:'smooth',block:'start'})};
- $('s15ExamGo').onclick=showExam;$('s15AwardsGo').onclick=()=>{viewTo('progress');$('s14Showcase').open=true};$('s15CarGo').onclick=()=>modeTo('car');
+ $('s15DailyGo').onclick=()=>{$('s15DailyDetails').open=true;$('s7DailyStart')?.click();go('daily')};
+ $('s15ExamGo').onclick=showExam;$('s15AwardsGo').onclick=()=>go('awards');$('s15CarGo').onclick=()=>go('car');
  $('s15Date').textContent=new Date().toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
  // Route successful checkpoint navigation to the correct main destination.
- $('s13ExamTest')?.addEventListener('click',()=>viewTo('learning'));
- $('s6SchoolStart')?.addEventListener('click',()=>viewTo('learning'));
- $('s6A1Start')?.addEventListener('click',()=>viewTo('learning'));
+ $('s13ExamTest')?.addEventListener('click',()=>go('checkpoint'));
+ $('s6SchoolStart')?.addEventListener('click',()=>go('checkpoint'));
+ $('s6A1Start')?.addEventListener('click',()=>go('checkpoint'));
  $('s10LessonClose')?.addEventListener('click',()=>refreshSeasons());
  $('uxUnit')?.addEventListener('change',refreshSeasons);
  window.addEventListener('franka:s14stage',()=>{refreshSeasons();refreshProgress()});
@@ -1300,8 +1355,10 @@ window.frankaLevel14={render,definitions,weekStart};
  window.addEventListener('franka:s14word',refreshProgress);
  window.addEventListener('storage',()=>{refreshProgress();refreshSeasons()});
  // Offer a quick return to lessons when classic game exit closes the game menu.
- $('uxCloseGames')?.addEventListener('click',()=>modeTo('lessons'));
+ $('uxCloseGames')?.addEventListener('click',()=>go('chooser'));
+ $('epicExit')?.addEventListener('click',()=>go('games',{focus:false}));
  refreshSeasons();refreshProgress();
- window.frankaUX15={viewTo,modeTo,pick,refreshSeasons,refreshProgress,showExam};
+ window.frankaUX15={viewTo,modeTo,pick,refreshSeasons,refreshProgress,showExam,startDailyMemory};
+ window.frankaNav15_2={go,version:'15.2'};
 })();
 </script></body></html>
