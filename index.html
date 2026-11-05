@@ -1062,7 +1062,7 @@ function draw(){
  weak.append(n('p','small',difficult.length?'Do powtórki: '+difficult.map(c=>c[2]).join(', '):'Na razie brak trudnych słówek — można poznawać kolejne!'));
  const date=$('s13ExamDate'),status=$('s13ExamStatus');date.value=examData[u]||'';status.textContent=exam?`✅ Przygotowanie aktywne do ${exam.date}. ${exam.days} dni do sprawdzianu.`:examData[u]?'Termin minął — ustaw nowy albo wyłącz przygotowanie.':'Tryb wyłączony. Codzienna nauka obejmuje szkołę i dodatkowe A1.';
 }
-function show(){if(!session)return;const item=session.queue[session.i];$('s7SessionFeedback').textContent='';$('s7NextWrap').hidden=true;const body=$('s7SessionBody');body.replaceChildren();if(!item){const correct=session.ok;const total=session.queue.length;body.append(n('h3','','🏆 Brawo, Franek!'),n('p','',`Ukończone zadania: ${total}. Poprawne odpowiedzi: ${correct}.`));$('s7SessionProgress').textContent='Sesja zakończona';const next=b('🧠 Zagraj w Memory',()=>{$('s7Session').hidden=true;if(window.frankaUX15?.startDailyMemory){window.frankaUX15.startDailyMemory()}else{$('uxMemory').click()}});body.append(next);data.dailyHistory.unshift({day:new Date().toISOString().slice(0,10),correct,total});data.dailyHistory=data.dailyHistory.slice(0,30);store();window.dispatchEvent(new CustomEvent("franka:s14daily",{detail:{correct,total}}));draw();session=null;return}
+function show(){if(!session)return;const item=session.queue[session.i];$('s7SessionFeedback').textContent='';$('s7NextWrap').hidden=true;const body=$('s7SessionBody');body.replaceChildren();if(!item){const correct=session.ok;const total=session.queue.length;body.append(n('h3','','🏆 Brawo, Franek!'),n('p','',`Ukończone zadania: ${total}. Poprawne odpowiedzi: ${correct}.`));$('s7SessionProgress').textContent='Sesja zakończona';const next=b('🧠 Zagraj w Memory',()=>{const go=window.frankaNav15_2?.go;const success=go?.('memory');if(success){$('s7Session').hidden=true}else{$('s7SessionFeedback').textContent='Nie udało się otworzyć Memory. Spróbuj ponownie lub wybierz Nauka → Gry.'}});body.append(next);data.dailyHistory.unshift({day:new Date().toISOString().slice(0,10),correct,total});data.dailyHistory=data.dailyHistory.slice(0,30);store();window.dispatchEvent(new CustomEvent("franka:s14daily",{detail:{correct,total}}));draw();session=null;return}
 session.answered=false;$('s7SessionProgress').textContent=`Zadanie ${session.i+1} z ${session.queue.length} · ${item.kind==='word'?'Słówko':'Zdanie'}`;
 const pic=n('div','s7-illustration',item.icon||'💬');const question=n('p','s7-question',item.kind==='sentence'?'🎧 Posłuchaj całego zdania':item.es);body.append(pic,question,b('🔊 Posłuchaj',()=>speak(item.es),'epic-listen'));
 const possible=item.kind==='word'?(units[item.u]?.cards||[]).map(x=>x[2]):newSentences().map(x=>x.pl);
@@ -1287,20 +1287,42 @@ window.frankaLevel14={render,definitions,weekStart};
  function refreshProgress(){const b=read('hiszpanskiFrankaLevel14V1').badges||{};const total=Object.keys(b).length;$('s15BadgeTotal').textContent=`${total}/6`;const nums=[1,2,3,4].map(i=>stats(i));$('s15SeasonDone').textContent=String(nums.reduce((v,x)=>v+x.done,0));let cups=0;const states=read('hiszpanskiFrankaPath10V2');for(let i=1;i<=4;i++){const stages=window.frankaPath10?.stages?.(i)||[];if(stages.some(s=>s.kind==='finale'&&states[i]?.[s.id]?.done||s.id==='finale-v1'&&states[i]?.[s.id]?.done))cups++} // Alternative verified trophy DOM after render.
  const domCups=$('s14Trophies')?.querySelectorAll('.s14-trophy');if(domCups?.length)cups=[...domCups].filter(x=>x.textContent.includes('🏆')).length;$('s15CupTotal').textContent=`${cups}/4`}
  function startDailyMemory(){
-  // Daily mission lives under Dziś, while its final Memory game lives under Nauka.
-  // Set the correct season, reveal the destination, then start and focus the game.
-  const season=Number($('s8FocusSeason')?.value||$('uxUnit')?.value||1);
-  const u=[1,2,3,4].includes(season)?season:1;
+  // v15.4: one atomic transition; do not rely on legacy links or racing scroll callbacks.
+  const requested=Number($('s8FocusSeason')?.value||$('uxUnit')?.value||1);
+  const u=[1,2,3,4].includes(requested)?requested:1;
   pick(u);
-  modeTo('games');
-  const memory=learning.querySelector('[data-epic="memory"]');
-  const stage=$('epicStage');
-  if(stage&&!stage.hidden)$('epicExit')?.click();
-  if(memory)memory.click();
-  const destination=stage&&!stage.hidden?stage:$('epicGames');
-  if(destination){
-   requestAnimationFrame(()=>destination.scrollIntoView({behavior:'smooth',block:'start'}));
+  // Turn on the destination before starting a game. Avoid modeTo('games'), which
+  // previously initiated legacy game setup and nested navigation implicitly.
+  learning.dataset.mode='games';
+  learning.querySelectorAll('[data-s15-mode]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.s15Mode==='games')));
+  viewTo('learning');
+  const setup=$('epicGames'),stage=$('epicStage'),menu=$('epicMenu');
+  if(!setup||!stage||!menu)return false;
+  setup.hidden=false;
+  $('epicUnit').value=String(u);
+  if(!stage.hidden)$('epicExit')?.click();
+  menu.hidden=false;
+  const memory=setup.querySelector('[data-epic="memory"]');
+  if(!memory)return false;
+  memory.click();
+  const actual=stage.hidden===false && menu.hidden===true && ($('epicContent')?.children.length||0)>0;
+  if(!actual){
+   setup.hidden=false; menu.hidden=false;
+   return false;
   }
+  // Scroll after DOM and view updates. Use an immediate jump for consistency
+  // with iOS Safari, where smooth scroll can race against layout switches.
+  const reposition=()=>{
+   if(!learning.classList.contains('s15-active')||stage.hidden)return;
+   const anchor=$('epicTitle')||stage;
+   const y=Math.max(0,window.scrollY+anchor.getBoundingClientRect().top-24);
+   window.scrollTo({top:y,behavior:'instant'});
+   if(!stage.hasAttribute('tabindex'))stage.setAttribute('tabindex','-1');
+   try{stage.focus({preventScroll:true})}catch(e){}
+  };
+  requestAnimationFrame(()=>requestAnimationFrame(reposition));
+  setTimeout(reposition,180);
+  return true;
  }
 
  // Sprint 15.2: one navigation gateway for every legacy engine and redesigned screen.
@@ -1317,7 +1339,7 @@ window.frankaLevel14={render,definitions,weekStart};
    case 'chooser':reveal('learning','lessons');if(chooser)chooser.open=true;target=$('uxChooser');break;
    case 'learningStage':viewTo('learning');if(chooser)chooser.open=true;target=$('uxLearningStage');break;
    case 'games':reveal('learning','games');if($('epicGames')?.hidden)$('uxGames')?.click();target=$('epicGames');break;
-   case 'memory':startDailyMemory();return true;
+   case 'memory':return startDailyMemory();
    case 'dialogues':reveal('learning','dialogues');if(chooser)chooser.open=true;$('uxStart')?.click();target=$('uxLearningStage');break;
    case 'checkpoint':reveal('learning','lessons');if(chooser)chooser.open=true;target=$('s6TestingPanel');break;
    case 'daily':reveal('today');if(daily)daily.open=true;target=$('s7Session');break;
@@ -1361,6 +1383,6 @@ window.frankaLevel14={render,definitions,weekStart};
  $('epicExit')?.addEventListener('click',()=>go('games',{focus:false}));
  refreshSeasons();refreshProgress();
  window.frankaUX15={viewTo,modeTo,pick,refreshSeasons,refreshProgress,showExam,startDailyMemory};
- window.frankaNav15_2={go,version:'15.3'};
+ window.frankaNav15_2={go,version:'15.4'};
 })();
 </script></body></html>
