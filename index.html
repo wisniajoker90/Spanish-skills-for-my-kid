@@ -15,6 +15,31 @@
 *{box-sizing:border-box}body{margin:0;background:var(--site-background);color:var(--site-on-background);font-family:var(--site-font-body)}button{font:inherit;cursor:pointer;border:0;border-radius:14px;padding:12px 16px;font-weight:750;background:var(--site-primary);color:white}button:focus-visible{outline:3px solid #e49c28;outline-offset:3px}.app{min-height:100vh;background:var(--site-background)}header{background:var(--site-primary);color:white;padding:24px max(20px,calc((100vw - 980px)/2));display:flex;align-items:center;justify-content:space-between;gap:16px}header h1{font-size:clamp(1.5rem,4vw,2.2rem);margin:0}header p{margin:5px 0 0;opacity:.88}.mascot{font-size:44px}main{max-width:980px;margin:auto;padding:22px 18px 42px}.notice{background:#fff5d7;border:1px solid #efd57c;border-radius:16px;padding:14px 16px;margin-bottom:18px;font-size:.95rem}.stats{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.pill{background:#e4eee7;border-radius:999px;padding:8px 12px;font-size:.9rem;font-weight:700}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tabs button{background:#e1e9e2;color:#23443a}.tabs button.active{background:var(--site-primary);color:white}.panel{background:white;border:1px solid #e1e8df;border-radius:22px;padding:clamp(18px,4vw,28px);box-shadow:0 8px 28px #1d4d3910}.lesson-top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.lesson-top h2{margin:0;font-size:1.35rem}.small{color:#5e7069;font-size:.9rem}.wordcard{text-align:center;background:#f4f8f1;border-radius:20px;padding:28px 16px;margin:20px 0}.emoji{font-size:58px}.word{font-size:clamp(2rem,7vw,3rem);font-weight:850;margin:8px 0}.meaning{font-size:1.1rem;color:#53665e}.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.secondary{background:#e6eee7;color:#23443a}.gamegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-top:18px}.choice{background:#f1f6ef;color:#24443a;border:2px solid #dbe7dc;min-height:72px}.choice.correct{background:#d8f1d8;border-color:#59a76a}.choice.wrong{background:#ffe1db;border-color:#dc7767}.feedback{min-height:28px;font-weight:750;margin-top:14px;text-align:center}.bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:18px;flex-wrap:wrap}.mode{display:flex;align-items:center;gap:8px;font-size:.92rem}.mode input{width:20px;height:20px}footer{font-size:.84rem;color:#63736c;margin-top:18px;line-height:1.5}@media(max-width:520px){header{padding:20px 16px}.mascot{font-size:34px}.bottom button{flex:1}}
 
 #s10Steps,#uxLearningStage,#communicationLab{scroll-margin-top:20px}
+
+/* Sprint 17 — Dialogi Junior. Non-intrusive to other activities. */
+.jr-dialog{max-width:600px!important;gap:16px!important;border:1px solid #e7e8ee!important;box-shadow:0 18px 48px rgba(39,41,76,.07);padding:clamp(18px,4vw,34px)!important;background:linear-gradient(180deg,#fff 70%,#fbfaff 100%)!important}
+.jr-top{display:flex;align-items:center;justify-content:space-between;gap:12px;color:#545576;font-size:.89rem;font-weight:750}
+.jr-eyebrow{font-weight:850;color:#5552af}.jr-progress{font-variant-numeric:tabular-nums}
+.jr-meter{height:7px;border-radius:999px;overflow:hidden;background:#eceaf7}.jr-meter span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#6c66d8,#b28aed);transition:width .2s}
+.jr-picture{font-size:clamp(4rem,16vw,6.2rem);line-height:1.15;padding:15px 0 2px}
+.jr-helper{font-size:1.03rem;font-weight:700;color:#5f6380;margin:0!important}
+.jr-question{font-size:clamp(1.65rem,5.3vw,2.45rem);font-weight:850;line-height:1.22;letter-spacing:-.03em;color:#1e2243;overflow-wrap:anywhere}
+.jr-answer{font-size:clamp(1.5rem,5vw,2.3rem);font-weight:850;color:#314a78;line-height:1.3}
+.jr-translation{font-size:1rem;color:#69728b;margin:0}
+.jr-dialog button{font-family:inherit;border-radius:18px;transition:transform .12s ease,background .12s ease;min-height:56px;touch-action:manipulation}
+.jr-dialog button:active{transform:scale(.98)}
+.jr-main{display:block;width:100%;border:0!important;background:#5754c9!important;color:white!important;font-weight:850!important;font-size:1.08rem!important;box-shadow:0 8px 22px rgba(68,65,164,.22);min-height:60px!important}
+.jr-main:focus-visible,.jr-audio:focus-visible,.jr-options button:focus-visible{outline:3px solid #d19d34;outline-offset:3px}
+.jr-audio{border:1px solid #dedcf4!important;background:#f6f5ff!important;color:#5653a1!important;font-size:.92rem!important;font-weight:750!important;min-height:49px!important;justify-self:center;padding:10px 18px!important}
+.jr-caption{font-size:.86rem;color:#788096;margin:0;line-height:1.45}
+.jr-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.jr-options button{padding:12px 8px;font-size:.94rem;font-weight:800}
+.jr-good{background:#e7f8ee!important;color:#1b6a41!important;border:1px solid #b6e8c8!important}
+.jr-help{background:#f2f2fb!important;color:#4e5190!important;border:1px solid #dadcf5!important}
+.jr-celebrate{font-size:4.5rem}
+@media(max-width:420px){.jr-options{grid-template-columns:1fr}.jr-dialog{padding:20px 15px!important}}
+@media(prefers-reduced-motion:reduce){.jr-dialog button,.jr-meter span{transition:none!important}}
+
 </style>
 <style>
 .screens{margin-top:22px}.screens h2{margin:0 0 6px}.screen-intro{color:#5e7069;margin:0 0 16px}.screen-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:14px}.screen-card{background:#fff;border:1px solid #dfe8de;border-radius:18px;padding:12px;text-align:left;color:#20332e;box-shadow:0 5px 18px #1d4d390b}.screen-card[aria-pressed="true"]{outline:3px solid #f5c85b}.mock{height:145px;border-radius:12px;background:#eef5ec;padding:12px;overflow:hidden;margin-bottom:10px}.mock-head{font-weight:850;font-size:.85rem;display:flex;justify-content:space-between}.mock-word{font-size:1.65rem;font-weight:900;text-align:center;margin:8px 0 2px}.mock-sub{text-align:center;font-size:.75rem;color:#5e7069}.mock-buttons{display:flex;gap:5px;justify-content:center;margin-top:10px}.mock-buttons span{background:#236b58;color:#fff;border-radius:8px;padding:6px 8px;font-size:.65rem}.mock-options{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:8px}.mock-options span{background:white;border:1px solid #d9e4d8;border-radius:7px;padding:7px 3px;text-align:center;font-size:.68rem}.mock-progress{height:9px;background:#d8e4d8;border-radius:99px;margin:8px 0}.mock-progress span{display:block;height:100%;width:72%;background:#236b58;border-radius:99px}.mock-bars{height:44px;display:flex;align-items:end;justify-content:space-around;gap:7px}.mock-bars span{display:block;width:17%;background:#236b58;border-radius:5px 5px 0 0}.screen-card strong{display:block;margin-bottom:4px}.screen-card small{color:#5e7069;line-height:1.35}.crossplatform{margin-top:18px;background:#e4eee7;border-radius:18px;padding:18px}.crossplatform h3{margin:0 0 8px}.platforms{display:flex;gap:8px;flex-wrap:wrap}.platforms span{background:white;border-radius:999px;padding:8px 11px;font-weight:750;font-size:.88rem}
@@ -192,7 +217,7 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style></head>
 <body><div class="app">
-<header><div><h1>🇪🇸 Hiszpański Franka</h1><p>Małe kroki. Wielka przygoda. · v16.0</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
+<header><div><h1>🇪🇸 Hiszpański Franka</h1><p>Małe kroki. Wielka przygoda. · v17.1</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
 <main>
 <section class="home-screen panel" id="homeScreen"><h2>¡Vamos, Franek! 🇪🇸</h2><p>Jak chcesz się dzisiaj uczyć?</p><div class="home-tiles"><button data-enter="car">🚗<strong>Tryb samochodowy</strong><span>Słucham i powtarzam — bez patrzenia w ekran</span></button><button data-enter="learn">🎮<strong>Centrum nauki</strong><span>Fiszki, quizy i pięć gier</span></button></div></section><div hidden="" id="workArea"><nav class="home-nav"><button class="secondary" id="backHome">🏠 Menu główne</button><span id="modeLabel"></span></nav><div id="carArea"><section aria-labelledby="carTitle" class="car-mode"><h2 id="carTitle">🚗 Tryb samochodowy — 10 minut</h2><p>Aktywna nauka przez słuchanie: Franek usłyszy słowo lub zwrot po hiszpańsku, chwilę na odpowiedź i odpowiedź po polsku. Nie trzeba patrzeć na ekran ani niczego dotykać w trakcie jazdy.</p><label for="carUnit"><strong>Rozdział do słuchania</strong></label><br/><select id="carUnit"></select><div class="car-controls"><button id="carStart">▶ Rozpocznij 10 minut</button><button class="secondary" disabled="" id="carPause">⏸ Pauza</button><button class="secondary" disabled="" id="carStop">■ Zakończ</button></div><div aria-live="polite" class="car-status" id="carStatus" role="status">Gotowe do rozpoczęcia. Wybierz rozdział.</div><div aria-label="Postęp sesji" class="car-progress"><span id="carProgress"></span></div><p class="small" id="carClock">Pozostało: 10:00</p><div class="car-note"><strong>Bezpieczeństwo:</strong> kierowca nie powinien obsługiwać ekranu. Uruchom sesję przed ruszeniem lub poproś pasażera. Quiz z przyciskami jest dostępny wyłącznie po zaznaczeniu, że samochód stoi — aplikacja nie wykrywa ruchu pojazdu.</div><label class="mode" style="margin-top:12px"><input id="carParked" type="checkbox"/> Samochód stoi bezpiecznie — odblokuj quiz ekranowy</label><div class="car-controls"><button class="secondary" disabled="" id="carQuiz">🎯 Quiz (tylko na postoju)</button></div></section></div><div id="learnArea"><div class="notice ux-source-note"><strong>📚 Szkoła najpierw, potem droga do A1.</strong> Cztery etapy odpowiadają porom roku. Rozszerzenia A1 są dodatkowymi ćwiczeniami; nie przypisujemy ich podręcznikowi. Verano nadal wymaga potwierdzenia materiału szkolnego.</div>
 <div class="stats"><span class="pill">⭐ Punkty: <span id="points">0</span></span><span class="pill">✅ Umiem: <span id="learnedCount">0</span></span><span class="pill">🔁 Do powtórki: <span id="reviewCount">0</span></span><span class="pill">💾 Postępy zapisują się na tym urządzeniu</span></div>
@@ -273,6 +298,36 @@ const units=[
 {title:"💬 Daily chat — codzienne zwroty",sub:"Dodatkowy materiał • proste rozmowy na co dzień",cards:[["👋","¡Hola!","Cześć!","ola"],["🙂","¿Cómo te llamas?","Jak masz na imię?","komo te jamas"],["😊","Me llamo Franek.","Mam na imię Franek.","me jamo franek"],["🤝","Mucho gusto.","Miło mi cię poznać.","muczo gusto"],["💬","¿Cómo estás?","Jak się masz?","komo estas"],["😄","Estoy bien, gracias.","Mam się dobrze, dziękuję.","estoj bjen grasjas"],["🙂","¿Y tú?","A ty?","i tu"],["😴","Estoy cansado.","Jestem zmęczony. (chłopiec)","estoj kansado"],["👨‍👩‍👦","Esta es mi familia.","To jest moja rodzina.","esta es mi familia"],["👨","Este es mi papá.","To jest mój tata.","este es mi papa"],["👩","Esta es mi mamá.","To jest moja mama.","esta es mi mama"],["👦","Este es mi hermano.","To jest mój brat.","este es mi hermano"],["❤️","Quiero a mi familia.","Kocham moją rodzinę.","kiero a mi familia"],["🏠","¿Dónde vives?","Gdzie mieszkasz?","donde bibes"],["🏡","Vivo en Polonia.","Mieszkam w Polsce.","bibo en polonia"],["🎂","¿Cuántos años tienes?","Ile masz lat?","kuantos anios tjenes"],["7️⃣","Tengo siete años.","Mam siedem lat.","tengo sjete anios"],["⚽","Me gusta el fútbol.","Lubię piłkę nożną.","me gusta el futbol"],["🎮","¿Qué te gusta hacer?","Co lubisz robić?","ke te gusta aser"],["🎨","Me gusta dibujar.","Lubię rysować.","me gusta dibuhar"],["🙏","Por favor.","Proszę.","por fabor"],["😊","Gracias.","Dziękuję.","grasjas"],["🙏","De nada.","Nie ma za co.","de nada"],["🙋","Perdón.","Przepraszam / wybacz.","perdon"],["👋","¡Hasta luego!","Do zobaczenia później!","asta luego"]]}
 ];
 
+/* Sprint 17.1 — 6 XI 2026. New photographed Invierno notebook page.
+   School-verified forms are kept separate from existing general winter material.
+   These additions do not replace old cards or modify saved learning history. */
+const INVIERNO_NOTEBOOK_20261106=[
+ ["☃️","Un muñeco de nieve","Bałwan","un muńeko de njebe"],
+ ["🧤","Unos guantes","Rękawiczki","unos gwantes"],
+ ["🥾","Unas botas","Buty zimowe / kozaki","unas botas"],
+ ["🧥","Una chaqueta","Kurtka","una czaketa"],
+ ["👖","Unos pantalones","Spodnie","unos pantalones"],
+ ["🧢","Un gorro","Czapka zimowa","un gorro"],
+ ["🧣","Una bufanda","Szalik","una bufanda"],
+ ["🎩","Un sombrero","Kapelusz","un sombrero"],
+ ["❄️","La nieve","Śnieg","la njebe"],
+ ["🥶","Tengo frío","Jest mi zimno","tengo frio"],
+ ["🥵","Tengo calor","Jest mi gorąco","tengo kalor"],
+ ["🧢","Ponte el gorro","Załóż czapkę","ponte el gorro"],
+ ["🧥","Ponte la chaqueta","Załóż kurtkę","ponte la czaketa"],
+ ["🌨️","Hoy nieva","Dzisiaj pada śnieg","oj njeba"],
+ ["🥶","Hoy hace frío","Dzisiaj jest zimno","oj ase frio"]
+];
+const INVIERNO_VERIFIED_20261106=new Set(INVIERNO_NOTEBOOK_20261106.map(c=>c[1].toLocaleLowerCase('es')));
+// Existing cards remain in their original order. Add forms from the notebook
+// without duplicating phrases already available from the older source.
+const inviernoExisting=new Set(units[2].cards.map(c=>c[1].toLocaleLowerCase('es')));
+for(const card of INVIERNO_NOTEBOOK_20261106){
+ if(!inviernoExisting.has(card[1].toLocaleLowerCase('es'))){units[2].cards.push(card);inviernoExisting.add(card[1].toLocaleLowerCase('es'));}
+}
+units[2].sub='Rozdział Invierno · nowa strona zeszytu (15 wyrażeń) + wcześniejsze materiały i rozszerzenia A1';
+window.frankaInviernoNotebook17=INVIERNO_NOTEBOOK_20261106;
+
 // Sprint 8: one four-season content catalog. School items stay tagged separately
 // from authored A1 extensions. No saved progress is read for the new journey.
 const S8_FOUNDATION={
@@ -292,6 +347,8 @@ window.frankaFoundation=S8_FOUNDATION;
 const S8_SEASONS=[1,2,3,4];
 const S8_NAMES={1:'🍂 Otoño',2:'❄️ Invierno',3:'🌸 Primavera',4:'☀️ Verano'};
 const S8_SCHOOL={1:[...units[0].cards,...units[1].cards],2:[...units[2].cards],3:[...units[3].cards],4:[...units[4].cards]};
+// Confirm the photographed notebook entries exactly in winter school content.
+S8_SCHOOL[2].forEach(c=>{if(INVIERNO_VERIFIED_20261106.has(c[1].toLocaleLowerCase('es')))c.notebookVerified17=true;});
 const S8_ORIGINAL_COUNTS={1:S8_SCHOOL[1].length,2:S8_SCHOOL[2].length,3:S8_SCHOOL[3].length,4:S8_SCHOOL[4].length};
 const S8_LEXICON={1:[],2:[],3:[],4:[]};
 const sf=Object.entries(S8_FOUNDATION);
@@ -311,7 +368,7 @@ for(const u of S8_SEASONS){
  const seen=new Set(units[u].cards.map(c=>c[1].toLowerCase().trim()));
  for(const c of S8_SCHOOL[u]){
   const k=c[1].toLowerCase().trim();
-  S8_ORIGIN[u+'|'+k]='szkoła / materiał z dostarczonych stron lub wcześniejsza baza';
+  S8_ORIGIN[u+'|'+k]=(u===2&&INVIERNO_VERIFIED_20261106.has(k))?'zeszyt Franka — Invierno, zdjęcie 06.11.2026':'szkoła / materiał z wcześniejszej bazy do weryfikacji';
   if(!seen.has(k)){seen.add(k);units[u].cards.push(c)}
  }
  for(const c of S8_LEXICON[u]){
@@ -707,6 +764,21 @@ const topics=[
 // Sprint 8: A1 dialogue exercises share the same four-season journey.
 topics[0].sentences.push(...topics[3].sentences,...topics[4].sentences);
 topics[0].dialogs.push(...topics[3].dialogs,...topics[4].dialogs);
+// Sprint 17.1: model sentences/dialogues applying the photographed winter phrases.
+// Only their individual phrases come from the notebook; questions are authored A1 practice.
+topics[1].source='Zeszyt Franka — Invierno (15 wyrażeń na zdjęciu z 06.11.2026). Pytania i dialogi to osobne ćwiczenia autorskie, nie cytaty z zeszytu.';
+topics[1].sentences.push(
+ ['🥶','Tengo frío.','Jest mi zimno.'],
+ ['🥵','Tengo calor.','Jest mi gorąco.'],
+ ['🧢','Ponte el gorro.','Załóż czapkę.'],
+ ['🧥','Ponte la chaqueta.','Załóż kurtkę.'],
+ ['🌨️','Hoy nieva.','Dzisiaj pada śnieg.']
+);
+topics[1].dialogs.push(
+ ['¿Tienes frío?','Sí, tengo frío.','Jest ci zimno?','Tak, jest mi zimno.','🥶'],
+ ['¿Qué me pongo?','Ponte el gorro.','Co mam założyć?','Załóż czapkę.','🧢'],
+ ['¿Qué tiempo hace hoy?','Hoy nieva.','Jaka jest dziś pogoda?','Dzisiaj pada śnieg.','🌨️']
+);
 topics[1].sentences.push(['✏️','Tengo un lápiz.','Mam ołówek.'],['🏠','Esta es mi casa.','To jest mój dom.'],['👀','Tengo dos ojos.','Mam dwoje oczu.']);
 topics[1].dialogs.push(['¿Qué tienes?','Tengo un libro.','Co masz?','Mam książkę.','📘'],['¿Dónde estás?','Estoy en casa.','Gdzie jesteś?','Jestem w domu.','🏠']);
 topics[2].sentences.push(['🍎','Me gusta la fruta.','Lubię owoce.'],['🥛','Quiero agua, por favor.','Poproszę wodę.'],['⚽','Mi deporte favorito es el fútbol.','Mój ulubiony sport to piłka nożna.']);
@@ -743,13 +815,50 @@ const button=(txt,click,cls='secondary')=>{const b=mk('button',cls,txt);b.type='
 function say(str){speak(str)}
 function renderStats(){const topic=topics[current],s=stat(topic);$('a1Stats').textContent=`${topic.school?'📚 Ćwiczenia ze słownictwa szkolnego':'🚀 Dodatkowy kurs A1'} · Rozumienie zdań: ${s.listeningCorrect}/${s.listeningAttempts} poprawnych · Wypowiedzi przećwiczone na głos: ${s.spoken}. To licznik ćwiczeń, nie certyfikat A1.`}
 function pickTopic(){return topics[current]}
-function setView(v){view=v;active=0;answered=false;document.querySelectorAll('[data-a1-view]').forEach(b=>b.classList.toggle('active',b.dataset.a1View===v));render()}
+function setView(v){view=v;active=0;answered=false;juniorStep=0;juniorTopicSignature='';document.querySelectorAll('[data-a1-view]').forEach(b=>b.classList.toggle('active',b.dataset.a1View===v));render()}
 function common(root,n,len){const s=mk('p','a1-step',`Ćwiczenie ${n+1} z ${len}`);root.append(s)}
 function sentence(){const t=pickTopic(),item=t.sentences[active%t.sentences.length];const root=mk('div','a1-card');common(root,active%t.sentences.length,t.sentences.length);root.append(mk('div','a1-illustration',item[0]),mk('div','a1-es',item[1]));const pl=mk('div','a1-pl',item[2]);pl.hidden=true;const controls=mk('div','a1-toolbar');controls.append(button('🔊 Posłuchaj',()=>say(item[1]),'a1-speaker'),button('🇵🇱 Pokaż tłumaczenie',()=>{pl.hidden=!pl.hidden},'secondary'),button('➡️ Następne zdanie',()=>{active++;render()},'a1-next'));root.append(pl,controls);$('a1Stage').replaceChildren(root)}
-function dialogue(){const t=pickTopic(),d=t.dialogs[active%t.dialogs.length];const root=mk('div','a1-card');common(root,active%t.dialogs.length,t.dialogs.length);root.append(mk('div','a1-illustration',d[4]));const chat=mk('div','a1-dialogue'),q=mk('div','a1-bubble'),a=mk('div','a1-bubble answer');q.append(mk('strong','',d[0]));q.append(button('🔊 Posłuchaj pytania',()=>say(d[0]),'a1-speaker'));a.append(mk('strong','','Teraz odpowiedz na głos.'));
-const answer=mk('div','',d[1]);answer.hidden=true;a.append(answer);const translation=mk('p','a1-detail',`${d[2]} — ${d[3]}`);translation.hidden=true;
-chat.append(q,a);root.append(chat,translation);
-const controls=mk('div','a1-toolbar');controls.append(button('🔁 Powtórz pytanie',()=>say(d[0]),'secondary'),button('👀 Pokaż odpowiedź',()=>{answer.hidden=!answer.hidden;translation.hidden=answer.hidden},'secondary'),button('🔊 Odsłuchaj odpowiedź',()=>say(d[1]),'a1-speaker'),button('➡️ Następny dialog',()=>{active++;render()},'a1-next'));const selfcheck=mk('div','s12-selfcheck');selfcheck.append(button('✅ Odpowiedziałem sam',()=>{recordDialogue(t,d,'yes');selfcheck.replaceChildren(mk('p','a1-positive','⭐ Świetnie! Spróbuj jeszcze raz bez podpowiedzi.'));},'secondary'),button('🔁 Potrzebuję pomocy',()=>{recordDialogue(t,d,'help');selfcheck.replaceChildren(mk('p','a1-instruction','Wrócimy do tej rozmowy w powtórkach.'));},'secondary'));const hard=Object.keys(newStat(t).dialogs).filter(k=>{const x=newStat(t).dialogs[k];return x.needsHelp>0&&x.confident===0});if(hard.length){const revisit=button('🔁 Wróć do trudnego dialogu',()=>{const i=t.dialogs.findIndex(pair=>hard.includes(pair[0]+'|'+pair[1]));if(i>=0){active=i;render()}},'secondary');root.append(revisit)}root.append(selfcheck,controls,mk('p','a1-instruction','Powiedz odpowiedź samodzielnie przed odsłonięciem wzoru. Mikrofon nie jest używany — aplikacja nie ocenia wymowy.'));$('a1Stage').replaceChildren(root)}
+/* Sprint 17 · Dialogi Junior: one clear activity and one learning action per step. */
+let juniorStep=0,juniorAutoplay=null,juniorTopicSignature='';
+function jrAudio(utterance){if(juniorAutoplay)clearTimeout(juniorAutoplay);juniorAutoplay=setTimeout(()=>{const stage=$('a1Stage');if(view==='dialogues'&&stage?.querySelector('.jr-dialog'))say(utterance)},160)}
+function dialogue(){
+ const t=pickTopic(),n=active%t.dialogs.length,d=t.dialogs[n],signature=t.id+'|'+n;
+ if(juniorTopicSignature!==signature){juniorStep=0;juniorTopicSignature=signature}
+ if(juniorAutoplay)clearTimeout(juniorAutoplay);
+ const root=mk('div','a1-card jr-dialog');
+ root.setAttribute('aria-label','Dialog Junior — '+(n+1)+' z '+t.dialogs.length);
+ const top=mk('div','jr-top');top.append(mk('span','jr-eyebrow','🗣️ Dialog Junior'),mk('span','jr-progress',(n+1)+' / '+t.dialogs.length));root.append(top);
+ const progressLine=mk('div','jr-meter');const fill=mk('span');fill.style.width=100*(n+1)/t.dialogs.length+'%';progressLine.append(fill);root.append(progressLine);
+ const picture=mk('div','jr-picture',d[4]||'💬');picture.setAttribute('aria-hidden','true');root.append(picture);
+ if(juniorStep===0){
+  root.append(mk('p','jr-helper','Posłuchaj i odpowiedz na głos'));
+  root.append(mk('div','jr-question',d[0]));
+  const audio=button('🔊 Posłuchaj jeszcze raz',()=>say(d[0]),'jr-audio');audio.setAttribute('aria-label','Odtwórz pytanie po hiszpańsku');root.append(audio);
+  root.append(button('🎤 Już odpowiedziałem',()=>{juniorStep=1;render()},'jr-main'));
+  root.append(mk('p','jr-caption','Nie musisz używać mikrofonu. Spróbuj powiedzieć odpowiedź sam.'));
+  $('a1Stage').replaceChildren(root);jrAudio(d[0]);return;
+ }
+ if(juniorStep===1){
+  root.append(mk('p','jr-helper','Sprawdź swoją odpowiedź'));
+  root.append(mk('div','jr-answer',d[1]));
+  const pl=mk('p','jr-translation',d[3]||'');root.append(pl);
+  root.append(button('🔊 Posłuchaj odpowiedzi',()=>say(d[1]),'jr-audio'));
+  root.append(button('Dalej',()=>{juniorStep=2;render()},'jr-main'));
+  $('a1Stage').replaceChildren(root);jrAudio(d[1]);return;
+ }
+ if(juniorStep===2){
+  root.append(mk('p','jr-helper','Jak Ci poszło?'));
+  root.append(mk('div','jr-question',d[1]));
+  const options=mk('div','jr-options');
+  options.append(button('⭐ Powiedziałem sam!',()=>{recordDialogue(t,d,'yes');juniorStep=3;render()},'jr-good'),button('🤝 Potrzebuję pomocy',()=>{recordDialogue(t,d,'help');juniorStep=3;render()},'jr-help'));
+  root.append(options,mk('p','jr-caption','To Twoja ocena, aplikacja nie sprawdza wymowy.'));
+  $('a1Stage').replaceChildren(root);return;
+ }
+ root.append(mk('div','jr-celebrate','🌟'),mk('div','jr-question','¡Muy bien!'));
+ root.append(mk('p','jr-helper','Brawo za rozmowę! Każda próba to postęp.'));
+ const next=button(n===t.dialogs.length-1?'🔁 Jeszcze jedna runda':'Następna rozmowa →',()=>{active++;juniorStep=0;juniorTopicSignature='';render()},'jr-main');root.append(next);
+ $('a1Stage').replaceChildren(root);
+}
 function choicesFor(t,idx){const correct=t.sentences[idx];const others=t.sentences.map((s,i)=>({s,i})).filter(x=>x.i!==idx&&x.s[0]!==correct[0]);for(let i=others.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[others[i],others[j]]=[others[j],others[i]]}const out=[{s:correct,i:idx},...others.slice(0,2)];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
 function listening(){const t=pickTopic(),i=active%t.sentences.length,item=t.sentences[i];answered=false;const root=mk('div','a1-card');common(root,i,t.sentences.length);root.append(mk('h3','','Który obrazek pasuje do zdania?'),mk('p','a1-instruction','Posłuchaj zdania. Następnie wybierz obrazek — nie musisz czytać po hiszpańsku.'));root.append(button('🔊 ODTWÓRZ ZDANIE',()=>say(item[1]),'a1-speaker'));const choices=mk('div','a1-options'),feedback=mk('p','', '');const next=button('➡️ Następne zdanie',()=>{active++;render()},'a1-next');next.hidden=true;
 choicesFor(t,i).forEach(o=>{const b=button('',()=>{if(answered)return;answered=true;const ok=o.i===i;const s=stat(t);s.listeningAttempts++;if(ok){s.listeningCorrect++;frankaPraiseInSpanish(item[1])}save();renderStats();choices.querySelectorAll('button').forEach(x=>{x.disabled=true;if(x.dataset.index===String(i))x.classList.add('good')});if(!ok)b.classList.add('bad');feedback.className=ok?'a1-positive':'a1-negative';feedback.textContent=ok?'✅ ¡Muy bien! Dobra odpowiedź!':'↩️ Poprawny obrazek jest zaznaczony na zielono.';next.hidden=false},'');b.dataset.index=String(o.i);b.append(mk('span','',o.s[0]),mk('span','a1-detail','Obrazek '+(choices.children.length+1)));choices.append(b)});root.append(choices,feedback,next);$('a1Stage').replaceChildren(root)}
@@ -842,11 +951,11 @@ function say(es){if(typeof speak==='function')speak(es)}
 // was prepared from earlier supplied excerpts; it is NOT asserted to be fully verified.
 const notebookOtono=new Set('Pájaros|Uvas|Higos|Lluvia|Frío|Castañas|Calabaza|Hojas|Árbol|Setas|Hongos|Champiñones|Noches largas|Días cortos|Coliflor|Aguacate|Judías verdes|Manzana|Pera|Granadas|Nueces|Moras|Sol|Día|Noche|Rojo|Amarillo|Verde|Naranja|Negro|Morado|Azul|Gris|Rosa|Café|Marrón|Uno|Dos|Tres|Cuatro|Cinco|Seis|Siete|Ocho|Nueve|Diez'.split('|').map(v=>v.toLocaleLowerCase('es')));
 const bookInitial=new Set('Hola|Mucho gusto|Rojo|Amarillo|Verde|Azul|Negro|Rosa|Naranja|Marrón|Gracias|De nada'.split('|').map(v=>v.toLocaleLowerCase('es')));
-function schoolSource(u,c){const word=c[1].trim().toLocaleLowerCase('es');if(u===1&&notebookOtono.has(word))return 'Zeszyt Franka — Otoño, potwierdzone na dostarczonych stronach';if(u===0&&bookInitial.has(word))return 'Przesłane strony Unidad Inicial — potwierdzony przykład';if(u===1||u===2||u===3)return 'Rozdział opracowany z dostarczonych materiałów; pozycja do szczegółowej weryfikacji';return 'Materiał dodatkowy / demonstracyjny'}
-function isVerified(u,c){return (u===1&&notebookOtono.has(c[1].trim().toLocaleLowerCase('es')))||(u===0&&bookInitial.has(c[1].trim().toLocaleLowerCase('es')))}
+function schoolSource(u,c){const word=c[1].trim().toLocaleLowerCase('es');if(u===2&&INVIERNO_VERIFIED_20261106.has(word))return 'Zeszyt Franka — Invierno, potwierdzone na zdjęciu z 06.11.2026';if(u===1&&notebookOtono.has(word))return 'Zeszyt Franka — Otoño, potwierdzone na dostarczonych stronach';if(u===0&&bookInitial.has(word))return 'Przesłane strony Unidad Inicial — potwierdzony przykład';if(u===1||u===2||u===3)return 'Rozdział opracowany z dostarczonych materiałów; pozycja do szczegółowej weryfikacji';return 'Materiał dodatkowy / demonstracyjny'}
+function isVerified(u,c){return (u===2&&INVIERNO_VERIFIED_20261106.has(c[1].trim().toLocaleLowerCase('es')))||(u===1&&notebookOtono.has(c[1].trim().toLocaleLowerCase('es')))||(u===0&&bookInitial.has(c[1].trim().toLocaleLowerCase('es')))}
 function poolFor(u){const seen=new Set();return (units[u]?.cards||[]).filter(c=>{const key=c[2].toLocaleLowerCase('pl').trim();if(seen.has(key))return false;seen.add(key);return true})}
 // School checkpoints are limited to school chapters. Verified notebook material takes precedence.
-function schoolPool(u){if(![1,2,3,4].includes(u))return [];const source=window.frankaSeasons8.school[u];const seen=new Set();const all=source.filter(c=>{const k=c[2].toLowerCase().trim();if(seen.has(k))return false;seen.add(k);return true});const verified=all.filter(c=>isVerified(u,c));return verified.length>=4?verified:all}
+function schoolPool(u){if(![1,2,3,4].includes(u))return [];if(u===2)return INVIERNO_NOTEBOOK_20261106.slice();const source=window.frankaSeasons8.school[u];const seen=new Set();const all=source.filter(c=>{const k=c[2].toLowerCase().trim();if(seen.has(k))return false;seen.add(k);return true});const verified=all.filter(c=>isVerified(u,c));return verified.length>=4?verified:all}
 const foundation=window.frankaFoundation;
 const sentences={
  1:[['En otoño llueve.','Jesienią pada deszcz.','🌧️','¿Qué tiempo hace?','Llueve.'],['Las hojas son amarillas.','Liście są żółte.','🍂','¿De qué color son las hojas?','Son amarillas.'],['Veo un árbol.','Widzę drzewo.','🌳','¿Qué ves?','Veo un árbol.'],['Me gusta la manzana.','Lubię jabłko.','🍎','¿Qué te gusta?','Me gusta la manzana.']],
@@ -869,7 +978,7 @@ function openGame(type,u,incorrectOnly=false){
   const list=Array.from({length:Math.min(15,Math.max(6,shuffled.length))},(_,i)=>shuffled[i%shuffled.length]);
   test={type,u,pool,questions:list,idx:0,correct:0,incorrect:[],answered:false};
   $('s6TestTitle').textContent=(u===4?'📋 Test ćwiczeniowy: ':'📋 Checkpoint: ')+units[u].title;
-  $('s6TestSource').textContent=u===4?'⚠️ Verano: test z obecnego słownictwa demonstracyjnego. Nie został potwierdzony z podręcznikiem; wynik nie oznacza opanowania materiału szkolnego.':u===1?'Pytania z haseł potwierdzonych w dostarczonym zeszycie Otoño. Dodatkowe zwroty nie są w tym teście.':'Pytania z opracowanego rozdziału; zgodność poszczególnych pozycji z podręcznikiem wymaga dalszej weryfikacji.';
+  $('s6TestSource').textContent=u===4?'⚠️ Verano: test z obecnego słownictwa demonstracyjnego. Nie został potwierdzony z podręcznikiem; wynik nie oznacza opanowania materiału szkolnego.':u===1?'Pytania z haseł potwierdzonych w dostarczonym zeszycie Otoño. Dodatkowe zwroty nie są w tym teście.':u===2?'15 zwrotów potwierdzonych na stronie zeszytu Invierno z 06.11.2026. Dodatkowe zdania A1 nie są w tym teście.':'Pytania z opracowanego rozdziału; zgodność poszczególnych pozycji z podręcznikiem wymaga dalszej weryfikacji.';
  }else{
   const lesson=sentences[u]||[];
   if(!lesson.length){$('s6TestTitle').textContent='🗣️ Wyzwanie A1';$('s6TestSource').textContent='Do tego rozdziału przygotujemy zadania A1 w kolejnej aktualizacji.';answer.textContent='Brak wyzwania A1 dla tego tematu. Wybierz Otoño, Invierno, Primavera lub Verano.';return}
@@ -1416,7 +1525,7 @@ const box=document.createElement('section');box.className='s16-box';box.id='s16S
 const place=()=>{const target=document.getElementById('s15ParentSlot') || document.getElementById('parentNotes') || document.querySelector('main');if(target&&!document.getElementById('s16Safety')){target.append(box);wire()}};
 let pending=null,installPrompt=null;
 function wire(){const $=id=>document.getElementById(id),status=t=>$('s16Status').textContent=t;
- $('s16Export').onclick=()=>{try{const data=collect();if(!Object.keys(data).length){status('Nie znaleziono zapisanych postępów w tej przeglądarce.');return}const payload={format:'hiszpanski-franka-backup',schema:1,appVersion:'16.0',exportedAt:new Date().toISOString(),data};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`hiszpanski-franka-kopia-${new Date().toISOString().slice(0,10)}.json`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);status(`Pobrano kopię: ${Object.keys(data).length} obszarów danych. Zachowaj plik w bezpiecznym miejscu.`)}catch(e){status('Nie udało się utworzyć kopii. Sprawdź ustawienia pamięci i spróbuj ponownie.')}};
+ $('s16Export').onclick=()=>{try{const data=collect();if(!Object.keys(data).length){status('Nie znaleziono zapisanych postępów w tej przeglądarce.');return}const payload={format:'hiszpanski-franka-backup',schema:1,appVersion:'17.0',exportedAt:new Date().toISOString(),data};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`hiszpanski-franka-kopia-${new Date().toISOString().slice(0,10)}.json`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);status(`Pobrano kopię: ${Object.keys(data).length} obszarów danych. Zachowaj plik w bezpiecznym miejscu.`)}catch(e){status('Nie udało się utworzyć kopii. Sprawdź ustawienia pamięci i spróbuj ponownie.')}};
  $('s16Import').onclick=()=>{$('s16File').value='';$('s16File').click()};
  $('s16File').onchange=async e=>{pending=null;$('s16Restore').classList.remove('is-open');const f=e.target.files?.[0];if(!f)return;if(f.size>3*1024*1024){status('Plik jest za duży. Limit 3 MB.');return}try{const obj=JSON.parse(await f.text());if(obj?.format!=='hiszpanski-franka-backup'||obj?.schema!==1||!obj.data||typeof obj.data!=='object'||Array.isArray(obj.data))throw Error('format');const entries=Object.entries(obj.data);if(!entries.length||entries.length>50||entries.some(([k,v])=>!appKey(k)||typeof v!=='string'||v.length>700000)||!Number.isFinite(Date.parse(obj.exportedAt)))throw Error('keys');for(const [k,v] of entries)JSON.parse(v);pending=obj.data;$('s16RestoreSummary').textContent=`Kopia z ${new Date(obj.exportedAt).toLocaleDateString('pl-PL')} · ${entries.length} obszarów postępów`;$('s16Confirm').checked=false;$('s16Apply').disabled=true;$('s16Restore').classList.add('is-open');status('Sprawdź szczegóły i potwierdź przywrócenie kopii.')}catch(e){status('To nie jest prawidłowa kopia aplikacji. Żadnych danych nie zmieniono.')}};
  $('s16Confirm').onchange=e=>$('s16Apply').disabled=!e.target.checked;
