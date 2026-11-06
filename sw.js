@@ -1,5 +1,5 @@
 /* Hiszpański Franka PWA v16.0. Cache app shell only; user progress stays in localStorage. */
-const CACHE='franka-pwa-v16-0-stable154';
+const CACHE='franka-pwa-v17-1-junior-invierno';
 const APP_FILES=['./','./index.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP_FILES)));
