@@ -217,7 +217,7 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style></head>
 <body><div class="app">
-<header><div><h1>🇪🇸 Hiszpański Franka</h1><p>Małe kroki. Wielka przygoda. · v17.1</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
+<header><div><h1>🇪🇸 Hiszpański Franka</h1><p>Małe kroki. Wielka przygoda. · v19.1</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
 <main>
 <section class="home-screen panel" id="homeScreen"><h2>¡Vamos, Franek! 🇪🇸</h2><p>Jak chcesz się dzisiaj uczyć?</p><div class="home-tiles"><button data-enter="car">🚗<strong>Tryb samochodowy</strong><span>Słucham i powtarzam — bez patrzenia w ekran</span></button><button data-enter="learn">🎮<strong>Centrum nauki</strong><span>Fiszki, quizy i pięć gier</span></button></div></section><div hidden="" id="workArea"><nav class="home-nav"><button class="secondary" id="backHome">🏠 Menu główne</button><span id="modeLabel"></span></nav><div id="carArea"><section aria-labelledby="carTitle" class="car-mode"><h2 id="carTitle">🚗 Tryb samochodowy — 10 minut</h2><p>Aktywna nauka przez słuchanie: Franek usłyszy słowo lub zwrot po hiszpańsku, chwilę na odpowiedź i odpowiedź po polsku. Nie trzeba patrzeć na ekran ani niczego dotykać w trakcie jazdy.</p><label for="carUnit"><strong>Rozdział do słuchania</strong></label><br/><select id="carUnit"></select><div class="car-controls"><button id="carStart">▶ Rozpocznij 10 minut</button><button class="secondary" disabled="" id="carPause">⏸ Pauza</button><button class="secondary" disabled="" id="carStop">■ Zakończ</button></div><div aria-live="polite" class="car-status" id="carStatus" role="status">Gotowe do rozpoczęcia. Wybierz rozdział.</div><div aria-label="Postęp sesji" class="car-progress"><span id="carProgress"></span></div><p class="small" id="carClock">Pozostało: 10:00</p><div class="car-note"><strong>Bezpieczeństwo:</strong> kierowca nie powinien obsługiwać ekranu. Uruchom sesję przed ruszeniem lub poproś pasażera. Quiz z przyciskami jest dostępny wyłącznie po zaznaczeniu, że samochód stoi — aplikacja nie wykrywa ruchu pojazdu.</div><label class="mode" style="margin-top:12px"><input id="carParked" type="checkbox"/> Samochód stoi bezpiecznie — odblokuj quiz ekranowy</label><div class="car-controls"><button class="secondary" disabled="" id="carQuiz">🎯 Quiz (tylko na postoju)</button></div></section></div><div id="learnArea"><div class="notice ux-source-note"><strong>📚 Szkoła najpierw, potem droga do A1.</strong> Cztery etapy odpowiadają porom roku. Rozszerzenia A1 są dodatkowymi ćwiczeniami; nie przypisujemy ich podręcznikowi. Verano nadal wymaga potwierdzenia materiału szkolnego.</div>
 <div class="stats"><span class="pill">⭐ Punkty: <span id="points">0</span></span><span class="pill">✅ Umiem: <span id="learnedCount">0</span></span><span class="pill">🔁 Do powtórki: <span id="reviewCount">0</span></span><span class="pill">💾 Postępy zapisują się na tym urządzeniu</span></div>
@@ -314,6 +314,7 @@ window.frankaStore={
 };
 function saveMeta(m){native.setItem(META,JSON.stringify(m));meta=m}
 function switchTo(id){if(!meta.profiles.some(p=>p.id===id))return;saveMeta({...meta,active:id});location.reload()}
+window.hfProfiles19={getMeta:()=>JSON.parse(JSON.stringify(meta)),switchTo,saveMeta,createProfile(name,avatar){const n=String(name||'').trim();if(!n||n.length>30||meta.profiles.length>=12)throw Error('Podaj imię (1–30 znaków); maksymalnie 12 profili.');const id='p-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);saveMeta({...meta,profiles:[...meta.profiles,{id,name:n,avatar:avatar||'🦊',createdAt:new Date().toISOString()}],active:id});location.reload()},setAvatar(id,avatar){saveMeta({...meta,profiles:meta.profiles.map(p=>p.id===id?{...p,avatar}:p)})}};
 function exportAll(){const profiles={};for(const p of meta.profiles){const d={},pre=PREFIX+p.id+':';for(let i=0;i<native.length;i++){const k=native.key(i);if(k.startsWith(pre)&&valid(k.slice(pre.length)))d[k.slice(pre.length)]=native.getItem(k)}profiles[p.id]=d}return {format:'hiszpanski-franka-backup',schema:2,appVersion:'18.0',exportedAt:new Date().toISOString(),profiles:meta.profiles,active:meta.active,data:profiles}}
 function download(obj){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='hiszpanski-franka-v18-kopia-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500)}
 function checkPayload(o){if(o?.format!=='hiszpanski-franka-backup'||![1,2].includes(o.schema))throw Error('Nieobsługiwany format kopii');let entries=[];
@@ -322,7 +323,7 @@ function checkPayload(o){if(o?.format!=='hiszpanski-franka-backup'||![1,2].inclu
  if(entries.length>300||entries.some(([k,v])=>!valid(k)||typeof v!=='string'||v.length>700000))throw Error('Nieprawidłowe klucze');for(const [,v] of entries)JSON.parse(v);return o}
 function render(){const host=document.getElementById('s15ParentSlot')||document.getElementById('parentNotes')||document.querySelector('main')||document.body;
  const section=document.createElement('section');section.className='s16-box';section.id='s18Profiles';section.innerHTML='<h3>👨‍👩‍👦 Profile i bezpieczeństwo · Sprint 18</h3><p id="hf18status" role="status"></p><div class="s16-controls"><select id="hf18select" aria-label="Wybierz profil"></select><button id="hf18switch" type="button">Przełącz profil</button><button id="hf18new" type="button">＋ Nowy profil</button></div><div class="s16-controls"><button id="hf18export" type="button">↓ Kopia wszystkich profili JSON</button><button id="hf18import" type="button">↑ Import JSON</button><input id="hf18file" type="file" accept=".json,application/json" hidden></div><p class="s16-offline">Postępy są lokalne na tym urządzeniu. Aktualizacja kodu nie usuwa danych. Przed testem importu wykonaj eksport i użyj drugiego profilu przeglądarki.</p>';
- host.append(section);const $=id=>document.getElementById(id),status=t=>$('hf18status').textContent=t;
+ host.append(section);section.classList.add('hf19-legacy-backups');const $=id=>document.getElementById(id),status=t=>$('hf18status').textContent=t;
  if(!meta){status('⚠️ Migracja nie powiodła się: '+error+'. Oryginalne dane pozostają nietknięte. Nie zapisuj nowych postępów, dopóki nie rozwiążesz problemu.');section.querySelectorAll('button,select').forEach(el=>el.disabled=true);return}
  for(const p of meta.profiles){const opt=document.createElement('option');opt.value=p.id;opt.textContent=p.name;$('hf18select').append(opt)}$('hf18select').value=meta.active;status('Aktywny profil: '+meta.profiles.find(p=>p.id===meta.active).name+' · oryginalne dane z 17.1 zachowane.');
  $('hf18switch').onclick=()=>switchTo($('hf18select').value);
@@ -1567,4 +1568,67 @@ window.frankaLevel14={render,definitions,weekStart};
 @media(max-width:520px){.s16-controls{flex-direction:column}.s16-controls button{width:100%}}
 </style>
 
+<style id="hf19Style">
+:root{--hf19-ink:#15283e;--hf19-blue:#284e78;--hf19-gold:#f5ca74}
+.hf19-legacy-backups .s16-controls:first-of-type{display:none!important}
+#hf19Launcher{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #dbe5ef;color:#193b60;border-radius:999px;padding:7px 12px;cursor:pointer;font:600 14px system-ui;box-shadow:0 3px 14px #15283e14;max-width:220px}
+#hf19Launcher:hover,#hf19Launcher:focus-visible{outline:2px solid #f5ca74;outline-offset:2px}
+#hf19Launcher .hf19-mini{width:31px;height:31px;border-radius:50%;background:#e6eff9;display:grid;place-items:center;font-size:20px}
+#hf19Launcher .hf19-chevron{font-size:11px;color:#59738d}
+#hf19Overlay{position:fixed;inset:0;background:#071c31bd;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(7px)}
+#hf19Overlay.hf19-open{display:flex}
+#hf19Dialog{width:min(520px,100%);max-height:min(90vh,760px);overflow:auto;background:#fff;border-radius:26px;box-shadow:0 24px 85px #0006;color:var(--hf19-ink);font:15px/1.45 system-ui,sans-serif}
+.hf19-hero{background:linear-gradient(135deg,#142c4a,#315b83);padding:24px 26px 28px;color:white;text-align:center;position:relative}
+.hf19-hero h2{color:#fff;font-size:27px;margin:8px 0 3px}.hf19-hero p{margin:0;color:#d4e3f2;font-size:14px}
+.hf19-close{position:absolute;right:13px;top:12px;border:0;border-radius:50%;background:#ffffff20;color:#fff;width:35px;height:35px;cursor:pointer;font-size:23px}
+.hf19-content{padding:22px 24px 26px}.hf19-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.hf19-profile{border:2px solid #e2e9f0;background:#f8fafc;border-radius:18px;padding:16px 10px;display:flex;align-items:center;flex-direction:column;gap:7px;cursor:pointer;color:#203a56;min-height:135px}
+.hf19-profile[aria-pressed="true"]{border-color:#d49a35;background:#fff8e9;box-shadow:0 0 0 2px #f7d99944}
+.hf19-face{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:#e7eff8;font-size:34px}
+.hf19-profile strong{font-size:16px;overflow-wrap:anywhere}.hf19-profile small{font-size:12px;color:#60788f}
+.hf19-actions{display:flex;gap:10px;margin-top:18px}.hf19-primary{flex:1;border:0;border-radius:13px;background:#f5ca74;color:#18324d;font-weight:750;padding:14px;cursor:pointer;font-size:15px}
+.hf19-secondary{border:1px solid #c9d7e6;background:white;color:#244968;border-radius:13px;padding:13px;cursor:pointer}
+.hf19-form{margin-top:15px;padding:14px;border-radius:15px;background:#f1f5f9}.hf19-form label{display:block;font-weight:650;margin-bottom:6px}
+.hf19-form input{width:100%;box-sizing:border-box;border:1px solid #aebfd1;border-radius:10px;padding:11px;background:white;color:#172c43}
+.hf19-avatars{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.hf19-avatar{border:2px solid transparent;border-radius:11px;background:#fff;font-size:25px;padding:6px;cursor:pointer}.hf19-avatar[aria-pressed="true"]{border-color:#ca922d}
+#hf19Message{min-height:18px;font-size:13px;color:#9d3c2d;margin-top:8px}.hf19-hint{font-size:12px;color:#677d90;margin:10px 0 0}
+@media(max-width:450px){.hf19-hero{padding:20px}.hf19-content{padding:17px}.hf19-list{gap:9px}.hf19-profile{padding:12px 6px}}
+@media(prefers-reduced-motion:no-preference){#hf19Dialog{animation:hf19In .2s ease-out}@keyframes hf19In{from{opacity:.6;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}}
+</style>
+<script id="hf19Script">
+/* Sprint 19.1 — Profile Experience: presentation-only enhancement of v18 storage. */
+(function(){'use strict';
+const api=window.hfProfiles19;if(!api)return;
+const avatars=['🦊','⚽','🐯','🦁','🐼','🦄','🚀','🌟','🐸','🐨'];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let selected=api.getMeta().active,chosenAvatar='🦊',previousFocus=null;
+const current=()=>api.getMeta().profiles.find(p=>p.id===api.getMeta().active);
+function personalise(){
+ const name=current()?.name||'Franek';
+ const target=$('s15Today')?.querySelector('h1');if(target){target.replaceChildren(document.createTextNode('¡Hola, '+name+'! '));const wave=document.createElement('span');wave.setAttribute('aria-hidden','true');wave.textContent='👋';target.append(wave)}
+ const home=$('homeScreen')?.querySelector('h2');if(home)home.textContent='¡Vamos, '+name+'! 🇪🇸';
+ const car=$('carArea')?.querySelector('.car-mode > p');if(car)car.textContent='Aktywna nauka przez słuchanie: '+name+' usłyszy słowo lub zwrot po hiszpańsku, chwilę na odpowiedź i odpowiedź po polsku. Nie trzeba patrzeć w ekran ani niczego dotykać w trakcie jazdy.';
+ const header=document.querySelector('header h1');if(header)header.textContent='🇪🇸 Hiszpański — '+name;
+ const brand=document.querySelector('.s15-brand strong');if(brand)brand.textContent='Hiszpański — '+name;
+}
+function draw(){const meta=api.getMeta();const list=$('hf19List');list.replaceChildren();for(const p of meta.profiles){const b=document.createElement('button');b.type='button';b.className='hf19-profile';b.setAttribute('aria-pressed',String(selected===p.id));b.innerHTML='<span class="hf19-face" aria-hidden="true">'+esc(p.avatar||'🦊')+'</span><strong>'+esc(p.name)+'</strong><small>'+(p.id===meta.active?'Aktywny profil':'Wybierz profil')+'</small>';b.onclick=()=>{selected=p.id;draw()};list.append(b)}const add=document.createElement('button');add.type='button';add.className='hf19-profile';add.innerHTML='<span class="hf19-face" aria-hidden="true">＋</span><strong>Nowy profil</strong><small>Dodaj ucznia</small>';add.onclick=()=>showForm();list.append(add);$('hf19Go').textContent=selected===meta.active?'Kontynuuj naukę →':'Przełącz profil →';}
+function showForm(){const f=$('hf19Form');f.hidden=false;$('hf19Name').value='';chosenAvatar='🦊';drawAvatars();$('hf19Name').focus()}
+function drawAvatars(){const a=$('hf19Avatars');a.replaceChildren();avatars.forEach(em=>{const b=document.createElement('button');b.type='button';b.className='hf19-avatar';b.textContent=em;b.setAttribute('aria-label','Awatar '+em);b.setAttribute('aria-pressed',String(chosenAvatar===em));b.onclick=()=>{chosenAvatar=em;drawAvatars()};a.append(b)})}
+function open(){previousFocus=document.activeElement;selected=api.getMeta().active;$('hf19Form').hidden=true;$('hf19Message').textContent='';draw();$('hf19Overlay').classList.add('hf19-open');$('hf19Close').focus()}
+function close(){$('hf19Overlay').classList.remove('hf19-open');previousFocus?.focus?.()}
+function setup(){if($('hf19Launcher'))return;const overlay=document.createElement('div');overlay.id='hf19Overlay';overlay.innerHTML='<div id="hf19Dialog" role="dialog" aria-modal="true" aria-labelledby="hf19Title"><div class="hf19-hero"><button type="button" class="hf19-close" id="hf19Close" aria-label="Zamknij">×</button><div style="font-size:27px">🇪🇸 ✨</div><h2 id="hf19Title">¡Hola!</h2><p>Kto dzisiaj wyrusza na przygodę?</p></div><div class="hf19-content"><div class="hf19-list" id="hf19List"></div><div class="hf19-form" id="hf19Form" hidden><label for="hf19Name">Jak masz na imię?</label><input id="hf19Name" maxlength="30" autocomplete="off" placeholder="Wpisz imię"/><label style="margin-top:12px">Wybierz awatar</label><div id="hf19Avatars" class="hf19-avatars"></div><button type="button" class="hf19-primary" id="hf19Create">Utwórz profil</button></div><div id="hf19Message" role="status" aria-live="polite"></div><div class="hf19-actions"><button type="button" class="hf19-secondary" id="hf19Cancel">Anuluj</button><button type="button" class="hf19-primary" id="hf19Go">Kontynuuj naukę →</button></div><p class="hf19-hint">Każdy profil ma własne postępy. Kopie zapasowe znajdziesz w panelu rodzica.</p></div></div>';document.body.append(overlay);
+ const launcher=document.createElement('button');launcher.type='button';launcher.id='hf19Launcher';launcher.setAttribute('aria-label','Zmień profil');const c=current();launcher.innerHTML='<span class="hf19-mini">'+esc(c?.avatar||'🦊')+'</span><span>'+esc(c?.name||'Profil')+'</span><span class="hf19-chevron">▾</span>';
+ const top=$('s15Shell')?.querySelector('.s15-topbar');if(top)top.append(launcher);else document.querySelector('header')?.append(launcher);
+ launcher.onclick=open;$('hf19Close').onclick=close;$('hf19Cancel').onclick=close;
+ $('hf19Go').onclick=()=>{if(selected===api.getMeta().active)close();else api.switchTo(selected)};
+ $('hf19Create').onclick=()=>{try{api.createProfile($('hf19Name').value,chosenAvatar)}catch(e){$('hf19Message').textContent=e.message}};
+ $('hf19Name').addEventListener('keydown',e=>{if(e.key==='Enter')$('hf19Create').click()});
+ overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
+ overlay.addEventListener('keydown',e=>{if(e.key==='Escape')close();if(e.key==='Tab'){const nodes=[...overlay.querySelectorAll('button:not([disabled]),input:not([disabled])')].filter(el=>el.getClientRects().length);if(!nodes.length)return;const first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
+ personalise();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(setup,0));else setTimeout(setup,0);
+})();
+</script>
 </body></html>
