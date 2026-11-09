@@ -1631,4 +1631,59 @@ function setup(){if($('hf19Launcher'))return;const overlay=document.createElemen
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(setup,0));else setTimeout(setup,0);
 })();
 </script>
+<style>
+/* Sprint 19.2 — parent dashboard */
+#hf192Open{position:fixed;right:16px;bottom:16px;z-index:8990;border:0;border-radius:999px;background:#17385a;color:#fff;padding:12px 18px;box-shadow:0 5px 22px #102b4540;font:600 14px system-ui;cursor:pointer}
+#hf192Shade{position:fixed;inset:0;background:#0b1b30b8;z-index:9100;display:none;align-items:center;justify-content:center;padding:15px;box-sizing:border-box}
+#hf192Shade.hf192-visible{display:flex}#hf192Dialog{background:#fff;color:#21344b;border-radius:20px;max-width:840px;width:100%;max-height:90vh;overflow:auto;padding:22px;box-sizing:border-box;font:15px system-ui;box-shadow:0 20px 65px #0005}
+#hf192Dialog h2{margin:0 0 8px}#hf192Dialog h3{margin:15px 0 8px}#hf192Dialog button{cursor:pointer;border-radius:9px;padding:10px 13px;border:1px solid #c6d6e4;background:#eef5fc;color:#17385a;font-weight:600}#hf192Dialog button.hf192-primary{background:#174f80;color:white;border-color:#174f80}#hf192Dialog input,#hf192Dialog select{font:inherit;padding:10px;border:1px solid #b8cadb;border-radius:9px;max-width:100%;box-sizing:border-box}#hf192Dialog .hf192-top{display:flex;justify-content:space-between;align-items:center;gap:12px}#hf192Dialog .hf192-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin:16px 0}#hf192Dialog .hf192-tile{padding:15px;background:#f0f6fb;border-radius:12px}#hf192Dialog .hf192-tile strong{font-size:23px;display:block}#hf192Dialog .hf192-muted{color:#61758a;font-size:13px}#hf192Dialog .hf192-row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #e5edf5;padding:9px 0}#hf192Dialog .hf192-meter{height:9px;border-radius:8px;background:#e5edf5;overflow:hidden;margin-top:5px}#hf192Dialog .hf192-meter span{height:100%;background:#378d82;display:block}#hf192Dialog .hf192-error{color:#a12d2d}#hf192Dialog .hf192-controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:14px 0}#hf192Dialog [hidden]{display:none!important}
+</style>
+<script>
+/* Sprint 19.2: read-only statistics, local PIN gate, no alteration to learning storage. */
+(()=>{'use strict';
+const PINKEY='hf192:parent-pin',LOCK='hf192:lock',SESSION='hf192:unlocked';
+const get=id=>document.getElementById(id), native=window.localStorage;
+const safeParse=(raw)=>{try{return JSON.parse(raw)}catch{return null}};
+const profileApi=()=>window.hfProfiles19;
+const profiles=()=>profileApi()?.getMeta()?.profiles||[];
+const getProfileData=(id)=>{const result={},prefix='hf18:p:'+id+':';for(let i=0;i<native.length;i++){const k=native.key(i);if(k&&k.startsWith(prefix))result[k.slice(prefix.length)]=safeParse(native.getItem(k))}return result};
+const number=v=>Number.isFinite(Number(v))?Number(v):0;
+const fmt=v=>new Intl.NumberFormat('pl-PL').format(v);
+const html=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function hash(pin,salt){const data=new TextEncoder().encode('hf192:'+salt+':'+pin);const digest=await crypto.subtle.digest('SHA-256',data);return Array.from(new Uint8Array(digest)).map(x=>x.toString(16).padStart(2,'0')).join('')}
+function lockState(){const s=safeParse(native.getItem(LOCK));return s&&typeof s==='object'?s:{fails:0,until:0}}
+function locked(){return Math.max(0,lockState().until-Date.now())}
+function status(msg,error=false){get('hf192Message').textContent=msg;get('hf192Message').className=error?'hf192-error':'hf192-muted'}
+function setView(which){for(const name of ['setup','login','dashboard'])get('hf192'+name).hidden=which!==name}
+function pinValid(s){return /^\d{4}$/.test(s)}
+function close(){get('hf192Shade').classList.remove('hf192-visible');get('hf192Open').focus()}
+function show(){get('hf192Shade').classList.add('hf192-visible');status('');const config=safeParse(native.getItem(PINKEY));if(!config)setView('setup');else if(sessionStorage.getItem(SESSION)==='yes'){setView('dashboard');render()}else setView('login')}
+async function setup(){const a=get('hf192NewPin').value,b=get('hf192RepeatPin').value;if(!pinValid(a)||a!==b){status('PIN musi mieć dokładnie 4 cyfry i być identyczny w obu polach.',true);return}try{const salt=Array.from(crypto.getRandomValues(new Uint8Array(16))).map(x=>x.toString(16).padStart(2,'0')).join('');native.setItem(PINKEY,JSON.stringify({schema:1,salt,digest:await hash(a,salt)}));sessionStorage.setItem(SESSION,'yes');get('hf192NewPin').value=get('hf192RepeatPin').value='';setView('dashboard');render()}catch(e){status('Nie udało się zapisać PIN-u. Sprawdź dostępność pamięci i bezpiecznego połączenia.',true)}}
+async function login(){const wait=locked();if(wait){status('Zbyt wiele prób. Spróbuj ponownie za '+Math.ceil(wait/60000)+' min.',true);return}const pin=get('hf192Pin').value,config=safeParse(native.getItem(PINKEY));if(!pinValid(pin)||!config){status('Wprowadź czterocyfrowy PIN.',true);return}try{const ok=(await hash(pin,config.salt))===config.digest;get('hf192Pin').value='';if(ok){native.removeItem(LOCK);sessionStorage.setItem(SESSION,'yes');setView('dashboard');render();return}const prev=lockState(),fails=prev.fails+1;native.setItem(LOCK,JSON.stringify({fails:fails>=5?0:fails,until:fails>=5?Date.now()+5*60000:0}));status(fails>=5?'Pięć błędnych prób. Blokada na 5 minut.':'Nieprawidłowy PIN.',true)}catch(e){status('Nie udało się zweryfikować PIN-u.',true)}}
+function stat(data){
+ const base=data.hiszpanskiFrankaProgressV1||{},mastery=base.mastery&&typeof base.mastery==='object'?Object.values(base.mastery):[];
+ const learned=mastery.filter(x=>x&&number(x.right)>=3&&number(x.right)/(number(x.right)+number(x.wrong)||1)>=.8&&number(x.streak)>=2).length;
+ const due=mastery.filter(x=>x&&number(x.due)>0&&number(x.due)<=Date.now()).length;
+ const tricky=mastery.filter(x=>x&&number(x.wrong)>number(x.right)).length;
+ const a1=data.hiszpanskiFrankaA1ProgressV1||{};
+ const a1items=Object.values(a1).filter(x=>x&&typeof x==='object');
+ const attempts=a1items.reduce((a,x)=>a+number(x.listeningAttempts),0),correct=a1items.reduce((a,x)=>a+number(x.listeningCorrect),0);
+ const seasons=['Otoño','Invierno','Primavera','Verano'];
+ const bySeason=seasons.map((name,i)=>{const count=mastery.filter(x=>x&&typeof x==='object'&&false).length;const entries=Object.entries(base.mastery||{}).filter(([key])=>key.startsWith((i+1)+'|'));const mastered=entries.filter(([,x])=>x&&number(x.right)>=3&&number(x.right)/(number(x.right)+number(x.wrong)||1)>=.8&&number(x.streak)>=2).length;return {name,practiced:entries.length,mastered}});
+ return {base,mastery,learned,due,tricky,attempts,correct,bySeason};
+}
+function render(){const list=profiles(),selector=get('hf192Profile'),previous=selector.value;selector.replaceChildren();for(const p of list){const option=document.createElement('option');option.value=p.id;option.textContent=p.name;selector.append(option)}selector.value=list.some(p=>p.id===previous)?previous:(profileApi()?.getMeta()?.active||list[0]?.id||'');if(!selector.value){get('hf192Stats').textContent='Brak profili.';return}const selected=list.find(p=>p.id===selector.value),data=getProfileData(selector.value),st=stat(data);
+ const tiles=[['Opanowane słówka',fmt(st.learned)],['Do powtórki',fmt(st.due)],['Trudne słówka',fmt(st.tricky)],['Wyniki słuchania',st.attempts?Math.round(st.correct/st.attempts*100)+'%':'Brak danych']];
+ let out='<p class="hf192-muted">Statystyki profilu '+html(selected?.name||'')+'. Dane pochodzą z zapisanych wyników na tym urządzeniu. Brak danych nie oznacza braku nauki.</p><div class="hf192-grid">'+tiles.map(([label,value])=>'<div class="hf192-tile"><strong>'+html(value)+'</strong>'+html(label)+'</div>').join('')+'</div>';
+ out+='<h3>Postępy według pór roku</h3><p class="hf192-muted">Liczba ćwiczonych i opanowanych słówek z historii inteligentnych powtórek; nie jest to procent całego podręcznika.</p>';
+ for(const x of st.bySeason){out+='<div class="hf192-row"><span>'+html(x.name)+'</span><span>'+x.mastered+' opanowanych / '+x.practiced+' ćwiczonych</span></div><div class="hf192-meter"><span style="width:'+(x.practiced?Math.min(100,Math.round(x.mastered/x.practiced*100)):0)+'%"></span></div>'}
+ out+='<h3>Rekomendacja</h3><p>'+(st.due?'Warto powtórzyć '+st.due+' słówek, dla których minął termin powtórki.':st.tricky?'Zacznij od '+st.tricky+' trudniejszych słówek.':'Brak zaległych powtórek w zapisanych danych. Można kontynuować aktualną ścieżkę nauki.')+'</p>';
+ out+='<p class="hf192-muted">Historia dni nauki: brak wiarygodnych danych dziennych w dotychczasowym zapisie — nie wyświetlamy sztucznych serii ani czasu nauki. PIN chroni interfejs przed przypadkowym dostępem, ale nie jest zabezpieczeniem przed osobą z dostępem do pamięci przeglądarki.</p>';
+ get('hf192Stats').innerHTML=out;
+}
+function init(){if(get('hf192Open'))return;const open=document.createElement('button');open.id='hf192Open';open.type='button';open.textContent='🔒 Dla rodzica';document.body.append(open);const shade=document.createElement('div');shade.id='hf192Shade';shade.innerHTML=`<section id="hf192Dialog" role="dialog" aria-modal="true" aria-labelledby="hf192Title"><div class="hf192-top"><h2 id="hf192Title">👨‍👩‍👧 Panel rodzica</h2><button id="hf192Close" type="button" aria-label="Zamknij">✕</button></div><p id="hf192Message" role="status"></p><div id="hf192setup" hidden><p>Ustaw 4-cyfrowy PIN rodzica. Zapamiętaj go — aplikacja nie ma zdalnego odzyskiwania PIN-u.</p><div class="hf192-controls"><input id="hf192NewPin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" placeholder="Nowy PIN" aria-label="Nowy PIN"><input id="hf192RepeatPin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" placeholder="Powtórz PIN" aria-label="Powtórz PIN"><button class="hf192-primary" id="hf192SetPin" type="button">Zapisz PIN</button></div></div><div id="hf192login" hidden><p>Wprowadź PIN rodzica.</p><div class="hf192-controls"><input id="hf192Pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" placeholder="PIN" aria-label="PIN rodzica"><button class="hf192-primary" id="hf192Login" type="button">Otwórz panel</button></div></div><div id="hf192dashboard" hidden><div class="hf192-controls"><label for="hf192Profile">Uczeń</label><select id="hf192Profile"></select><button id="hf192Lock" type="button">🔒 Zablokuj panel</button></div><div id="hf192Stats"></div></div></section>`;document.body.append(shade);
+ open.onclick=show;get('hf192Close').onclick=close;shade.addEventListener('click',e=>{if(e.target===shade)close()});get('hf192SetPin').onclick=setup;get('hf192Login').onclick=login;get('hf192Profile').onchange=render;get('hf192Lock').onclick=()=>{sessionStorage.removeItem(SESSION);setView('login');status('Panel zablokowany.')};document.addEventListener('keydown',e=>{if(e.key==='Escape'&&shade.classList.contains('hf192-visible'))close()});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
 </body></html>
