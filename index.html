@@ -285,6 +285,62 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 <section class="panel epic-games" hidden="" id="epicGames"><button class="secondary" id="uxCloseGames" type="button">← Wróć do wyboru ćwiczenia</button><h2>🎮 Gry edukacyjne</h2><p class="small">Wybierz rozdział, grę i poziom trudności.</p><div class="game-setup"><label>Rozdział <select id="epicUnit"></select></label><label>Poziom <select id="epicLevel"><option value="easy">⭐ Łatwy</option><option value="medium">⭐⭐ Średni</option><option value="hard">⭐⭐⭐ Trudny</option></select></label></div><div class="game-menu" id="epicMenu"><button data-epic="memory">🧠 Memory z ilustracjami</button><button data-epic="sentence-memory">🗣️ Memory ze zdaniami</button><button data-epic="audio">🎧 Zgadnij ze słuchu</button><button data-epic="match">🎯 Dopasuj pary</button><button data-epic="letters">🔤 Rozsypanka liter</button><button data-epic="timed">⏱️ Wyzwanie 60 sekund</button></div><div class="junior-setup"><label><input checked="" id="juniorMode" type="checkbox"/> 🌟 Rozsypanka Junior: obrazek, odsłuch i pomoc</label><p class="small">Dotyczy rozsypanki. Odznacz, aby grać w klasyczną wersję.</p></div><div class="epic-stage" hidden="" id="epicStage"><div class="stage-top"><h3 id="epicTitle"></h3><button class="secondary" id="epicExit">← Wybierz grę</button></div><p class="small" id="epicScore"></p><div id="epicContent"></div><p aria-live="polite" class="feedback" id="epicFeedback"></p></div></section><section class="parent-notes panel" id="parentNotes"><details><summary>ℹ️ Dla rodzica · urządzenia i informacje techniczne</summary><div class="crossplatform"><h3>Jedna aplikacja na wszystkie urządzenia</h3><p style="margin:0 0 12px">Aplikacja działa w przeglądarce na komputerze i urządzeniach mobilnych. Wersja 16.0 obsługuje instalację PWA i pamięć offline po pierwszym wczytaniu online. Wymaga publikacji wszystkich plików paczki.</p><div class="platforms"><span>🖥️ Windows / Mac</span><span>🤖 Android</span><span>📱 iPhone / iPad</span></div><p class="small" style="margin:12px 0 0">Publikacja w App Store i Google Play to osobny etap; prototyp nie jest jeszcze opublikowaną aplikacją.</p></div><p class="small">Postępy są zapisane lokalnie w tej przeglądarce. Dostępność głosu hiszpańskiego zależy od urządzenia i połączenia.</p></details></section><footer>Wymowa zależy od głosu hiszpańskiego dostępnego na urządzeniu. Przycisk audio korzysta z wbudowanego syntezatora mowy, więc głos i działanie offline mogą różnić się między urządzeniami. W tej wersji nie ma jeszcze oryginalnych nagrań z podręcznika.</footer>
 </div></div></main></div>
 <script>
+/* Sprint 18.0: additive migration, immutable legacy data, isolated profile storage. */
+(function(){'use strict';
+const native=window.localStorage, META='hf18:meta', PREFIX='hf18:p:', SNAP='hf18:legacy-snapshot';
+const valid=k=>/^(hiszpanskiFranka[A-Za-z0-9_-]{0,100}|franka(?:Ux|Learning|Progress)[A-Za-z0-9_-]{0,100})$/i.test(k);
+const read=(k,d)=>{try{return JSON.parse(native.getItem(k))??d}catch{return d}};
+const rawLegacy=()=>{const d={};for(let i=0;i<native.length;i++){const k=native.key(i);if(valid(k))d[k]=native.getItem(k)}return d};
+let meta=read(META,null), error='';
+try{
+ if(!meta){const old=rawLegacy();const id='franek';const stamp=new Date().toISOString();
+   // First make an independent immutable copy; never remove original keys.
+   if(native.getItem(SNAP)===null)native.setItem(SNAP,JSON.stringify({createdAt:stamp,data:old}));
+   for(const [k,v] of Object.entries(old))native.setItem(PREFIX+id+':'+k,v);
+   meta={schema:1,active:id,profiles:[{id,name:'Franek',createdAt:stamp}],migratedAt:stamp};
+   native.setItem(META,JSON.stringify(meta));
+ }
+ if(!Array.isArray(meta.profiles)||!meta.profiles.some(p=>p.id===meta.active))throw Error('profile metadata');
+}catch(e){error=String(e.message||e);meta=null}
+const active=()=>meta?.active||null;
+const key=k=>PREFIX+active()+':'+k;
+window.frankaStore={
+ getItem(k){return active()?native.getItem(key(k)):native.getItem(k)},
+ setItem(k,v){if(!active())throw Error('Profile migration failed');native.setItem(key(k),String(v))},
+ removeItem(k){if(!active())throw Error('Profile migration failed');native.removeItem(key(k))},
+ key(i){return Object.keys(this.dump())[i]??null},
+ get length(){return Object.keys(this.dump()).length},
+ dump(){const d={};if(!active())return rawLegacy();const pre=PREFIX+active()+':';for(let i=0;i<native.length;i++){const k=native.key(i);if(k.startsWith(pre)){const logical=k.slice(pre.length);if(valid(logical))d[logical]=native.getItem(k)}}return d}
+};
+function saveMeta(m){native.setItem(META,JSON.stringify(m));meta=m}
+function switchTo(id){if(!meta.profiles.some(p=>p.id===id))return;saveMeta({...meta,active:id});location.reload()}
+function exportAll(){const profiles={};for(const p of meta.profiles){const d={},pre=PREFIX+p.id+':';for(let i=0;i<native.length;i++){const k=native.key(i);if(k.startsWith(pre)&&valid(k.slice(pre.length)))d[k.slice(pre.length)]=native.getItem(k)}profiles[p.id]=d}return {format:'hiszpanski-franka-backup',schema:2,appVersion:'18.0',exportedAt:new Date().toISOString(),profiles:meta.profiles,active:meta.active,data:profiles}}
+function download(obj){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='hiszpanski-franka-v18-kopia-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500)}
+function checkPayload(o){if(o?.format!=='hiszpanski-franka-backup'||![1,2].includes(o.schema))throw Error('Nieobsługiwany format kopii');let entries=[];
+ if(o.schema===1){if(!o.data||typeof o.data!=='object'||Array.isArray(o.data))throw Error('Brak danych');entries=Object.entries(o.data)}
+ else {if(!Array.isArray(o.profiles)||!o.profiles.length||o.profiles.length>12||!o.data||typeof o.data!=='object')throw Error('Nieprawidłowe profile');for(const p of o.profiles){if(!/^[a-z0-9-]{1,50}$/.test(p.id)||typeof p.name!=='string'||p.name.length>40||!o.data[p.id])throw Error('Nieprawidłowy profil');entries.push(...Object.entries(o.data[p.id]))}}
+ if(entries.length>300||entries.some(([k,v])=>!valid(k)||typeof v!=='string'||v.length>700000))throw Error('Nieprawidłowe klucze');for(const [,v] of entries)JSON.parse(v);return o}
+function render(){const host=document.getElementById('s15ParentSlot')||document.getElementById('parentNotes')||document.querySelector('main')||document.body;
+ const section=document.createElement('section');section.className='s16-box';section.id='s18Profiles';section.innerHTML='<h3>👨‍👩‍👦 Profile i bezpieczeństwo · Sprint 18</h3><p id="hf18status" role="status"></p><div class="s16-controls"><select id="hf18select" aria-label="Wybierz profil"></select><button id="hf18switch" type="button">Przełącz profil</button><button id="hf18new" type="button">＋ Nowy profil</button></div><div class="s16-controls"><button id="hf18export" type="button">↓ Kopia wszystkich profili JSON</button><button id="hf18import" type="button">↑ Import JSON</button><input id="hf18file" type="file" accept=".json,application/json" hidden></div><p class="s16-offline">Postępy są lokalne na tym urządzeniu. Aktualizacja kodu nie usuwa danych. Przed testem importu wykonaj eksport i użyj drugiego profilu przeglądarki.</p>';
+ host.append(section);const $=id=>document.getElementById(id),status=t=>$('hf18status').textContent=t;
+ if(!meta){status('⚠️ Migracja nie powiodła się: '+error+'. Oryginalne dane pozostają nietknięte. Nie zapisuj nowych postępów, dopóki nie rozwiążesz problemu.');section.querySelectorAll('button,select').forEach(el=>el.disabled=true);return}
+ for(const p of meta.profiles){const opt=document.createElement('option');opt.value=p.id;opt.textContent=p.name;$('hf18select').append(opt)}$('hf18select').value=meta.active;status('Aktywny profil: '+meta.profiles.find(p=>p.id===meta.active).name+' · oryginalne dane z 17.1 zachowane.');
+ $('hf18switch').onclick=()=>switchTo($('hf18select').value);
+ $('hf18new').onclick=()=>{const name=prompt('Imię nowego użytkownika (maks. 30 znaków):');if(name===null)return;const n=name.trim();if(!n||n.length>30||meta.profiles.length>=12){status('Podaj imię (1–30 znaków); maksymalnie 12 profili.');return}const id='p-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);try{saveMeta({...meta,profiles:[...meta.profiles,{id,name:n,createdAt:new Date().toISOString()}],active:id});location.reload()}catch(e){status('Nie udało się utworzyć profilu.')}};
+ $('hf18export').onclick=()=>{try{download(exportAll());status('Pobrano kopię wszystkich profili.')}catch(e){status('Błąd eksportu: '+e.message)}};
+ $('hf18import').onclick=()=>$('hf18file').click();
+ $('hf18file').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;if(file.size>3*1024*1024){status('Limit pliku: 3 MB');return}try{const o=checkPayload(JSON.parse(await file.text()));
+  if(!confirm('Import utworzy NOWE profile z kopii, nie nadpisze istniejących. Kontynuować?'))return;
+  const incoming=o.schema===1?[{name:'Import 17.1',data:o.data}]:o.profiles.map(p=>({name:p.name+' (import)',data:o.data[p.id]}));
+  if(meta.profiles.length+incoming.length>12)throw Error('Przekroczono limit 12 profili');
+  const created=[];try{for(const p of incoming){const id='imp-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);for(const [k,v] of Object.entries(p.data)){native.setItem(PREFIX+id+':'+k,v);created.push(PREFIX+id+':'+k)}created.push({id,name:p.name,createdAt:new Date().toISOString()})}saveMeta({...meta,profiles:[...meta.profiles,...created.filter(x=>typeof x==='object')]});status('Import zakończony. Nowe profile dodano bez nadpisywania obecnych. Odśwież stronę, aby zobaczyć je na liście.')}catch(e){for(const k of created.filter(x=>typeof x==='string'))native.removeItem(k);throw e}}
+  catch(e){status('Import przerwany: '+e.message)}finally{$('hf18file').value=''}};
+ if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render);else render();
+})();
+</script>
+<script>
 (()=>{const $=id=>document.getElementById(id);let running=false,paused=false,remaining=600,cycleTimer=null,tickTimer=null,sessionUnit=1,sessionIndex=0;const format=n=>`${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`;function status(s){$('carStatus').textContent=s}function clearTimers(){clearTimeout(cycleTimer);clearInterval(tickTimer);cycleTimer=null;tickTimer=null}function stopSpeech(){if('speechSynthesis'in window)speechSynthesis.cancel()}function updateClock(){$('carClock').textContent='Pozostało: '+format(remaining);$('carProgress').style.width=((600-remaining)/600*100)+'%'}function speakLine(text,done){if(!('speechSynthesis'in window)){status('To urządzenie nie obsługuje syntezatora mowy.');return}const u=new SpeechSynthesisUtterance(text);u.lang='es-ES';u.rate=.82;const voices=speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.toLowerCase().startsWith('es'));if(voice)u.voice=voice;u.onend=()=>{if(running&&!paused&&done)done()};speechSynthesis.speak(u)}function nextCard(){if(!running||paused)return;if(remaining<=0){finish('Sesja zakończona! ¡Muy bien, Franek!');return}const cards=sessionUnit===-1?[1,2,3,4].flatMap(i=>units[i].cards):units[sessionUnit].cards;const card=cards[sessionIndex%cards.length];sessionIndex++;status('Słuchaj, powtórz na głos i odpowiedz, zanim usłyszysz tłumaczenie.');speakLine(card[1],()=>{cycleTimer=setTimeout(()=>{if(!running||paused)return;speakLine('¿Qué significa '+card[1]+'?',()=>{cycleTimer=setTimeout(()=>{if(!running||paused)return;speakLine(card[2],()=>{cycleTimer=setTimeout(nextCard,2500)})},4500)})},1600)});cycleTimer=setTimeout(()=>{if(running&&!paused&&!speechSynthesis.speaking)nextCard()},18000)}function finish(message){clearTimers();stopSpeech();running=false;paused=false;$('carStart').disabled=false;$('carPause').disabled=true;$('carStop').disabled=true;$('carPause').textContent='⏸ Pauza';status(message);if(remaining<=0){remaining=0;updateClock()}}function start(){clearTimers();stopSpeech();sessionUnit=Number($('carUnit').value);sessionIndex=0;remaining=600;running=true;paused=false;$('carStart').disabled=true;$('carPause').disabled=false;$('carStop').disabled=false;$('carPause').textContent='⏸ Pauza';updateClock();status('Sesja rozpoczęta: '+(sessionUnit===-1?'Wszystkie rozdziały':units[sessionUnit].title));tickTimer=setInterval(()=>{if(!running||paused)return;remaining--;updateClock();if(remaining<=0)finish('Sesja zakończona! ¡Muy bien, Franek!')},1000);nextCard()}$('carStart').addEventListener('click',start);$('carPause').addEventListener('click',()=>{if(!running)return;if(!paused){paused=true;clearTimeout(cycleTimer);stopSpeech();$('carPause').textContent='▶ Wznów';status('Pauza. Naciśnij „Wznów”, aby kontynuować.')}else{paused=false;$('carPause').textContent='⏸ Pauza';status('Wracamy do słuchania.');nextCard()}});$('carStop').addEventListener('click',()=>finish('Sesja zakończona wcześniej. Możesz rozpocząć ją ponownie.'));$('carParked').addEventListener('change',e=>{$('carQuiz').disabled=!e.target.checked;if(!e.target.checked&& !$('game').hidden)$('game').hidden=true});$('carQuiz').addEventListener('click',()=>{if(!$('carParked').checked){status('Quiz jest dostępny tylko po potwierdzeniu postoju.');return}if(running)finish('Sesja audio zatrzymana przed quizem.');$('startGame').click();window.frankaNav15_2?.go('carQuiz') || $('game').scrollIntoView({behavior:'smooth',block:'start'})});updateClock()})();
 </script>
 <script>
@@ -386,7 +442,7 @@ let unit=0,index=0,points=0,question=0,answered=false;
 const $=id=>document.getElementById(id);
 const STORAGE_KEY='hiszpanskiFrankaProgressV1';
 let saved={points:0,unit:0,index:0,words:{},quizCorrect:0,quizTotal:0};
-try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const parsed=JSON.parse(raw);if(parsed&&typeof parsed==='object')saved={...saved,...parsed,words:parsed.words||{}}}}catch(e){}
+try{const raw=frankaStore.getItem(STORAGE_KEY);if(raw){const parsed=JSON.parse(raw);if(parsed&&typeof parsed==='object')saved={...saved,...parsed,words:parsed.words||{}}}}catch(e){}
 points=Number(saved.points)||0;unit=Math.min(4,Math.max(0,Number(saved.unit)||0));index=Math.max(0,Number(saved.index)||0);
 function speak(text){if(!('speechSynthesis'in window)){alert('To urządzenie nie udostępnia syntezatora mowy.');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='es-ES';u.rate=.78;const chooseVoice=()=>{const vs=speechSynthesis.getVoices();const v=vs.find(x=>x.lang.toLowerCase()==='es-es')||vs.find(x=>x.lang.toLowerCase().startsWith('es'));if(v)u.voice=v;speechSynthesis.speak(u)};if(speechSynthesis.getVoices().length){chooseVoice()}else{speechSynthesis.addEventListener('voiceschanged',chooseVoice,{once:true});speechSynthesis.getVoices()}}
 // Sprint 4 — stable keys (unit title + normalized Spanish wording); compatible with earlier saved.words index markers.
@@ -414,7 +470,7 @@ function isTricky(r){return !!r && r.wrong>0 && !isMastered(r)}
 function dueNow(r){return !!r && (r.due||0)<=Date.now()}
 function indexFromCard(u,card){return units[u]?.cards.indexOf(card)??-1}
 function wordKey(){return unit+':'+index}
-function saveProgress(){saved.points=points;saved.unit=unit;saved.index=index;try{localStorage.setItem(STORAGE_KEY,JSON.stringify(saved))}catch(e){};updateStats()}
+function saveProgress(){saved.points=points;saved.unit=unit;saved.index=index;try{frankaStore.setItem(STORAGE_KEY,JSON.stringify(saved))}catch(e){};updateStats()}
 function updateStats(){const vals=Object.values(saved.words||{});$('points').textContent=points;const mastery=Object.values(masteryMap());$('learnedCount').textContent=mastery.filter(isMastered).length;$('reviewCount').textContent=mastery.filter(isTricky).length}
 renderDailyChat();
 function render(){let c=units[unit].cards;index=(index+c.length)%c.length;let d=c[index];$('lessonTitle').textContent=units[unit].title;$('lessonSubtitle').textContent=units[unit].sub;$('counter').textContent=`Karta ${index+1} z ${c.length}`;$('emoji').textContent=d[0];$('word').textContent=d[1];$('meaning').textContent=d[2];$('pronunciation').textContent='Wymowa: skorzystaj z odsłuchu — zapis fonetyczny pomijamy, bo bywa mylący';$('pronunciationHint').textContent='Powiedz mniej więcej: '+(d[3]||d[1])+' (to tylko uproszczona podpowiedź)';$('pronunciationHint').hidden=true;$('showPronunciation').setAttribute('aria-expanded','false');const status=saved.words[wordKey()]||'new';$('wordStatus').textContent=status==='learned'?'Status: umiem to!':status==='review'?'Status: do powtórki':'Status: do nauki';$('game').hidden=true;$('feedback').textContent='';saveProgress()}
@@ -796,8 +852,8 @@ topics[5].sentences.push(['🏊','Nado en la piscina.','Pływam w basenie.'],['�
 topics[5].dialogs.push(['¿Qué quieres?','Quiero un helado, por favor.','Co chcesz?','Poproszę loda.','🍦'],['¿Hace calor?','Sí, hace calor.','Jest gorąco?','Tak, jest gorąco.','☀️'],['¿Qué haces en verano?','Nado en la piscina.','Co robisz latem?','Pływam w basenie.','🏊']);
 let view='sentences',current=0,active=0,answered=false,randomChoices=[];
 const savedKey='hiszpanskiFrankaA1ProgressV1';let progress={};
-try{const raw=JSON.parse(localStorage.getItem(savedKey)||'{}');if(raw&&typeof raw==='object'&&!Array.isArray(raw))progress=raw}catch(e){}
-function save(){try{localStorage.setItem(savedKey,JSON.stringify(progress))}catch(e){}}
+try{const raw=JSON.parse(frankaStore.getItem(savedKey)||'{}');if(raw&&typeof raw==='object'&&!Array.isArray(raw))progress=raw}catch(e){}
+function save(){try{frankaStore.setItem(savedKey,JSON.stringify(progress))}catch(e){}}
 function stat(topic){if(!progress[topic.id])progress[topic.id]={listeningCorrect:0,listeningAttempts:0,spoken:0};return progress[topic.id]}
 function newStat(t){const v=stat(t);if(!v.dialogs||typeof v.dialogs!=='object')v.dialogs={};if(!v.speaking||typeof v.speaking!=='object')v.speaking={};return v}
 function recordDialogue(t,d,quality){const st=newStat(t),key=d[0]+'|'+d[1],x=st.dialogs[key]||{practised:0,confident:0,needsHelp:0};x.practised++;if(quality==='yes')x.confident++;else x.needsHelp++;st.dialogs[key]=x;save();window.dispatchEvent(new CustomEvent("franka:s14dialogue",{detail:{quality,question:d[0]}}));if(window.s12RefreshSkills)window.s12RefreshSkills()}
@@ -906,11 +962,11 @@ function showLearning(){
  $('uxStageTitle').textContent=choice.options[choice.selectedIndex].text+' · '+display[kind];
  if(isFoundation(unit)){document.dispatchEvent(new CustomEvent('franka:foundationStart',{detail:{index:unit-100}}))}
  if(kind!=='words'){const button=document.querySelector('[data-a1-view="'+kind+'"]');if(button)button.click()}
- try{localStorage.setItem(uxKey,JSON.stringify({unit,kind}))}catch(e){}
+ try{frankaStore.setItem(uxKey,JSON.stringify({unit,kind}))}catch(e){}
  refreshResume();window.frankaNav15_2?.go('learningStage') || $('uxLearningStage').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function refreshResume(){
- let v=null;try{v=JSON.parse(localStorage.getItem(uxKey)||'null')}catch(e){}
+ let v=null;try{v=JSON.parse(frankaStore.getItem(uxKey)||'null')}catch(e){}
  const ok=v&&Number.isInteger(v.unit)&&v.unit>=0&&v.unit<=110&&typeof v.kind==='string'&&supported(v.unit,v.kind);
  $('uxContinue').hidden=!ok;
  if(ok){const option=[...choice.options].find(o=>Number(o.value)===v.unit);$('uxContinueLabel').textContent=(option?option.text:'')+' · '+display[v.kind]}
@@ -919,7 +975,7 @@ choice.onchange=()=>{choose(getUnit(),selected);$('uxLearningStage').hidden=true
 activities.forEach(b=>b.onclick=()=>{choose(getUnit(),b.dataset.uxActivity);$('uxLearningStage').hidden=true;$('epicGames').hidden=true});
 $('uxStart').onclick=showLearning;
 $('uxBackToChoice').onclick=()=>{$('uxLearningStage').hidden=true;window.frankaNav15_2?.go('chooser') || $('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
-$('uxResume').onclick=()=>{let v;try{v=JSON.parse(localStorage.getItem(uxKey)||'null')}catch(e){}if(v&&supported(v.unit,v.kind)){choose(v.unit,v.kind);showLearning()}};
+$('uxResume').onclick=()=>{let v;try{v=JSON.parse(frankaStore.getItem(uxKey)||'null')}catch(e){}if(v&&supported(v.unit,v.kind)){choose(v.unit,v.kind);showLearning()}};
 function openGames(startMemory){
  const n=getUnit();
  if(n>=6){$('uxActivityNote').textContent='Gry Memory i pozostałe gry są obecnie dostępne dla rozdziałów szkolnych i Daily chat. Dla wybranego tematu A1 wybierz Fiszki lub Quiz tematyczny.';return}
@@ -944,8 +1000,8 @@ const newNode=(tag,cl,txt)=>{const x=document.createElement(tag);if(cl)x.classNa
 const button=(txt,cb,cls='secondary')=>{const b=newNode('button',cls,txt);b.type='button';b.onclick=cb;return b};
 const s6Key='hiszpanskiFrankaSprint6ProgressV1';
 let state={school:{},a1:{},foundation:{}};
-try{let x=JSON.parse(localStorage.getItem(s6Key)||'null');if(x&&typeof x==='object')state={school:x.school||{},a1:x.a1||{},foundation:x.foundation||{}}}catch(e){}
-function save(){try{localStorage.setItem(s6Key,JSON.stringify(state))}catch(e){};drawDashboard()}
+try{let x=JSON.parse(frankaStore.getItem(s6Key)||'null');if(x&&typeof x==='object')state={school:x.school||{},a1:x.a1||{},foundation:x.foundation||{}}}catch(e){}
+function save(){try{frankaStore.setItem(s6Key,JSON.stringify(state))}catch(e){};drawDashboard()}
 function say(es){if(typeof speak==='function')speak(es)}
 // Only the listed notebook entries are verified at ITEM level. Other chapter material
 // was prepared from earlier supplied excerpts; it is NOT asserted to be fully verified.
@@ -1074,9 +1130,9 @@ window.addEventListener('storage',drawDashboard);
 /* Sprint 8: independent progress for a unified four-stage learning journey. */
 (function(){
  const STORE='hiszpanskiFrankaJourney8V1';let data={entries:{},checkpoints:{}};
- try{const v=JSON.parse(localStorage.getItem(STORE)||'null');if(v&&v.entries&&v.checkpoints)data=v}catch(e){}
+ try{const v=JSON.parse(frankaStore.getItem(STORE)||'null');if(v&&v.entries&&v.checkpoints)data=v}catch(e){}
  const key=(u,k,es)=>`${u}|${k}|${es.normalize('NFC').trim().toLocaleLowerCase('es').replace(/\s+/g,' ')}`;
- const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(data))}catch(e){}};
+ const save=()=>{try{frankaStore.setItem(STORE,JSON.stringify(data))}catch(e){}};
  function get(u,k,es){return data.entries[key(u,k,es)]||null}
  function result(u,k,es,ok){if(![1,2,3,4].includes(Number(u)))return;const id=key(u,k,es),r=data.entries[id]||{u,k,es,right:0,wrong:0,streak:0,next:0,days:[]};r.right+=ok?1:0;r.wrong+=ok?0:1;r.streak=ok?r.streak+1:0;const date=new Date().toISOString().slice(0,10);if(!r.days.includes(date))r.days.push(date);r.next=Date.now()+(ok?[1,3,7,14,30][Math.min(4,Math.max(0,r.streak-1))]*86400000:10*60*1000);data.entries[id]=r;save();draw()}
  function checkpoint(u,ok){if(![1,2,3,4].includes(Number(u)))return;const old=data.checkpoints[u]||{school:0,a1:0};old[ok.type]=Math.max(old[ok.type]||0,ok.percent);data.checkpoints[u]=old;save();draw()}
@@ -1113,9 +1169,9 @@ const S6='hiszpanskiFrankaSprint6ProgressV1';
 const S7='hiszpanskiFrankaSmart7V1';
 const day=86400000;
 let data={sentences:{},schoolTopics:{},dailyHistory:[]};
-try{const x=JSON.parse(localStorage.getItem(S7)||'null');if(x&&typeof x==='object')data={...data,...x,sentences:x.sentences||{},schoolTopics:x.schoolTopics||{},dailyHistory:x.dailyHistory||[]}}catch(e){}
-const load=k=>{try{return JSON.parse(localStorage.getItem(k)||'{}')||{}}catch(e){return {}}};
-function store(){try{localStorage.setItem(S7,JSON.stringify(data))}catch(e){}}
+try{const x=JSON.parse(frankaStore.getItem(S7)||'null');if(x&&typeof x==='object')data={...data,...x,sentences:x.sentences||{},schoolTopics:x.schoolTopics||{},dailyHistory:x.dailyHistory||[]}}catch(e){}
+const load=k=>{try{return JSON.parse(frankaStore.getItem(k)||'{}')||{}}catch(e){return {}}};
+function store(){try{frankaStore.setItem(S7,JSON.stringify(data))}catch(e){}}
 function id(u,es){return u+'|'+es.normalize('NFC').trim().toLocaleLowerCase('es').replace(/\s+/g,' ')}
 function reviewSentence(u,es,pl,correct,kind){const key=id(u,es),now=Date.now();const r=data.sentences[key]||{u,es,pl,right:0,wrong:0,streak:0,due:0};r.u=u;r.es=es;r.pl=pl;r.right+=(correct?1:0);r.wrong+=(!correct?1:0);r.streak=correct?r.streak+1:0;const intervals=[1,3,7,14,30];r.due=now+(correct?intervals[Math.min(intervals.length-1,Math.max(0,r.streak-1))]*day:10*60*1000);r.last=now;r.kind=kind;data.sentences[key]=r;store();draw()}
 window.addEventListener('franka:s7sentence',e=>{const x=e.detail;if(!x||!x.es)return;reviewSentence(x.u,x.es,x.pl,!!x.correct,x.kind||'listening')});
@@ -1123,7 +1179,7 @@ window.addEventListener('franka:s7school',e=>{const x=e.detail;if(!x||!x.es)retu
 function allSchool(){return Object.values(data.schoolTopics)}
 
 const EXAM_STORE='hiszpanskiFrankaExam13V1';
-let examData={};try{const value=JSON.parse(localStorage.getItem(EXAM_STORE)||'{}');if(value&&typeof value==='object')examData=value}catch(e){}
+let examData={};try{const value=JSON.parse(frankaStore.getItem(EXAM_STORE)||'{}');if(value&&typeof value==='object')examData=value}catch(e){}
 const normalized=x=>String(x||'').normalize('NFC').trim().toLocaleLowerCase('es').replace(/\s+/g,' ');
 function activeExam(u){const iso=examData[u];if(!iso)return null;const end=new Date(iso+'T23:59:59');if(Number.isNaN(end.getTime())||end.getTime()<Date.now())return null;return {date:iso,days:Math.max(0,Math.ceil((end.getTime()-Date.now())/day))}}
 function schoolWords(u){const source=window.frankaSeasons8?.school?.[u]||[];const unique=new Set();return source.filter(c=>{const k=normalized(c[1]);if(unique.has(k))return false;unique.add(k);return true})}
@@ -1195,8 +1251,8 @@ for(const other of box.querySelectorAll('button')){other.disabled=true;if(other.
 $('s7SessionFeedback').textContent=ok?'✅ Świetnie!':'❌ Poprawna odpowiedź: '+item.pl;$('s7NextWrap').hidden=false;$('s7Next').textContent=session.i+1===session.queue.length?'🏆 Zobacz wynik':'➡️ Następne zadanie';},'secondary');box.append(button)}body.append(box);
 }
 $('s8FocusSeason').onchange=()=>{draw()};
-$('s13ExamDate').onchange=()=>{const u=Number($('s8FocusSeason').value),date=$('s13ExamDate').value;if(date){examData[u]=date}else delete examData[u];try{localStorage.setItem(EXAM_STORE,JSON.stringify(examData))}catch(e){}draw()};
-$('s13ExamClear').onclick=()=>{const u=Number($('s8FocusSeason').value);delete examData[u];try{localStorage.setItem(EXAM_STORE,JSON.stringify(examData))}catch(e){}draw()};
+$('s13ExamDate').onchange=()=>{const u=Number($('s8FocusSeason').value),date=$('s13ExamDate').value;if(date){examData[u]=date}else delete examData[u];try{frankaStore.setItem(EXAM_STORE,JSON.stringify(examData))}catch(e){}draw()};
+$('s13ExamClear').onclick=()=>{const u=Number($('s8FocusSeason').value);delete examData[u];try{frankaStore.setItem(EXAM_STORE,JSON.stringify(examData))}catch(e){}draw()};
 $('s13ExamTest').onclick=()=>{const u=Number($('s8FocusSeason').value),sel=$('uxUnit');sel.value=String(u);sel.dispatchEvent(new Event('change',{bubbles:true}));$('s6SchoolStart').click()};
 $('s7DailyStart').onclick=()=>{const queue=buildPlan();if(!queue.length)return;session={queue,i:0,ok:0,answered:false};$('s7Session').hidden=false;show();window.frankaNav15_2?.go('daily') || $('s7Session').scrollIntoView({behavior:'smooth',block:'start'})};
 $('s7Next').onclick=()=>{if(!session||!session.answered)return;session.i++;show()};
@@ -1214,8 +1270,8 @@ function celebration(text){const old=document.querySelector('.s11-celebration');
 
 const normal=s=>String(s).normalize('NFC').trim().toLocaleLowerCase('es').replace(/\s+/g,' ');
 const chunks=(xs,n)=>Array.from({length:Math.ceil(xs.length/n)},(_,i)=>xs.slice(i*n,(i+1)*n));
-let data={};try{const obj=JSON.parse(localStorage.getItem(STORE)||'{}');if(obj&&typeof obj==='object')data=obj}catch(e){}
-const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(data))}catch(e){}};
+let data={};try{const obj=JSON.parse(frankaStore.getItem(STORE)||'{}');if(obj&&typeof obj==='object')data=obj}catch(e){}
+const save=()=>{try{frankaStore.setItem(STORE,JSON.stringify(data))}catch(e){}};
 function unique(u){const seen=new Set();return (units[u]?.cards||[]).filter(c=>{const k=normal(c[1]);if(seen.has(k))return false;seen.add(k);return true})}
 function school(u,c){return ORIGIN[u+'|'+normal(c[1])]!=='rozszerzenie A1' && (SCHOOL[u]||[]).some(s=>normal(s[1])===normal(c[1]))}
 const sentenceBank={
@@ -1316,11 +1372,11 @@ draw();
 'use strict';
 const $=id=>document.getElementById(id);
 const KEY='hiszpanskiFrankaLevel14V1',PATH='hiszpanskiFrankaPath10V2',MAIN='hiszpanskiFrankaProgressV1',A1='hiszpanskiFrankaA1ProgressV1',S7='hiszpanskiFrankaSmart7V1';
-function read(k){try{return JSON.parse(localStorage.getItem(k)||'{}')||{}}catch(e){return {}}}
+function read(k){try{return JSON.parse(frankaStore.getItem(k)||'{}')||{}}catch(e){return {}}}
 let state=read(KEY);if(!state||typeof state!=='object'||Array.isArray(state))state={};
 if(!Array.isArray(state.events))state.events=[];if(!state.badges||typeof state.badges!=='object')state.badges={};
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function save(){try{frankaStore.setItem(KEY,JSON.stringify(state))}catch(e){}}
 function evt(kind){const day=today();state.events.push({day,kind});state.events=state.events.slice(-700);save();render()}
 const names={1:'Otoño',2:'Invierno',3:'Primavera',4:'Verano'};
 const icons={1:'🍂',2:'❄️',3:'🌸',4:'☀️'};
@@ -1396,7 +1452,7 @@ window.frankaLevel14={render,definitions,weekStart};
  function viewTo(next){view=next;[['today',today],['learning',learning],['progress',progress]].forEach(([key,el])=>el.classList.toggle('s15-active',key===next));dock.querySelectorAll('button').forEach(b=>{const active=b.dataset.s15View===next;b.classList.toggle('s15-current',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});if(next==='progress'){try{window.frankaLevel14?.render()}catch(e){}refreshProgress()}if(next==='learning')refreshSeasons();window.scrollTo({top:0,behavior:'instant'})}
  function modeTo(next){mode=next;learning.dataset.mode=next;learning.querySelectorAll('[data-s15-mode]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.s15Mode===next)));if(next==='games'){if($('epicGames')?.hidden)$('uxGames')?.click();}if(next==='dialogues'){$('s15ChooserDetails').open=true;$('uxChooser')?.querySelector('[data-ux-activity="dialogues"]')?.click();}if(next==='car'){$('carArea').hidden=false;}viewTo('learning')}
  function pick(u){if(!$('uxUnit'))return;$('uxUnit').value=String(u);$('uxUnit').dispatchEvent(new Event('change',{bubbles:true}));if($('s8FocusSeason')){$('s8FocusSeason').value=String(u);$('s8FocusSeason').dispatchEvent(new Event('change',{bubbles:true}))}if($('epicUnit')){$('epicUnit').value=String(u);$('epicUnit').dispatchEvent(new Event('change',{bubbles:true}))}refreshSeasons()}
- function read(k){try{return JSON.parse(localStorage.getItem(k)||'{}')||{}}catch(e){return {}}}
+ function read(k){try{return JSON.parse(frankaStore.getItem(k)||'{}')||{}}catch(e){return {}}}
  function stats(u){const stages=window.frankaPath10?.stages?.(u)||[];const saved=read('hiszpanskiFrankaPath10V2')[u]||{};const done=stages.filter(s=>saved[s.id]?.done).length;return {done,total:stages.length,pct:stages.length?Math.round(done/stages.length*100):0}}
  function refreshSeasons(){const goal=$('s15TodayGoal');if(goal){const source=$('s14Next')?.querySelector('strong');goal.textContent=source?source.textContent:'Wybierz sezon w zakładce Nauka, aby zobaczyć kolejne cele.'}const target=$('s15Seasons');if(!target)return;target.replaceChildren();const u=Number($('uxUnit')?.value||1);for(let i=1;i<=4;i++){const a=stats(i),b=make('button',`s15-season s15-season--${i}`+(i===u?' s15-selected':''));b.type='button';b.setAttribute('aria-label',`${labels[i]}, ukończono ${a.done} z ${a.total} etapów`);b.innerHTML=`<span class="s15-season-art" aria-hidden="true">${icons[i]}</span><span class="s15-season-copy"><strong>${labels[i]}</strong><small>Słowa · Zdania · Checkpoint</small><span class="s15-season-progress"><span style="width:${a.pct}%"></span></span><span class="s15-season-pct">${a.pct}% · ${a.done}/${a.total} etapów</span></span><span class="s15-chevron" aria-hidden="true">›</span>`;b.onclick=()=>{pick(i);go('path',{focus:false})};target.append(b)}}
  function refreshProgress(){const b=read('hiszpanskiFrankaLevel14V1').badges||{};const total=Object.keys(b).length;$('s15BadgeTotal').textContent=`${total}/6`;const nums=[1,2,3,4].map(i=>stats(i));$('s15SeasonDone').textContent=String(nums.reduce((v,x)=>v+x.done,0));let cups=0;const states=read('hiszpanskiFrankaPath10V2');for(let i=1;i<=4;i++){const stages=window.frankaPath10?.stages?.(i)||[];if(stages.some(s=>s.kind==='finale'&&states[i]?.[s.id]?.done||s.id==='finale-v1'&&states[i]?.[s.id]?.done))cups++} // Alternative verified trophy DOM after render.
@@ -1510,37 +1566,5 @@ window.frankaLevel14={render,definitions,weekStart};
 .s16-offline{font-size:.78rem;color:#666b7e;margin-top:5px}.s16-offline b{color:#4b4e69}
 @media(max-width:520px){.s16-controls{flex-direction:column}.s16-controls button{width:100%}}
 </style>
-<script>
-/* Sprint 16 — data safety + PWA; never stores passwords, never alters user progress on startup. */
-(()=>{'use strict';
-const SAFE_KEYS=[
- 'hiszpanskiFrankaProgressV1','hiszpanskiFrankaJourney8V1','hiszpanskiFrankaPath10V2',
- 'hiszpanskiFrankaSprint6ProgressV1','hiszpanskiFrankaA1ProgressV1','hiszpanskiFrankaSmart7V1',
- 'hiszpanskiFrankaExam13V1','hiszpanskiFrankaLastActivityV1','hiszpanskiFrankaLevel14V1'
-];
-// Include historical keys only if they are from this app (not unrelated origin data).
-const appKey=k=>/^hiszpanskiFranka[A-Za-z0-9_-]{0,100}$/.test(k) || /^franka(?:Ux|Learning|Progress)[A-Za-z0-9_-]{0,100}$/i.test(k);
-const collect=()=>{const values={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&appKey(k))values[k]=localStorage.getItem(k)}}catch(e){}return values};
-const box=document.createElement('section');box.className='s16-box';box.id='s16Safety';box.innerHTML=`<h3>🛡️ Kopia zapasowa i instalacja</h3><p>Zapisz postępy, odznaki i ukończone lekcje w jednym pliku. Przywrócenie kopii zastąpi postępy zapisane w tej przeglądarce.</p><div class="s16-controls"><button type="button" id="s16Export">↓ Pobierz kopię</button><button class="s16-outline" type="button" id="s16Import">↑ Przywróć kopię</button><button class="s16-outline" type="button" id="s16Install" hidden>＋ Zainstaluj aplikację</button></div><input type="file" id="s16File" accept=".json,application/json" hidden/><div id="s16Restore" class="s16-restore"><strong id="s16RestoreSummary"></strong><p>Przywrócenie zastąpi aktualne dane nauki w tej przeglądarce. Najpierw pobierz ich kopię.</p><label><input type="checkbox" id="s16Confirm"/> Rozumiem, że bieżące postępy zostaną zastąpione danymi z pliku.</label><div class="s16-controls"><button type="button" id="s16Apply" disabled>Przywróć i odśwież</button><button type="button" id="s16Cancel" class="s16-outline">Anuluj</button></div></div><div class="s16-status" id="s16Status" role="status" aria-live="polite"></div><div class="s16-offline">📱 Instalacja: w menu przeglądarki wybierz „Dodaj do ekranu głównego” lub „Zainstaluj aplikację”. <b>Offline:</b> pierwsze otwarcie wymaga internetu; hiszpański głos zależy od systemu urządzenia.</div>`;
-const place=()=>{const target=document.getElementById('s15ParentSlot') || document.getElementById('parentNotes') || document.querySelector('main');if(target&&!document.getElementById('s16Safety')){target.append(box);wire()}};
-let pending=null,installPrompt=null;
-function wire(){const $=id=>document.getElementById(id),status=t=>$('s16Status').textContent=t;
- $('s16Export').onclick=()=>{try{const data=collect();if(!Object.keys(data).length){status('Nie znaleziono zapisanych postępów w tej przeglądarce.');return}const payload={format:'hiszpanski-franka-backup',schema:1,appVersion:'17.0',exportedAt:new Date().toISOString(),data};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`hiszpanski-franka-kopia-${new Date().toISOString().slice(0,10)}.json`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);status(`Pobrano kopię: ${Object.keys(data).length} obszarów danych. Zachowaj plik w bezpiecznym miejscu.`)}catch(e){status('Nie udało się utworzyć kopii. Sprawdź ustawienia pamięci i spróbuj ponownie.')}};
- $('s16Import').onclick=()=>{$('s16File').value='';$('s16File').click()};
- $('s16File').onchange=async e=>{pending=null;$('s16Restore').classList.remove('is-open');const f=e.target.files?.[0];if(!f)return;if(f.size>3*1024*1024){status('Plik jest za duży. Limit 3 MB.');return}try{const obj=JSON.parse(await f.text());if(obj?.format!=='hiszpanski-franka-backup'||obj?.schema!==1||!obj.data||typeof obj.data!=='object'||Array.isArray(obj.data))throw Error('format');const entries=Object.entries(obj.data);if(!entries.length||entries.length>50||entries.some(([k,v])=>!appKey(k)||typeof v!=='string'||v.length>700000)||!Number.isFinite(Date.parse(obj.exportedAt)))throw Error('keys');for(const [k,v] of entries)JSON.parse(v);pending=obj.data;$('s16RestoreSummary').textContent=`Kopia z ${new Date(obj.exportedAt).toLocaleDateString('pl-PL')} · ${entries.length} obszarów postępów`;$('s16Confirm').checked=false;$('s16Apply').disabled=true;$('s16Restore').classList.add('is-open');status('Sprawdź szczegóły i potwierdź przywrócenie kopii.')}catch(e){status('To nie jest prawidłowa kopia aplikacji. Żadnych danych nie zmieniono.')}};
- $('s16Confirm').onchange=e=>$('s16Apply').disabled=!e.target.checked;
- $('s16Cancel').onclick=()=>{pending=null;$('s16Restore').classList.remove('is-open');status('Anulowano przywracanie. Dane nie zostały zmienione.')};
- $('s16Apply').onclick=()=>{if(!pending||!$('s16Confirm').checked)return;try{const current=collect(),keys=Object.keys(pending);const original={};for(const key of new Set([...Object.keys(current),...keys]))original[key]=localStorage.getItem(key);try{for(const key of Object.keys(current))localStorage.removeItem(key);for(const [key,value] of Object.entries(pending))localStorage.setItem(key,value)}catch(e){for(const key of Object.keys(original)){if(original[key]===null)localStorage.removeItem(key);else localStorage.setItem(key,original[key])}throw e}status('Kopia przywrócona. Odświeżam aplikację.');window.location.reload()}catch(e){status('Przywrócenie nie powiodło się. Nie odświeżaj strony; pobierz kopię obecnych danych i spróbuj ponownie.')}};
- $('s16Install').onclick=async()=>{if(!installPrompt)return;installPrompt.prompt();try{await installPrompt.userChoice}finally{installPrompt=null;$('s16Install').hidden=true}};
- window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('s16Install').hidden=false});
- window.addEventListener('online',()=>status('Internet jest dostępny.'));
- window.addEventListener('offline',()=>status('Brak połączenia. Zapisane lokalnie lekcje nadal mogą działać.'));
- if('serviceWorker' in navigator && location.protocol==='https:'){
- navigator.serviceWorker.register('./sw.js',{scope:'./'}).then(reg=>{status('Aplikacja przygotowana do pracy offline po zapisaniu plików na urządzeniu.');reg.addEventListener('updatefound',()=>{const worker=reg.installing;if(worker)worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)status('Nowa wersja jest dostępna. Zapisz postępy i odśwież stronę, aby ją włączyć.')})})}).catch(()=>status('Nie udało się włączyć offline. Sprawdź publikację plików i połączenie.'));
- }else{status('Instalacja offline wymaga otwarcia aplikacji przez HTTPS (np. GitHub Pages).')}
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',place);else place();
- window.frankaSafety16={collect,appKey};
-})();
-</script>
+
 </body></html>
