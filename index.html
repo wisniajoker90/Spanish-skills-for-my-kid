@@ -217,7 +217,7 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style></head>
 <body><div class="app">
-<header><div><h1>🇪🇸 Hiszpański Franka</h1><p>Małe kroki. Wielka przygoda. · v19.1</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
+<header><div><h1>🇪🇸 Hiszpański Franka</h1><p>Małe kroki. Wielka przygoda. · v19.3</p></div><div aria-hidden="true" class="mascot">🦜</div></header>
 <main>
 <section class="home-screen panel" id="homeScreen"><h2>¡Vamos, Franek! 🇪🇸</h2><p>Jak chcesz się dzisiaj uczyć?</p><div class="home-tiles"><button data-enter="car">🚗<strong>Tryb samochodowy</strong><span>Słucham i powtarzam — bez patrzenia w ekran</span></button><button data-enter="learn">🎮<strong>Centrum nauki</strong><span>Fiszki, quizy i pięć gier</span></button></div></section><div hidden="" id="workArea"><nav class="home-nav"><button class="secondary" id="backHome">🏠 Menu główne</button><span id="modeLabel"></span></nav><div id="carArea"><section aria-labelledby="carTitle" class="car-mode"><h2 id="carTitle">🚗 Tryb samochodowy — 10 minut</h2><p>Aktywna nauka przez słuchanie: Franek usłyszy słowo lub zwrot po hiszpańsku, chwilę na odpowiedź i odpowiedź po polsku. Nie trzeba patrzeć na ekran ani niczego dotykać w trakcie jazdy.</p><label for="carUnit"><strong>Rozdział do słuchania</strong></label><br/><select id="carUnit"></select><div class="car-controls"><button id="carStart">▶ Rozpocznij 10 minut</button><button class="secondary" disabled="" id="carPause">⏸ Pauza</button><button class="secondary" disabled="" id="carStop">■ Zakończ</button></div><div aria-live="polite" class="car-status" id="carStatus" role="status">Gotowe do rozpoczęcia. Wybierz rozdział.</div><div aria-label="Postęp sesji" class="car-progress"><span id="carProgress"></span></div><p class="small" id="carClock">Pozostało: 10:00</p><div class="car-note"><strong>Bezpieczeństwo:</strong> kierowca nie powinien obsługiwać ekranu. Uruchom sesję przed ruszeniem lub poproś pasażera. Quiz z przyciskami jest dostępny wyłącznie po zaznaczeniu, że samochód stoi — aplikacja nie wykrywa ruchu pojazdu.</div><label class="mode" style="margin-top:12px"><input id="carParked" type="checkbox"/> Samochód stoi bezpiecznie — odblokuj quiz ekranowy</label><div class="car-controls"><button class="secondary" disabled="" id="carQuiz">🎯 Quiz (tylko na postoju)</button></div></section></div><div id="learnArea"><div class="notice ux-source-note"><strong>📚 Szkoła najpierw, potem droga do A1.</strong> Cztery etapy odpowiadają porom roku. Rozszerzenia A1 są dodatkowymi ćwiczeniami; nie przypisujemy ich podręcznikowi. Verano nadal wymaga potwierdzenia materiału szkolnego.</div>
 <div class="stats"><span class="pill">⭐ Punkty: <span id="points">0</span></span><span class="pill">✅ Umiem: <span id="learnedCount">0</span></span><span class="pill">🔁 Do powtórki: <span id="reviewCount">0</span></span><span class="pill">💾 Postępy zapisują się na tym urządzeniu</span></div>
@@ -1684,6 +1684,100 @@ function render(){const list=profiles(),selector=get('hf192Profile'),previous=se
 function init(){if(get('hf192Open'))return;const open=document.createElement('button');open.id='hf192Open';open.type='button';open.textContent='🔒 Dla rodzica';document.body.append(open);const shade=document.createElement('div');shade.id='hf192Shade';shade.innerHTML=`<section id="hf192Dialog" role="dialog" aria-modal="true" aria-labelledby="hf192Title"><div class="hf192-top"><h2 id="hf192Title">👨‍👩‍👧 Panel rodzica</h2><button id="hf192Close" type="button" aria-label="Zamknij">✕</button></div><p id="hf192Message" role="status"></p><div id="hf192setup" hidden><p>Ustaw 4-cyfrowy PIN rodzica. Zapamiętaj go — aplikacja nie ma zdalnego odzyskiwania PIN-u.</p><div class="hf192-controls"><input id="hf192NewPin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" placeholder="Nowy PIN" aria-label="Nowy PIN"><input id="hf192RepeatPin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" placeholder="Powtórz PIN" aria-label="Powtórz PIN"><button class="hf192-primary" id="hf192SetPin" type="button">Zapisz PIN</button></div></div><div id="hf192login" hidden><p>Wprowadź PIN rodzica.</p><div class="hf192-controls"><input id="hf192Pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" placeholder="PIN" aria-label="PIN rodzica"><button class="hf192-primary" id="hf192Login" type="button">Otwórz panel</button></div></div><div id="hf192dashboard" hidden><div class="hf192-controls"><label for="hf192Profile">Uczeń</label><select id="hf192Profile"></select><button id="hf192Lock" type="button">🔒 Zablokuj panel</button></div><div id="hf192Stats"></div></div></section>`;document.body.append(shade);
  open.onclick=show;get('hf192Close').onclick=close;shade.addEventListener('click',e=>{if(e.target===shade)close()});get('hf192SetPin').onclick=setup;get('hf192Login').onclick=login;get('hf192Profile').onchange=render;get('hf192Lock').onclick=()=>{sessionStorage.removeItem(SESSION);setView('login');status('Panel zablokowany.')};document.addEventListener('keydown',e=>{if(e.key==='Escape'&&shade.classList.contains('hf192-visible'))close()});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<style id="hf193Style">
+/* Sprint 19.3 — mobile navigation and adaptive daily learning */
+#hf192Open{display:none!important} /* available in profile menu, no floating iOS overlap */
+#hf193Parent{width:100%;margin-top:12px;border:1px solid #c9d7e6;background:#f0f5fb;color:#183b60;padding:13px;border-radius:13px;font-weight:700;cursor:pointer}
+#hf193Shade{position:fixed;inset:0;z-index:9200;background:#071c31c9;display:none;align-items:center;justify-content:center;padding:calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));box-sizing:border-box}
+#hf193Shade.hf193-visible{display:flex}
+#hf193Dialog{background:#fff;color:#1b344f;width:min(560px,100%);max-height:88dvh;overflow:auto;border-radius:22px;padding:20px;box-sizing:border-box;font:15px/1.5 system-ui;box-shadow:0 18px 70px #0005}
+#hf193Dialog h2{margin:0;font-size:22px;color:#183b60}#hf193Dialog p{margin:9px 0}#hf193Dialog .hf193-head{display:flex;justify-content:space-between;align-items:start;gap:12px}
+#hf193Dialog button{min-height:44px;border-radius:12px;border:1px solid #b8cde1;background:#f0f6fc;color:#1d466e;padding:10px 13px;cursor:pointer;font:600 14px system-ui}
+#hf193Dialog button.hf193-primary{background:#204e7b;color:white;border-color:#204e7b}
+#hf193Options{display:grid;gap:10px;margin:15px 0}#hf193Options button{text-align:left;white-space:normal}
+#hf193Options button:disabled{opacity:.72;cursor:default}#hf193Options .hf193-correct{background:#d9f4e7;border-color:#23855e}#hf193Options .hf193-wrong{background:#ffe1df;border-color:#d15d52}
+#hf193Status{font-size:13px;color:#59728b}#hf193Feedback{min-height:28px;font-weight:700}#hf193Progress{height:8px;border-radius:8px;background:#e6edf4;overflow:hidden;margin:13px 0}#hf193Progress span{display:block;height:100%;background:#378d82;transition:width .2s}
+#hf193Next{width:100%}#hf193Next[hidden]{display:none}#hf193Question{font-size:21px;font-weight:750;margin:14px 0!important}
+@media(max-width:600px){.s15-topbar{flex-wrap:wrap;gap:10px}.s15-brand{min-width:0;flex:1 1 175px}.s15-brand strong{overflow-wrap:anywhere}#hf19Launcher{flex:0 0 auto;max-width:100%;min-height:44px}#hf193Dialog{padding:17px}#hf192Dialog{max-height:88dvh;padding:15px}}
+</style>
+<script id="hf193Script">
+/* Sprint 19.3 — profile-menu parent access, adaptive review, no new persistent storage keys. */
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const api=window.hfProfiles19;
+if(!api)return;
+let mission=null,previousFocus=null;
+function attachParent(){
+ const dialog=$('hf19Dialog'),trigger=$('hf192Open');if(!dialog||!trigger||$('hf193Parent'))return;
+ const b=document.createElement('button');b.type='button';b.id='hf193Parent';b.textContent='🔒 Dla rodzica · panel postępów';
+ b.onclick=()=>{$('hf19Close')?.click();trigger.click()};
+ const actions=dialog.querySelector('.hf19-actions');if(actions)actions.insertAdjacentElement('afterend',b);else dialog.append(b);
+}
+function pool(){
+ if(typeof units==='undefined'||typeof trainingKey!=='function'||typeof masteryMap!=='function')return [];
+ const m=masteryMap();const now=Date.now();
+ return [1,2,3,4].flatMap(u=>(units[u]?.cards||[]).map(card=>{
+ const state=m[trainingKey(u,card[1])]||null;
+ return {u,card,state,due:!!state&&Number(state.due||0)<=now,hard:!!state&&Number(state.wrong||0)>0&&!(typeof isMastered==='function'&&isMastered(state)),fresh:!state};
+ }));
+}
+function shuffle(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function pick(){
+ const all=pool(),chosen=[],used=new Set();
+ const take=(arr,n)=>{for(const item of arr){const k=trainingKey(item.u,item.card[1]);if(used.has(k))continue;chosen.push(item);used.add(k);if(chosen.length>=n)break}};
+ // Revisions first, then new school vocabulary from earliest available season.
+ take(shuffle(all.filter(x=>x.due&&x.hard)).sort((a,b)=>(a.state.due||0)-(b.state.due||0)),4);
+ take(shuffle(all.filter(x=>x.due)).sort((a,b)=>(a.state.due||0)-(b.state.due||0)),6);
+ take(shuffle(all.filter(x=>x.hard)),7);
+ take(shuffle(all.filter(x=>x.fresh)).sort((a,b)=>a.u-b.u),10);
+ take(shuffle(all),10);
+ return chosen.slice(0,10);
+}
+function draw(){if(!mission)return;const item=mission.queue[mission.index];
+ $('hf193Progress').firstElementChild.style.width=(100*mission.index/mission.queue.length)+'%';
+ $('hf193Status').textContent='Pytanie '+(mission.index+1)+' z '+mission.queue.length+' · '+(['','Otoño','Invierno','Primavera','Verano'][item?.u]||'');
+ $('hf193Feedback').textContent='';$('hf193Next').hidden=true;
+ const choices=$('hf193Options');choices.replaceChildren();
+ if(!item)return;
+ $('hf193Question').textContent=item.card[1];
+ const wrong=shuffle((units[item.u]?.cards||[]).filter(c=>c!==item.card&&c[2]!==item.card[2])).slice(0,3);
+ for(const c of shuffle([item.card,...wrong])){
+ const b=document.createElement('button');b.type='button';b.textContent=c[2];b.onclick=()=>{
+ if(mission.answered)return;mission.answered=true;
+ const ok=c===item.card;recordResult(item.u,item.card,ok,'sprint19.3-daily');
+ if(ok){mission.correct++;if(typeof points==='number'&&typeof saveProgress==='function'){points++;saveProgress()}}
+ choices.querySelectorAll('button').forEach(el=>{el.disabled=true;if(el.textContent===item.card[2])el.classList.add('hf193-correct')});
+ if(!ok)b.classList.add('hf193-wrong');
+ $('hf193Feedback').textContent=ok?'✅ ¡Muy bien!':('💡 Poprawna odpowiedź: '+item.card[2]);
+ if(ok&&typeof frankaPraiseInSpanish==='function')frankaPraiseInSpanish(item.card[1]);
+ $('hf193Next').hidden=false;$('hf193Next').textContent=mission.index===mission.queue.length-1?'🏁 Zobacz wynik':'➡️ Dalej';
+ };choices.append(b);
+ }
+}
+function finish(){
+ $('hf193Progress').firstElementChild.style.width='100%';$('hf193Status').textContent='Misja zakończona';
+ $('hf193Question').textContent='🎉 ¡Excelente!';$('hf193Options').replaceChildren();
+ $('hf193Feedback').textContent='Poprawne odpowiedzi: '+mission.correct+' / '+mission.queue.length+'. Wyniki zapisano w Twoim profilu.';
+ $('hf193Next').hidden=false;$('hf193Next').textContent='Zakończ';mission.done=true;
+}
+function open(){const q=pick();if(!q.length){alert('Brak dostępnych słówek do nauki.');return}
+ previousFocus=document.activeElement;mission={queue:q,index:0,correct:0,answered:false,done:false};$('hf193Shade').classList.add('hf193-visible');draw();$('hf193Close').focus();
+}
+function close(){$('hf193Shade').classList.remove('hf193-visible');mission=null;previousFocus?.focus?.();if(typeof refreshSmart==='function')refreshSmart()}
+function init(){attachParent();if($('hf193Shade'))return;
+ const shade=document.createElement('div');shade.id='hf193Shade';shade.innerHTML='<section id="hf193Dialog" role="dialog" aria-modal="true" aria-labelledby="hf193Title"><div class="hf193-head"><div><h2 id="hf193Title">🧠 Moja misja na dziś</h2><p>10 pytań · trudne słówka, powtórki i nowe materiały szkolne</p></div><button type="button" id="hf193Close" aria-label="Zamknij misję">✕</button></div><div id="hf193Progress"><span></span></div><p id="hf193Status" aria-live="polite"></p><p id="hf193Question"></p><button type="button" id="hf193Listen">🔊 Posłuchaj</button><div id="hf193Options"></div><p id="hf193Feedback" aria-live="polite"></p><button type="button" class="hf193-primary" id="hf193Next" hidden>➡️ Dalej</button></section>';
+ document.body.append(shade);
+ $('hf193Close').onclick=close;
+ $('hf193Next').onclick=()=>{if(!mission)return;if(mission.done){close();return}if(!mission.answered)return;mission.index++;mission.answered=false;if(mission.index>=mission.queue.length)finish();else draw()};
+ $('hf193Listen').onclick=()=>{const item=mission?.queue[mission.index];if(item&&typeof speak==='function')speak(item.card[1])};
+ shade.addEventListener('click',e=>{if(e.target===shade)close()});
+ shade.addEventListener('keydown',e=>{if(e.key==='Escape')close();if(e.key==='Tab'){const nodes=[...shade.querySelectorAll('button:not([disabled])')].filter(x=>x.getClientRects().length);if(nodes.length){const first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}}});
+ const go=$('s15DailyGo');if(go)go.onclick=open;
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,30));else setTimeout(init,30);
 })();
 </script>
 </body></html>
