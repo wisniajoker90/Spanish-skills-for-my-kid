@@ -865,7 +865,7 @@ function renderSkills(){const root=$('s12SkillsBody');if(!root)return;const real
  {name:'Ćwiczenie samodzielnych odpowiedzi',measure:()=>real.reduce((a,t)=>a+Object.values(newStat(t).speaking).reduce((z,v)=>z+v.attempts,0),0),total:()=>real.reduce((a,t)=>a+t.dialogs.length,0),desc:'Liczba wypowiedzianych prób / orientacyjny cel pytań'},
  {name:'Dialogi bez podpowiedzi',measure:()=>real.reduce((a,t)=>a+Object.values(newStat(t).dialogs).filter(v=>v.confident>0).length,0),total:()=>real.reduce((a,t)=>a+t.dialogs.length,0),desc:'Pytania, na które dziecko deklaruje samodzielną odpowiedź'},
  {name:'Dialogi wymagające pomocy',measure:()=>real.reduce((a,t)=>a+Object.values(newStat(t).dialogs).filter(v=>v.needsHelp>0&&v.confident===0).length,0),total:()=>real.reduce((a,t)=>a+t.dialogs.length,0),desc:'Pytania do powtórzenia — nie jest to ocena językowa'}
- ];root.replaceChildren();defs.forEach(d=>{const a=d.measure(),b=d.total(),row=mk('div','s12-skill'),head=mk('div','s12-skill-head');head.append(mk('strong','',d.name),mk('span','',a+' / '+b));row.append(head,mk('div','s12-card-foot',d.desc));const meter=mk('div','s12-meter'),fill=mk('span');fill.style.width=Math.min(100,Math.round(100*a/Math.max(1,b)))+'%';meter.append(fill);row.append(meter);root.append(row)});root.append(mk('p','small','To podsumowanie ćwiczeń, a nie certyfikat A1. Postęp rozdziału i szkolne checkpointy nadal działają niezależnie.'))}
+ ];root.replaceChildren();defs.forEach(d=>{const a=d.measure(),b=d.total(),row=mk('div','s12-skill'),head=mk('div','s12-skill-head');head.append(mk('strong','',d.name),mk('span','',a+' / '+b));row.append(head,mk('div','s12-card-foot',d.desc));const meter=mk('div','s12-meter'),fill=mk('span');fill.style.width=Math.min(100,Math.round(100*a/Math.max(1,b)))+'%';meter.append(fill);row.append(meter);root.append(row)});const practice=window.hfSpeaking202?.getStats?.()||{};const count=Number(practice.total)||0;const speechRow=mk('div','s12-skill');speechRow.append(mk('strong','','🗣️ Mówienie i słuchanie — '+count+' wykonanych ćwiczeń'),mk('div','s12-card-foot','Wynik z ćwiczeń Mówię i słucham oraz dialogów. To licznik praktyki, nie automatyczna ocena wymowy.'));root.append(speechRow);root.append(mk('p','small','Wskaźniki A1 pochodzą z ćwiczeń rozumienia zdań, samodzielnych odpowiedzi i dialogów. Nowa praktyka mówienia jest wykazywana oddzielnie. Nie jest to certyfikat A1 ani procent ukończenia lekcji.'))}
 window.s12RefreshSkills=renderSkills;
 const mk=(tag,cls,txt)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(txt!==undefined)n.textContent=txt;return n};
 const button=(txt,click,cls='secondary')=>{const b=mk('button',cls,txt);b.type='button';b.onclick=click;return b};
@@ -1989,7 +1989,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const phrasePool=u=>{const cards=(typeof units!=='undefined'&&units[u]?.cards)||[];return cards.filter(c=>c?.[1]&&c?.[2]).map(c=>({es:c[1],pl:c[2]}))};
  const safeRead=()=>{try{return JSON.parse(frankaStore.getItem(KEY)||'{}')||{}}catch(e){return {}}};
  let journey=null;let speechSequence=0,mode='repeat',season=1,index=0,dialogIndex=0,recorder=null,stream=null,chunks=[],audioUrl=null,recordingTimer=null,carRunning=false,carToken=0,carEnd=0,carCount=0,carTimeout=null,openedFrom=null;
- function savePractice(kind,phrase){try{const data=safeRead();data.schema=1;data.total=(Number(data.total)||0)+1;data[kind]=(Number(data[kind])||0)+1;data.bySeason ||= {};data.bySeason[season]=(Number(data.bySeason[season])||0)+1;data.lastAt=new Date().toISOString();data.lastPhrase=phrase;frankaStore.setItem(KEY,JSON.stringify(data));}catch(e){status('Nie udało się zapisać statystyk. Sprawdź miejsce na urządzeniu.')}}
+ function savePractice(kind,phrase){try{const data=safeRead();data.schema=1;data.total=(Number(data.total)||0)+1;data[kind]=(Number(data[kind])||0)+1;data.bySeason ||= {};data.bySeason[season]=(Number(data.bySeason[season])||0)+1;data.lastAt=new Date().toISOString();data.lastPhrase=phrase;frankaStore.setItem(KEY,JSON.stringify(data));window.s12RefreshSkills?.();}catch(e){status('Nie udało się zapisać statystyk. Sprawdź miejsce na urządzeniu.')}}
  function status(t){if($('hf202Status'))$('hf202Status').textContent=t}
  function node(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e}
  function button(label,fn,cls){const b=node('button',label,cls);b.type='button';b.onclick=fn;return b}
@@ -2009,11 +2009,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   if(count>=journey.phrases.length){const callback=journey.onComplete;journey=null;close();callback?.();return}
   status('⭐ Świetnie! '+count+' z '+journey.phrases.length+' zwrotów.');
   const b=$('hf202Mark');if(b)b.disabled=true;
-  const nextBtn=$('hf202JourneyNext');if(nextBtn)nextBtn.disabled=false;
+
  }else{status('⭐ Świetnie, '+profile().name+'! Zapisano ćwiczenie mówienia, bez oceniania wymowy.');const b=$('hf202Mark');if(b)b.disabled=true}
  }
  function render(){const content=$('hf202Content');if(!content)return;content.replaceChildren();clearAudio();const d=mode==='dialog'?currentDialogue():null;const item=mode==='repeat'?currentItem():null;const phrase=mode==='repeat'?item.es:subst(d.a);$('hf202Title').textContent='🗣️ Mówię po hiszpańsku — '+profile().name;$('hf202Context').textContent=seasons[season]+' · '+(mode==='repeat'?'Listen & Repeat':'Dialogi interaktywne');const card=node('div',undefined,'hf202-phrase');card.append(node('div',mode==='repeat'?'Posłuchaj i powtórz':'Posłuchaj pytania i odpowiedz','hf202-sub'));if(d){const q=node('div',undefined,'hf202-dialogue');q.append(node('strong',d.q),node('div',d.pl,'hf202-sub'));card.append(q)}card.append(node('strong',phrase),node('div',mode==='repeat'?item.pl:'Przykładowa odpowiedź','hf202-sub'));content.append(card);
- content.append(row(button('🔊 Posłuchaj',()=>speakText(mode==='repeat'?phrase:d.q,0.95)),button('🐢 Bardzo wolno',()=>speakText(mode==='repeat'?phrase:d.q,0.28))));if(d)content.append(row(button('🔊 Wzór odpowiedzi',()=>speakText(phrase))));const rec=button('🎙️ Nagraj',startMic,'record');rec.id='hf202Record';const play=button('▶ Mój głos',()=>{},'');play.id='hf202MyVoice';play.disabled=true;content.append(row(rec,play));const markButton=button('⭐ Ćwiczyłem na głos',mark,'primary');markButton.id='hf202Mark';const nextBtn=button('Następne →',()=>{if(journey){if(!journey.completed.has(index))return;dispose();index++;render()}else next()});nextBtn.id='hf202JourneyNext';if(journey)nextBtn.disabled=true;content.append(row(markButton,nextBtn));if(journey){$('hf202Context').textContent=seasons[season]+' · Mówienie '+(index+1)+'/'+journey.phrases.length;}status('Najpierw posłuchaj, następnie powiedz zdanie na głos. Nagranie jest opcjonalne i tymczasowe.')}
+ content.append(row(button('🔊 Posłuchaj',()=>speakText(mode==='repeat'?phrase:d.q,0.95)),button('🐢 Bardzo wolno',()=>speakText(mode==='repeat'?phrase:d.q,0.28))));if(d)content.append(row(button('🔊 Wzór odpowiedzi',()=>speakText(phrase))));const rec=button('🎙️ Nagraj',startMic,'record');rec.id='hf202Record';const play=button('▶ Mój głos',()=>{},'');play.id='hf202MyVoice';play.disabled=true;content.append(row(rec,play));const continueButton=button('✓ Przećwiczone — dalej',()=>{mark();if(journey){if(journey.completed.has(index)){dispose();index++;render()}}else{next()}},'primary');continueButton.id='hf202Mark';content.append(row(continueButton));if(journey){$('hf202Context').textContent=seasons[season]+' · Mówienie '+(index+1)+'/'+journey.phrases.length;}status('Najpierw posłuchaj, następnie powiedz zdanie na głos. Nagranie jest opcjonalne i tymczasowe.')}
  function switchMode(m){dispose();mode=m;index=0;dialogIndex=0;render()}
  function close(){journey=null;carStop();dispose();$('hf202Shade')?.classList.remove('open');openedFrom?.focus?.()}
  function open(m='repeat',chosenSeason){journey=null;['hf202Repeat','hf202Dialog','hf202Season'].forEach(id=>{if($(id))$(id).hidden=false});document.querySelector('label[for=hf202Season]')?.removeAttribute('hidden');openedFrom=document.activeElement;carStop();dispose();mode=m;const val=Number(chosenSeason||$('uxUnit')?.value||$('hf202Season')?.value||1);season=[1,2,3,4].includes(val)?val:1;$('hf202Season').value=String(season);$('hf202Shade').classList.add('open');render();$('hf202Close').focus()}
@@ -2100,6 +2100,37 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   if(next)next.insertAdjacentElement('afterend',btn);else steps.prepend(btn);
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,150));else setTimeout(install,150);
+})();
+</script>
+<script id="hf204SeasonAudioFix">
+/* Seasonal navigation announces only the season name, not a random vocabulary item. */
+(()=>{
+ const names={1:'Otoño',2:'Invierno',3:'Primavera',4:'Verano'};
+ let ticket=0;
+ function announce(u){
+   const id=++ticket;
+   if(!names[u]||!('speechSynthesis' in window))return;
+   try{speechSynthesis.cancel()}catch(e){}
+   // Wait until synchronous season-change handlers finish; cancel their queued speech.
+   setTimeout(()=>{
+     if(id!==ticket)return;
+     try{
+       speechSynthesis.cancel();
+       const phrase=new SpeechSynthesisUtterance(names[u]);phrase.lang='es-ES';phrase.rate=.82;
+       const voices=speechSynthesis.getVoices();const v=voices.find(x=>x.lang.toLowerCase()==='es-es')||voices.find(x=>x.lang.toLowerCase().startsWith('es'));
+       if(v)phrase.voice=v;
+       speechSynthesis.speak(phrase);
+     }catch(e){}
+   },100);
+ }
+ function init(){
+   const selector=document.getElementById('uxUnit');if(!selector)return;
+   selector.addEventListener('change',()=>announce(Number(selector.value)));
+   // Season picker inside speaking module also announces the selected season.
+   const speaking=document.getElementById('hf202Season');
+   speaking?.addEventListener('change',()=>announce(Number(speaking.value)));
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
 </body></html>
