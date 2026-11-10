@@ -230,7 +230,7 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 <label class="small" for="s8FocusSeason">Dziś ćwiczę: <select id="s8FocusSeason"><option value="1">🍂 Otoño</option><option value="2">❄️ Invierno</option><option value="3">🌸 Primavera</option><option value="4">☀️ Verano</option></select></label><details class="s13-exam" id="s13ExamDetails"><summary>📋 Mam sprawdzian! — przygotowanie szkolne</summary><p class="small">Wybierz datę sprawdzianu. W codziennej sesji priorytet otrzymają szkolne słówka i Twoje błędy. Rozszerzenia A1 pozostają poza przygotowaniem.</p><div class="s13-exam-controls"><label for="s13ExamDate">Data sprawdzianu <input id="s13ExamDate" type="date"/></label><button class="secondary" id="s13ExamClear" type="button">Wyłącz przygotowanie</button></div><p aria-live="polite" class="small" id="s13ExamStatus"></p><button class="secondary" id="s13ExamTest" type="button">📝 Próbny checkpoint tego rozdziału</button></details><div class="s8-daily-tip" id="s8DailyTip"></div><div aria-live="polite" class="s7-plan" id="s7Plan"></div>
 <div class="s7-session" hidden="" id="s7Session"><div class="s7-progress-line"><strong id="s7SessionProgress"></strong><button class="secondary" id="s7SessionClose" type="button">✕ Zakończ</button></div><div id="s7SessionBody"></div><p aria-live="polite" id="s7SessionFeedback"></p><div class="s7-next" hidden="" id="s7NextWrap"><button id="s7Next" type="button">➡️ Dalej</button></div></div>
 </div>
-<details class="s12-skills" id="s12Skills"><summary>🎓 Moje umiejętności A1 — zobacz postępy</summary><p class="small">Wyniki z rzeczywistych ćwiczeń. Próby mówienia są samooceną, nie automatycznym sprawdzianem wymowy.</p><div aria-live="polite" id="s12SkillsBody"></div></details><div class="s7-insights" id="s7Insights"><h3>📋 Co warto powtórzyć w szkole?</h3><div class="s7-topic-list" id="s7WeakTopics"></div><p class="small">Wskazówki bazują na odpowiedziach w aplikacji; nie zastępują szkolnych ocen ani rozmowy z nauczycielem.</p></div><div aria-live="polite" class="smart-progress" id="smartProgress"></div>
+<details class="s12-skills" id="s12Skills"><summary>🎓 Moje umiejętności — zobacz postępy</summary><p class="small">Postępy szkolne i praktyka A1. Mówienie nie jest oceniane automatycznie.</p><div aria-live="polite" id="s12SkillsBody"></div></details><div class="s7-insights" id="s7Insights"><h3>📋 Co warto powtórzyć w szkole?</h3><div class="s7-topic-list" id="s7WeakTopics"></div><p class="small">Wskazówki bazują na odpowiedziach w aplikacji; nie zastępują szkolnych ocen ani rozmowy z nauczycielem.</p></div><div aria-live="polite" class="smart-progress" id="smartProgress"></div>
 <p class="small">„Opanowane” oznacza co najmniej 3 poprawne odpowiedzi i 80% skuteczności. To szacunkowy wskaźnik nauki, nie ocena szkolna. Wyniki przechowywane są tylko w tej przeglądarce.</p>
 <div class="smart-review" hidden="" id="smartReview"><h3 id="smartReviewTitle">Powtórka</h3><p id="smartReviewCounter"></p><p class="epic-prompt" id="smartReviewPrompt"></p><div class="smart-review-btns"><button class="epic-listen" id="smartListen">🔊 Posłuchaj</button><button class="secondary" id="smartQuit">✕ Zakończ</button></div><div class="epic-choices" id="smartReviewChoices"></div><p aria-live="polite" class="epic-feedback" id="smartReviewFeedback"></p><div class="epic-action-row" hidden="" id="smartNextWrap"><button class="epic-primary" id="smartNext">➡️ Następne słowo</button></div></div>
 </section>
@@ -860,13 +860,47 @@ function newStat(t){const v=stat(t);if(!v.dialogs||typeof v.dialogs!=='object')v
 function recordDialogue(t,d,quality){const st=newStat(t),key=d[0]+'|'+d[1],x=st.dialogs[key]||{practised:0,confident:0,needsHelp:0};x.practised++;if(quality==='yes')x.confident++;else x.needsHelp++;st.dialogs[key]=x;save();window.dispatchEvent(new CustomEvent("franka:s14dialogue",{detail:{quality,question:d[0]}}));if(window.s12RefreshSkills)window.s12RefreshSkills()}
 function saveSpeaking(t,d){const st=newStat(t),key=d[0]+'|'+d[1],x=st.speaking[key]||{attempts:0};x.attempts++;st.speaking[key]=x;save();if(window.s12RefreshSkills)window.s12RefreshSkills()}
 function escapeText(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function renderSkills(){const root=$('s12SkillsBody');if(!root)return;const real=topics.filter((t,i)=>i===0||i===1||i===2||i===5);const defs=[
- {name:'Rozumienie krótkich zdań',measure:()=>real.reduce((a,t)=>a+stat(t).listeningCorrect,0),total:()=>real.reduce((a,t)=>a+stat(t).listeningAttempts,0),desc:'Poprawne odpowiedzi / próby ze słuchu'},
- {name:'Ćwiczenie samodzielnych odpowiedzi',measure:()=>real.reduce((a,t)=>a+Object.values(newStat(t).speaking).reduce((z,v)=>z+v.attempts,0),0),total:()=>real.reduce((a,t)=>a+t.dialogs.length,0),desc:'Liczba wypowiedzianych prób / orientacyjny cel pytań'},
- {name:'Dialogi bez podpowiedzi',measure:()=>real.reduce((a,t)=>a+Object.values(newStat(t).dialogs).filter(v=>v.confident>0).length,0),total:()=>real.reduce((a,t)=>a+t.dialogs.length,0),desc:'Pytania, na które dziecko deklaruje samodzielną odpowiedź'},
- {name:'Dialogi wymagające pomocy',measure:()=>real.reduce((a,t)=>a+Object.values(newStat(t).dialogs).filter(v=>v.needsHelp>0&&v.confident===0).length,0),total:()=>real.reduce((a,t)=>a+t.dialogs.length,0),desc:'Pytania do powtórzenia — nie jest to ocena językowa'}
- ];root.replaceChildren();defs.forEach(d=>{const a=d.measure(),b=d.total(),row=mk('div','s12-skill'),head=mk('div','s12-skill-head');head.append(mk('strong','',d.name),mk('span','',a+' / '+b));row.append(head,mk('div','s12-card-foot',d.desc));const meter=mk('div','s12-meter'),fill=mk('span');fill.style.width=Math.min(100,Math.round(100*a/Math.max(1,b)))+'%';meter.append(fill);row.append(meter);root.append(row)});const practice=window.hfSpeaking202?.getStats?.()||{};const count=Number(practice.total)||0;const speechRow=mk('div','s12-skill');speechRow.append(mk('strong','','🗣️ Mówienie i słuchanie — '+count+' wykonanych ćwiczeń'),mk('div','s12-card-foot','Wynik z ćwiczeń Mówię i słucham oraz dialogów. To licznik praktyki, nie automatyczna ocena wymowy.'));root.append(speechRow);root.append(mk('p','small','Wskaźniki A1 pochodzą z ćwiczeń rozumienia zdań, samodzielnych odpowiedzi i dialogów. Nowa praktyka mówienia jest wykazywana oddzielnie. Nie jest to certyfikat A1 ani procent ukończenia lekcji.'))}
+function renderSkills(){
+ const root=$('s12SkillsBody');if(!root)return;
+ const safe=(key)=>{try{return JSON.parse(frankaStore.getItem(key)||'{}')||{}}catch(e){return {}}};
+ const path=safe('hiszpanskiFrankaPath10V2');
+ const speaking=safe('hiszpanskiFrankaSpeaking20V1');
+ const seasonNames={1:'Otoño',2:'Invierno',3:'Primavera',4:'Verano'};
+ const group=(title,description)=>{const box=mk('section','hf21-skill-group');box.append(mk('h4','',title),mk('p','',description));const grid=mk('div','hf21-skill-grid');box.append(grid);root.append(box);return grid};
+ const tile=(grid,label,value,desc,pct)=>{const box=mk('div','hf21-skill-tile');box.append(mk('strong','',String(value)),mk('span','',label),mk('small','',desc));if(Number.isFinite(pct)){const track=mk('div','hf21-skill-meter'),fill=mk('i');fill.style.width=Math.max(0,Math.min(100,pct))+'%';track.append(fill);box.append(track)}grid.append(box)};
+ root.replaceChildren();
+ const school=group('📚 Nauka szkolna','Ukończenie etapów i opanowanie słówek to dwie różne miary. Ćwiczenia mówienia są częścią ścieżki.');
+ let completed=0,total=0,mastered=0,words=0;
+ for(let u=1;u<=4;u++){
+  const steps=window.frankaPath10?.stages?.(u)||[];
+  const done=steps.filter(step=>path[u]?.[step.id]?.done).length;
+  const knowledge=window.frankaJourney8?.progress?.(u);
+  completed+=done;total+=steps.length;
+  mastered+=Number(knowledge?.wordRight)||0;words+=Number(knowledge?.total)||0;
+  tile(school,seasonNames[u],done+' / '+steps.length+' etapów','Ukończone etapy w tym sezonie',steps.length?done/steps.length*100:0);
+ }
+ tile(school,'Cała ścieżka',completed+' / '+total,'Zaliczone etapy we wszystkich sezonach',total?completed/total*100:0);
+ tile(school,'Utrwalone słówka',mastered+' / '+words,'Według mechanizmu inteligentnych powtórek; nie zależy od samego nagrania',words?mastered/words*100:0);
+ const a1=group('🗣️ Rozwijam umiejętności A1','Statystyki aktywności i samooceny. Nie są formalną oceną poziomu A1 ani oceną wymowy.');
+ const real=topics.filter((t,i)=>i===0||i===1||i===2||i===5);
+ const savedA1=safe('hiszpanskiFrankaA1ProgressV1');
+ const a1For=t=>savedA1[t.id]||{};
+ const listeningCorrect=real.reduce((a,t)=>a+(Number(a1For(t).listeningCorrect)||0),0);
+ const listeningAttempts=real.reduce((a,t)=>a+(Number(a1For(t).listeningAttempts)||0),0);
+ const dialogRecords=real.flatMap(t=>Object.values(a1For(t).dialogs||{}));
+ const confident=dialogRecords.filter(v=>Number(v.confident)>0).length;
+ const help=dialogRecords.filter(v=>Number(v.needsHelp)>0&&!(Number(v.confident)>0)).length;
+ const classicSpeaking=real.reduce((a,t)=>a+Object.values(a1For(t).speaking||{}).reduce((sum,v)=>sum+(Number(v.attempts)||0),0),0);
+ const speakingTotal=Number(speaking.total)||0;
+ tile(a1,'Rozumienie zdań',listeningAttempts?Math.round(100*listeningCorrect/listeningAttempts)+'%':'Brak prób',listeningCorrect+' poprawnych z '+listeningAttempts+' odpowiedzi w ćwiczeniach zdań',listeningAttempts?100*listeningCorrect/listeningAttempts:0);
+ tile(a1,'Mówienie i słuchanie',speakingTotal+' prób','Powtórki i dialogi z modułu mówienia, w tym etapy ścieżki; bez oceny wymowy');
+ tile(a1,'Samodzielne wypowiedzi',classicSpeaking+' prób','Ćwiczenia ustne z wcześniejszej sekcji A1');
+ tile(a1,'Dialogi',confident+' samodzielnie','Zadeklarowane bez podpowiedzi · '+help+' wymaga powtórzenia');
+ root.append(mk('p','small','Wskaźniki aktualizują się po zapisaniu ćwiczenia. Lekcje i słówka mają odrębne kryteria zaliczenia; samo użycie mikrofonu nie oznacza opanowania języka.'));
+}
 window.s12RefreshSkills=renderSkills;
+['franka:s14stage','franka:s8checkpoint','franka:mission-answer','franka:s14word','franka:profile-changed'].forEach(name=>window.addEventListener(name,()=>{if(typeof window.s12RefreshSkills==='function')window.s12RefreshSkills()}));
+
 const mk=(tag,cls,txt)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(txt!==undefined)n.textContent=txt;return n};
 const button=(txt,click,cls='secondary')=>{const b=mk('button',cls,txt);b.type='button';b.onclick=click;return b};
 function say(str){speak(str)}
@@ -1971,6 +2005,31 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <style id="hf202Style">
 #hf202Shade{position:fixed;inset:0;z-index:9500;background:#10283edc;display:none;align-items:center;justify-content:center;padding:12px;box-sizing:border-box}#hf202Shade.open{display:flex}#hf202Panel{background:#fff;color:#19364e;border-radius:22px;width:min(640px,100%);max-height:92dvh;overflow:auto;padding:clamp(16px,4vw,26px);box-sizing:border-box;font:16px/1.5 system-ui;box-shadow:0 16px 60px #0006}#hf202Panel button,#hf202CarLaunch{min-height:46px;border-radius:12px;border:1px solid #b5cddd;background:#eaf3fa;color:#19466a;font:650 15px system-ui;padding:10px 14px;cursor:pointer}#hf202Panel button:disabled{opacity:.5;cursor:not-allowed}#hf202Panel button.primary{background:#245d84;color:white}#hf202Panel button.record{background:#b73e51;color:white}#hf202Panel button:focus-visible{outline:3px solid #dfad35;outline-offset:2px}.hf202-row{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}.hf202-row button{flex:1 1 125px}.hf202-phrase{background:#eef7f3;border-radius:15px;padding:19px;margin:15px 0;text-align:center}.hf202-phrase strong{display:block;font-size:clamp(22px,5vw,30px);color:#225b52}.hf202-sub{font-size:13px;color:#586e7e}.hf202-head{display:flex;align-items:start;justify-content:space-between;gap:12px}.hf202-head h2{margin:0;font-size:23px}.hf202-status{background:#f0f5fa;border-radius:10px;padding:11px;margin:10px 0;min-height:22px}.hf202-dialogue{background:#edf2ff;border-radius:13px;padding:14px;margin:12px 0}.hf202-privacy{font-size:12px;color:#607184}#hf202Launch{margin:12px 0;min-height:52px}#hf202Panel select{padding:10px;border:1px solid #b8cddd;border-radius:10px;max-width:100%;background:#fff;color:#19364e}@media(max-width:390px){#hf202Panel{padding:14px}.hf202-row{display:grid;grid-template-columns:1fr 1fr}.hf202-row button{min-width:0}}
 </style>
+<style id="hf21VisualStyle">
+/* Learning Experience: accessible, consistent primary action and calm spacing. */
+#hf202Panel{background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);padding:clamp(18px,4vw,30px);scroll-padding-bottom:22px}
+#hf202Panel .hf202-phrase{padding:clamp(22px,5vw,36px) 18px;background:linear-gradient(140deg,#e7f7f0,#edf5ff);border:1px solid #d3e9e2;box-shadow:0 7px 22px #183b5b0c}
+#hf202Panel .hf202-phrase strong{line-height:1.3}
+#hf202Panel .hf21-action-area{display:flex;justify-content:center;margin:26px auto 12px;width:100%;padding-bottom:max(6px,env(safe-area-inset-bottom))}
+#hf202Panel #hf202Mark{display:block;width:min(100%,480px);min-height:64px;border:0;border-radius:17px;background:linear-gradient(135deg,#146b63,#218e79);color:#fff;font-size:clamp(17px,4.5vw,20px);font-weight:800;letter-spacing:.01em;box-shadow:0 9px 22px #176e6040;transition:transform .15s,box-shadow .15s}
+#hf202Panel #hf202Mark:not(:disabled):active{transform:translateY(2px);box-shadow:0 3px 10px #176e6033}
+#hf202Panel #hf202Mark:focus-visible{outline:3px solid #e2a52d;outline-offset:4px}
+#s12Skills{border:1px solid #d7e5ef;border-radius:19px;padding:16px;background:#fff;box-shadow:0 6px 24px #183b5b0b}
+#s12Skills>summary{font-size:clamp(17px,3vw,21px);font-weight:800;cursor:pointer}
+.hf21-skill-group{margin:18px 0;padding:17px;border-radius:16px;background:#f4f8fc;border:1px solid #e2ebf4}
+.hf21-skill-group h4{margin:0 0 6px;font-size:17px;color:#173e5e}
+.hf21-skill-group p{font-size:13px;color:#516b7d;margin:5px 0 13px}
+.hf21-skill-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:11px}
+.hf21-skill-tile{padding:15px;background:#fff;border-radius:13px;border:1px solid #e0eaf0}
+.hf21-skill-tile strong{font-size:24px;color:#145c59;display:block;line-height:1.25}
+.hf21-skill-tile span{display:block;font-size:13px;font-weight:700;color:#27465e;margin:4px 0}
+.hf21-skill-tile small{display:block;font-size:12px;line-height:1.5;color:#60788b}
+.hf21-skill-meter{height:8px;background:#e4edf2;border-radius:99px;overflow:hidden;margin-top:10px}
+.hf21-skill-meter i{display:block;height:100%;background:linear-gradient(90deg,#3b8f89,#67b5a5);border-radius:99px}
+@media(max-width:420px){#hf202Panel #hf202Mark{width:100%;min-height:62px}.hf21-skill-group{padding:12px}.hf21-skill-grid{grid-template-columns:1fr 1fr;gap:8px}.hf21-skill-tile{padding:12px}.hf21-skill-tile strong{font-size:21px}}
+@media(max-width:340px){.hf21-skill-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){#hf202Panel #hf202Mark{transition:none}}
+</style>
 <script id="hf202Script">
 /* Sprint 20.2: ephemeral local recordings, per-profile practice metadata only. */
 (()=>{'use strict';
@@ -2013,7 +2072,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  }else{status('⭐ Świetnie, '+profile().name+'! Zapisano ćwiczenie mówienia, bez oceniania wymowy.');const b=$('hf202Mark');if(b)b.disabled=true}
  }
  function render(){const content=$('hf202Content');if(!content)return;content.replaceChildren();clearAudio();const d=mode==='dialog'?currentDialogue():null;const item=mode==='repeat'?currentItem():null;const phrase=mode==='repeat'?item.es:subst(d.a);$('hf202Title').textContent='🗣️ Mówię po hiszpańsku — '+profile().name;$('hf202Context').textContent=seasons[season]+' · '+(mode==='repeat'?'Listen & Repeat':'Dialogi interaktywne');const card=node('div',undefined,'hf202-phrase');card.append(node('div',mode==='repeat'?'Posłuchaj i powtórz':'Posłuchaj pytania i odpowiedz','hf202-sub'));if(d){const q=node('div',undefined,'hf202-dialogue');q.append(node('strong',d.q),node('div',d.pl,'hf202-sub'));card.append(q)}card.append(node('strong',phrase),node('div',mode==='repeat'?item.pl:'Przykładowa odpowiedź','hf202-sub'));content.append(card);
- content.append(row(button('🔊 Posłuchaj',()=>speakText(mode==='repeat'?phrase:d.q,0.95)),button('🐢 Bardzo wolno',()=>speakText(mode==='repeat'?phrase:d.q,0.28))));if(d)content.append(row(button('🔊 Wzór odpowiedzi',()=>speakText(phrase))));const rec=button('🎙️ Nagraj',startMic,'record');rec.id='hf202Record';const play=button('▶ Mój głos',()=>{},'');play.id='hf202MyVoice';play.disabled=true;content.append(row(rec,play));const continueButton=button('✓ Przećwiczone — dalej',()=>{mark();if(journey){if(journey.completed.has(index)){dispose();index++;render()}}else{next()}},'primary');continueButton.id='hf202Mark';content.append(row(continueButton));if(journey){$('hf202Context').textContent=seasons[season]+' · Mówienie '+(index+1)+'/'+journey.phrases.length;}status('Najpierw posłuchaj, następnie powiedz zdanie na głos. Nagranie jest opcjonalne i tymczasowe.')}
+ content.append(row(button('🔊 Posłuchaj',()=>speakText(mode==='repeat'?phrase:d.q,0.95)),button('🐢 Bardzo wolno',()=>speakText(mode==='repeat'?phrase:d.q,0.28))));if(d)content.append(row(button('🔊 Wzór odpowiedzi',()=>speakText(phrase))));const rec=button('🎙️ Nagraj',startMic,'record');rec.id='hf202Record';const play=button('▶ Mój głos',()=>{},'');play.id='hf202MyVoice';play.disabled=true;content.append(row(rec,play));const continueButton=button('✓ Przećwiczone — dalej',()=>{const wasJourney=!!journey;mark();if(wasJourney){if(journey&&journey.completed.has(index)){dispose();index++;render()}}else{next()}},'primary');continueButton.id='hf202Mark';const actionArea=node('div',undefined,'hf21-action-area');actionArea.append(continueButton);content.append(actionArea);if(journey){$('hf202Context').textContent=seasons[season]+' · Mówienie '+(index+1)+'/'+journey.phrases.length;}status('Najpierw posłuchaj, następnie powiedz zdanie na głos. Nagranie jest opcjonalne i tymczasowe.')}
  function switchMode(m){dispose();mode=m;index=0;dialogIndex=0;render()}
  function close(){journey=null;carStop();dispose();$('hf202Shade')?.classList.remove('open');openedFrom?.focus?.()}
  function open(m='repeat',chosenSeason){journey=null;['hf202Repeat','hf202Dialog','hf202Season'].forEach(id=>{if($(id))$(id).hidden=false});document.querySelector('label[for=hf202Season]')?.removeAttribute('hidden');openedFrom=document.activeElement;carStop();dispose();mode=m;const val=Number(chosenSeason||$('uxUnit')?.value||$('hf202Season')?.value||1);season=[1,2,3,4].includes(val)?val:1;$('hf202Season').value=String(season);$('hf202Shade').classList.add('open');render();$('hf202Close').focus()}
