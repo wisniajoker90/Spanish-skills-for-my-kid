@@ -1704,7 +1704,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 @media(max-width:600px){.s15-topbar{flex-wrap:wrap;gap:10px}.s15-brand{min-width:0;flex:1 1 175px}.s15-brand strong{overflow-wrap:anywhere}#hf19Launcher{flex:0 0 auto;max-width:100%;min-height:44px}#hf193Dialog{padding:17px}#hf192Dialog{max-height:88dvh;padding:15px}}
 </style>
 <script id="hf193Script">
-/* Sprint 19.3 — profile-menu parent access, adaptive review, no new persistent storage keys. */
+/* Sprint 19.3.1 — Progress Sync Fix; existing per-profile storage only. */
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
 const api=window.hfProfiles19;
@@ -1747,8 +1747,21 @@ function draw(){if(!mission)return;const item=mission.queue[mission.index];
  for(const c of shuffle([item.card,...wrong])){
  const b=document.createElement('button');b.type='button';b.textContent=c[2];b.onclick=()=>{
  if(mission.answered)return;mission.answered=true;
- const ok=c===item.card;recordResult(item.u,item.card,ok,'sprint19.3-daily');
- if(ok){mission.correct++;if(typeof points==='number'&&typeof saveProgress==='function'){points++;saveProgress()}}
+ const ok=c===item.card;
+ // Sprint 19.3.1: one answer updates the shared mastery/journey pipeline AND
+ // legacy quiz counters/status used by the older Progress screens.
+ recordResult(item.u,item.card,ok,'sprint19.3-daily');
+ if(typeof saved==='object'&&saved){
+   saved.quizTotal=(Number(saved.quizTotal)||0)+1;
+   if(ok)saved.quizCorrect=(Number(saved.quizCorrect)||0)+1;
+   if(!saved.words||typeof saved.words!=='object')saved.words={};
+   const legacyIndex=units[item.u]?.cards.indexOf(item.card)??-1;
+   if(legacyIndex>=0)saved.words[item.u+':'+legacyIndex]=ok?'learned':'review';
+ }
+ if(ok){mission.correct++;if(typeof points==='number')points++}
+ if(typeof saveProgress==='function')saveProgress();
+ mission.answeredCount=(mission.answeredCount||0)+1;
+ if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('franka:mission-answer',{detail:{unit:item.u,correct:ok,source:'sprint19.3.1-daily'}}));
  choices.querySelectorAll('button').forEach(el=>{el.disabled=true;if(el.textContent===item.card[2])el.classList.add('hf193-correct')});
  if(!ok)b.classList.add('hf193-wrong');
  $('hf193Feedback').textContent=ok?'✅ ¡Muy bien!':('💡 Poprawna odpowiedź: '+item.card[2]);
@@ -1760,7 +1773,11 @@ function draw(){if(!mission)return;const item=mission.queue[mission.index];
 function finish(){
  $('hf193Progress').firstElementChild.style.width='100%';$('hf193Status').textContent='Misja zakończona';
  $('hf193Question').textContent='🎉 ¡Excelente!';$('hf193Options').replaceChildren();
- $('hf193Feedback').textContent='Poprawne odpowiedzi: '+mission.correct+' / '+mission.queue.length+'. Wyniki zapisano w Twoim profilu.';
+ $('hf193Feedback').textContent='Poprawne odpowiedzi: '+mission.correct+' / '+mission.queue.length+'. Przećwiczone słówka: '+mission.queue.length+'. Wyniki zapisano w Twoim profilu. Procent opanowania może pozostać bez zmian, dopóki słówka nie osiągną progu utrwalenia.';
+ // Refresh all progress consumers, without creating a second result event.
+ if(typeof updateStats==='function')updateStats();
+ if(window.frankaJourney8?.draw)window.frankaJourney8.draw();
+ if(typeof refreshSmart==='function')refreshSmart();
  $('hf193Next').hidden=false;$('hf193Next').textContent='Zakończ';mission.done=true;
 }
 function open(){const q=pick();if(!q.length){alert('Brak dostępnych słówek do nauki.');return}
