@@ -1797,4 +1797,62 @@ function init(){attachParent();if($('hf193Shade'))return;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,30));else setTimeout(init,30);
 })();
 </script>
+
+<style id="hf1932Style">
+/* Sprint 19.3.2 — two independent seasonal indicators; no storage schema changes. */
+.hf1932-dual{display:grid;gap:7px;margin-top:12px;font-size:12px;color:#43546d}
+.hf1932-line{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:700}
+.hf1932-track{height:6px;border-radius:8px;background:#ffffffb8;overflow:hidden}
+.hf1932-track>span{display:block;height:100%;background:#278b79;border-radius:8px}
+.hf1932-note{font-size:12px;color:#607088;margin:8px 0 16px;line-height:1.5}
+.hf1932-panel{background:#fff;border:1px solid #e6e6f2;border-radius:20px;padding:18px;margin:18px 0;box-shadow:0 3px 14px #1d2c4610}
+.hf1932-panel h3{margin:0 0 6px;font-size:19px}
+.hf1932-season{padding:12px 0;border-top:1px solid #e9edf3}
+.hf1932-season:first-of-type{border-top:0}
+.hf1932-panel .hf1932-track{background:#e7edf2}
+@media(max-width:420px){.hf1932-panel{padding:13px}.hf1932-line{font-size:12px}}
+</style>
+<script id="hf1932Script">
+/* Sprint 19.3.2 — read-only seasonal indicators derived from existing profile-specific stores.
+   Path completion is NEVER granted by daily missions; vocabulary mastery uses the
+   existing Journey8 algorithm, which recordResult already updates for each answer. */
+(()=>{'use strict';
+ const labels={1:'🍂 Otoño',2:'❄️ Invierno',3:'🌸 Primavera',4:'☀️ Verano'};
+ const $=id=>document.getElementById(id);
+ function values(u){
+   const stages=window.frankaPath10?.stages?.(u)||[];
+   let state={};try{state=JSON.parse(frankaStore.getItem('hiszpanskiFrankaPath10V2')||'{}')?.[u]||{}}catch(e){}
+   const completed=stages.filter(step=>state[step.id]?.done).length;
+   const lessons=stages.length?Math.round(completed/stages.length*100):0;
+   const knowledge=window.frankaJourney8?.progress?.(u);
+   return {completed,total:stages.length,lessons,mastery:knowledge?.pct??null,known:knowledge?.wordRight??0,words:knowledge?.total??0};
+ }
+ function line(label,value){const wrap=document.createElement('div');wrap.className='hf1932-line';const a=document.createElement('span');a.textContent=label;const b=document.createElement('strong');b.textContent=value;wrap.append(a,b);return wrap}
+ function meter(value){const track=document.createElement('div');track.className='hf1932-track';const fill=document.createElement('span');fill.style.width=Math.max(0,Math.min(100,Number(value)||0))+'%';track.append(fill);return track}
+ function dual(u){const v=values(u),root=document.createElement('div');root.className='hf1932-dual';root.append(line('Ukończenie lekcji',v.lessons+'% · '+v.completed+'/'+v.total),meter(v.lessons),line('Opanowanie materiału',v.mastery===null?'Brak danych':v.mastery+'%'),meter(v.mastery));return root}
+ function renderCards(){const grid=$('s15Seasons');if(!grid)return;for(const [i,card] of [...grid.children].entries()){
+   if(i>=4)break;card.querySelector('.hf1932-dual')?.remove();
+   const original=card.querySelector('.s15-season-progress');if(original)original.hidden=true;
+   const originalLabel=card.querySelector('.s15-season-pct');if(originalLabel)originalLabel.hidden=true;
+   card.querySelector('.s15-season-copy')?.append(dual(i+1));
+   const v=values(i+1);card.setAttribute('aria-label',labels[i+1]+': ukończenie lekcji '+v.lessons+'%, opanowanie materiału '+(v.mastery===null?'brak danych':v.mastery+'%'));
+ }}
+ function renderPanel(){const page=$('s15Progress');if(!page)return;let root=$('hf1932Panel');if(!root){root=document.createElement('section');root.id='hf1932Panel';root.className='hf1932-panel';root.setAttribute('aria-label','Postępy sezonowe: lekcje i opanowanie');const anchor=$('s15ProgressSlots');if(anchor)page.insertBefore(root,anchor);else page.append(root)}
+ root.replaceChildren();const h=document.createElement('h3');h.textContent='📚 Postępy w czterech sezonach';root.append(h);
+ const p=document.createElement('p');p.className='hf1932-note';p.textContent='Ukończenie lekcji rośnie po zaliczeniu etapów ścieżki. Opanowanie materiału uwzględnia odpowiedzi z lekcji, gier i codziennej misji; może pozostać bez zmian po pojedynczej powtórce.';root.append(p);
+ for(let u=1;u<=4;u++){const section=document.createElement('div');section.className='hf1932-season';const title=document.createElement('strong');title.textContent=labels[u];section.append(title,dual(u));root.append(section)}
+ }
+ let scheduled=false;function refresh(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;renderCards();renderPanel()})}
+ function init(){const grid=$('s15Seasons');if(grid){new MutationObserver(mutations=>{if(mutations.some(m=>m.target===grid&&m.type==='childList'))refresh()}).observe(grid,{childList:true})}
+  document.addEventListener('click',e=>{if(e.target.closest('[data-s15-view],.s15-season,#hf193Next,#hf193Close'))refresh()});
+  window.addEventListener('franka:mission-answer',refresh);
+  window.addEventListener('franka:s14stage',refresh);
+  window.addEventListener('franka:s14word',refresh);
+  window.addEventListener('franka:profile-changed',refresh);
+  refresh();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+ window.hfSeasonProgress1932={values,refresh};
+})();
+</script>
 </body></html>
