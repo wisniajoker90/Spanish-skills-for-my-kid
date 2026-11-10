@@ -2255,4 +2255,71 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  window.hf22Skills={read};
 })();
 </script>
+<style id="hf23Style">
+#hf23Home{margin:16px 0;padding:18px;border-radius:20px;background:linear-gradient(125deg,#e5f7ee,#eaf2ff);border:1px solid #cce6db;color:#183f48}#hf23Home h3{margin:0 0 6px;font-size:21px}#hf23Home p{margin:5px 0 12px;color:#385969}#hf23Start{background:#176c60;color:white;border:0;border-radius:14px;padding:14px 20px;min-height:52px;font-size:17px;font-weight:750;width:100%;cursor:pointer}#hf23Start:focus-visible,.hf23-modal button:focus-visible{outline:3px solid #e9aa34;outline-offset:3px}.hf23-meta{font-size:13px!important}#hf23Awards{margin:14px 0;padding:15px;border:1px solid #d9e7ed;border-radius:16px;background:#f9fcff}#hf23Awards h3{margin:0 0 9px}.hf23-awards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}.hf23-award{background:#fff;border:1px solid #d6e5e9;border-radius:12px;padding:10px;font-size:13px}.hf23-award strong{display:block;font-size:14px}.hf23-award small{display:block;color:#60717d;margin-top:4px}.hf23-modal{position:fixed;inset:0;background:#12283edb;z-index:9700;display:none;align-items:center;justify-content:center;padding:12px}.hf23-modal.open{display:flex}.hf23-panel{width:min(560px,100%);max-height:93dvh;overflow:auto;background:#fff;color:#19384c;border-radius:22px;padding:clamp(18px,4vw,28px);box-shadow:0 20px 65px #0005}.hf23-top{display:flex;justify-content:space-between;align-items:start;gap:10px}.hf23-top h2{margin:0;font-size:24px}.hf23-panel button{border-radius:12px;padding:12px 14px;min-height:46px;border:1px solid #b8d1dc;background:#eef5f9;color:#183f56;font-weight:700;cursor:pointer}.hf23-panel button:disabled{opacity:.55;cursor:default}.hf23-panel .hf23-primary{background:#167464;color:white;border:0}.hf23-options{display:grid;gap:9px;margin:18px 0}.hf23-options button{text-align:left;font-size:16px}.hf23-question{background:#eaf7f1;border-radius:15px;padding:18px;margin:18px 0;text-align:center}.hf23-question strong{font-size:25px;display:block}.hf23-question small{display:block;color:#526b75}.hf23-feedback{min-height:40px;margin:12px 0;font-weight:650}.hf23-controls{display:flex;flex-wrap:wrap;gap:8px}.hf23-controls button{flex:1}.hf23-muted{color:#5b707c;font-size:13px}.hf23-progress{height:9px;background:#e8eff3;border-radius:20px;overflow:hidden;margin:12px 0}.hf23-progress span{display:block;background:#218f75;height:100%;transition:width .2s}.hf23-chip{display:inline-block;background:#e7f5ef;border-radius:30px;padding:4px 10px;font-size:12px;font-weight:700;margin:8px 0}
+@media(prefers-reduced-motion:reduce){.hf23-progress span{transition:none}}
+</style>
+<script id="hf23Script">
+/* Sprint 23: smart repetition and motivation. No new course content, no legacy key migrations. */
+(()=>{'use strict';
+ const KEY='hiszpanskiFrankaSmart23V1', $=id=>document.getElementById(id);
+ const day=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+ const norm=s=>String(s||'').normalize('NFC').trim().toLocaleLowerCase('es').replace(/\s+/g,' ');
+ const read=()=>{try{const x=JSON.parse(frankaStore.getItem(KEY)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch(e){return {}}};
+ const write=x=>{try{frankaStore.setItem(KEY,JSON.stringify(x));return true}catch(e){return false}};
+ const profile=()=>window.hfProfiles19?.getMeta?.()?.profiles?.find(p=>p.id===window.hfProfiles19.getMeta().active)?.name||'Uczeń';
+ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+ function pool(){if(typeof units==='undefined')return [];const m=typeof masteryMap==='function'?masteryMap():{},seen=new Set(),now=Date.now(),all=[];
+  for(let u=1;u<=4;u++)for(const c of units[u]?.cards||[]){if(!c?.[1]||!c?.[2])continue;const k=u+'|'+norm(c[1]);if(seen.has(k))continue;seen.add(k);const r=m[typeof trainingKey==='function'?trainingKey(u,c[1]):k];const right=Number(r?.right)||0,wrong=Number(r?.wrong)||0;const hard=wrong>0&&(!r||!isMastered(r));const due=!!r&&Number(r.due||0)<=now;all.push({u,es:c[1],pl:c[2],emoji:c[0]||'📚',card:c,hard,due,seen:!!r,right,wrong});}return all}
+ function select(){const all=pool(),chosen=[],used=new Set(),pick=(items,count)=>{for(const c of shuffle(items)){const k=c.u+'|'+norm(c.es);if(used.has(k))continue;used.add(k);chosen.push(c);if(chosen.length>=count)break}};
+  const state=read(),last=state.sessions?.slice(-5)||[],accuracy=last.reduce((a,x)=>a+Number(x.correct||0),0)/Math.max(1,last.reduce((a,x)=>a+Number(x.answered||0),0));const level=last.length>=2?(accuracy>=.85?'wyzwanie':accuracy<.55?'wsparcie':'równowaga'):'równowaga';
+  const target=level==='wsparcie'?7:level==='wyzwanie'?10:8;
+  pick(all.filter(x=>x.hard&&x.due),Math.ceil(target*.5));pick(all.filter(x=>x.hard),Math.ceil(target*.7));pick(all.filter(x=>x.due),Math.ceil(target*.85));pick(all.filter(x=>x.seen),target);pick(all,target);
+  return {items:chosen.slice(0,target),level};
+ }
+ function awards(s){const sessions=s.sessions||[],days=new Set(sessions.filter(x=>x.finished).map(x=>x.day)),perfect=sessions.filter(x=>x.finished&&x.correct===x.answered&&x.answered>=5).length,reviewed=sessions.reduce((a,x)=>a+(x.answered||0),0);return [
+  {icon:'🌱',name:'Pierwsza powtórka',ok:sessions.some(x=>x.finished),goal:'Ukończ Powtórkę mistrza'},
+  {icon:'🔥',name:'Trzy dni nauki',ok:days.size>=3,goal:`${Math.min(days.size,3)}/3 różnych dni`},
+  {icon:'🎯',name:'Celne odpowiedzi',ok:perfect>=1,goal:'Ukończ sesję bez pomyłki'},
+  {icon:'🧠',name:'Mistrz powtórek',ok:reviewed>=30,goal:`${Math.min(reviewed,30)}/30 odpowiedzi`}
+ ]}
+ let state=null,questions=[],idx=0,answered=0,correct=0,started=0,opener=null,locked=false,level='równowaga';
+ function el(tag,txt,cls){const x=document.createElement(tag);if(txt!==undefined)x.textContent=txt;if(cls)x.className=cls;return x}
+ function renderAwards(){const s=read(),a=awards(s),root=$('hf23Awards');if(!root)return;root.replaceChildren();root.append(el('h3','🏅 Nowe osiągnięcia'));const grid=el('div',undefined,'hf23-awards');for(const b of a){const item=el('div',undefined,'hf23-award');item.append(el('strong',(b.ok?b.icon:'🔒')+' '+b.name),el('small',b.ok?'Zdobyta!':b.goal));grid.append(item)}root.append(grid,el('p','Nagrody za ćwiczenie i systematyczność. Bez kar za przerwy.','hf23-muted'));const home=$('hf23Home');if(home){const p=home.querySelector('.hf23-meta');if(p)p.textContent=`Zdobyte odznaki: ${a.filter(x=>x.ok).length}/4 · Ostatnie sesje: ${(s.sessions||[]).filter(x=>x.finished).length}`}}
+ function update(){const progress=$('hf23Progress');if(progress)progress.style.width=(questions.length?100*idx/questions.length:0)+'%';$('hf23Counter').textContent=`Pytanie ${Math.min(idx+1,questions.length)} z ${questions.length} · ${correct} poprawnych`}
+ function show(){if(!$('hf23Modal'))return;update();const area=$('hf23Body');area.replaceChildren();$('hf23Feedback').textContent='';locked=false;
+  if(idx>=questions.length){finish();return}const x=questions[idx],box=el('div',undefined,'hf23-question');box.append(el('small',x.mode==='listen'?'🎧 Posłuchaj i wybierz znaczenie':'📚 Co to znaczy po polsku?'),el('strong',x.mode==='listen'?'🔊':x.es));area.append(box);
+  if(x.mode==='listen'){const listen=el('button','🔊 Odsłuchaj hiszpański');listen.type='button';listen.onclick=()=>{if(typeof speak==='function')speak(x.es)};box.append(listen);if(typeof speak==='function')setTimeout(()=>{if($('hf23Modal')?.classList.contains('open'))speak(x.es)},120)}
+  const choices=shuffle([x.pl,...shuffle(pool().filter(y=>y.pl!==x.pl&&y.u===x.u).map(y=>y.pl)).slice(0,2)]);while(choices.length<3)choices.push('Nie wiem');const opts=el('div',undefined,'hf23-options');for(const value of choices){const b=el('button',value);b.type='button';b.onclick=()=>answer(x,value===x.pl,opts);opts.append(b)}area.append(opts);$('hf23Next').hidden=true;
+ }
+ function answer(x,ok,opts){if(locked)return;locked=true;answered++;if(ok)correct++;for(const b of opts.querySelectorAll('button'))b.disabled=true;
+  // Delegation to the established mastery engine: one answer = one recordResult call.
+  try{if(typeof recordResult==='function')recordResult(x.u,x.card,ok,'sprint23-master-review')}catch(e){console.warn('Review mastery recording failed',e)}
+  $('hf23Feedback').textContent=ok?'✅ ¡Muy bien! Dobra odpowiedź!':'💡 Poprawna odpowiedź: '+x.pl;
+  $('hf23Next').hidden=false;$('hf23Next').textContent=idx===questions.length-1?'Zobacz wynik':'Następne pytanie';
+  // Save resumable answer checkpoint, not a new learning event on re-render.
+  state.partial={items:questions.map(q=>({u:q.u,es:q.es,mode:q.mode})),idx:idx+1,answered,correct,started,level};write(state);
+ }
+ function finish(){const area=$('hf23Body');area.replaceChildren();const pct=answered?Math.round(correct/answered*100):0;area.append(el('h3',`🏆 Brawo, ${profile()}!`),el('p',`Poprawne odpowiedzi: ${correct}/${answered} (${pct}%).`),el('p',pct>=85?'Świetnie! Kolejna powtórka może być trochę trudniejsza.':pct<55?'Ćwiczymy spokojnie — następnym razem więcej znanych słówek.':'Dobra praca! Warto wrócić do trudniejszych słówek.'));
+  $('hf23Counter').textContent='Sesja ukończona';$('hf23Progress').style.width='100%';$('hf23Next').hidden=true;
+  if(!state.partial?.finished){const today=day();state.sessions||=[];state.sessions.push({day:today,answered,correct,level,finished:true,at:new Date().toISOString()});state.sessions=state.sessions.slice(-90);state.partial={finished:true};if(!write(state))$('hf23Feedback').textContent='⚠️ Nie udało się zapisać sesji. Sprawdź miejsce na urządzeniu.';else $('hf23Feedback').textContent='🌟 Postęp zapisany w Twoim profilu.'}
+  const again=el('button','Zakończ i wróć','hf23-primary');again.type='button';again.onclick=close;area.append(again);renderAwards();window.frankaLevel14?.render?.();
+ }
+ function open(){if(!pool().length){alert('Brak materiału do powtórek.');return}opener=document.activeElement;state=read();let resume=false;
+  if(state.partial&&!state.partial.finished&&Array.isArray(state.partial.items)&&state.partial.items.length){const mapped=state.partial.items.map(q=>pool().find(x=>x.u===q.u&&norm(x.es)===norm(q.es))).filter(Boolean);if(mapped.length===state.partial.items.length){questions=mapped.map((x,i)=>({...x,mode:state.partial.items[i].mode}));idx=Number(state.partial.idx)||0;answered=Number(state.partial.answered)||0;correct=Number(state.partial.correct)||0;started=Number(state.partial.started)||Date.now();level=state.partial.level||'równowaga';resume=true}}
+  if(!resume){const selected=select();questions=selected.items.map((x,i)=>({...x,mode:i%3===1?'listen':'read'}));idx=0;answered=0;correct=0;started=Date.now();level=selected.level;state.partial={items:questions.map(q=>({u:q.u,es:q.es,mode:q.mode})),idx,answered,correct,started,level};write(state)}
+  $('hf23Mode').textContent=level==='wsparcie'?'🌱 Spokojne utrwalanie':level==='wyzwanie'?'🚀 Małe wyzwanie':'🎯 Mądra powtórka';$('hf23Modal').classList.add('open');$('hf23Modal').setAttribute('aria-hidden','false');if(idx>=questions.length)finish();else show();$('hf23Close').focus();
+ }
+ function close(){if(window.speechSynthesis)try{speechSynthesis.cancel()}catch(e){}$('hf23Modal').classList.remove('open');$('hf23Modal').setAttribute('aria-hidden','true');opener?.focus?.();renderAwards()}
+ function init(){if($('hf23Home'))return;const slot=$('s15Today')?.querySelector('.s15-cards')||$('s15Today');if(!slot)return;
+  const home=el('section',undefined);home.id='hf23Home';home.append(el('h3','🧠 Powtórka mistrza'),el('p','Krótka sesja z trudniejszymi i zapomnianymi słówkami. Około 5 minut, bez nowego materiału.'));const b=el('button','▶ Rozpocznij powtórkę');b.id='hf23Start';b.type='button';b.onclick=open;home.append(b,el('p','','hf23-meta'));slot.append(home);
+  const progress=$('s15ProgressSlots')||$('s15Progress');if(progress){const awardsRoot=el('section');awardsRoot.id='hf23Awards';progress.append(awardsRoot)}
+  const modal=el('div',undefined,'hf23-modal');modal.id='hf23Modal';modal.setAttribute('aria-hidden','true');modal.innerHTML='<section class="hf23-panel" role="dialog" aria-modal="true" aria-labelledby="hf23Title"><div class="hf23-top"><div><h2 id="hf23Title">🧠 Powtórka mistrza</h2><span id="hf23Mode" class="hf23-chip"></span></div><button id="hf23Close" type="button" aria-label="Zamknij powtórkę">✕</button></div><p id="hf23Counter" class="hf23-muted"></p><div class="hf23-progress"><span id="hf23Progress"></span></div><div id="hf23Body"></div><p id="hf23Feedback" class="hf23-feedback" role="status" aria-live="polite"></p><div class="hf23-controls"><button id="hf23Next" type="button" class="hf23-primary" hidden>Następne pytanie</button></div><p class="hf23-muted">Możesz przerwać i wrócić później. Każda odpowiedź zapisuje się tylko raz.</p></section>';
+  document.body.append(modal);$('hf23Close').onclick=close;$('hf23Next').onclick=()=>{idx++;state.partial.idx=idx;write(state);show()};modal.addEventListener('click',e=>{if(e.target===modal)close()});modal.addEventListener('keydown',e=>{if(e.key==='Escape')close();if(e.key==='Tab'){const controls=[...modal.querySelectorAll('button:not([disabled]):not([hidden])')].filter(b=>b.getClientRects().length);if(!controls.length)return;const first=controls[0],last=controls[controls.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
+  renderAwards();window.addEventListener('franka:s14word',()=>{if(!$('hf23Modal')?.classList.contains('open'))renderAwards()});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,100));else setTimeout(init,100);
+ window.hf23={read,select,awards,open};
+})();
+</script>
 </body></html>
