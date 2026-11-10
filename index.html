@@ -1855,4 +1855,101 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  window.hfSeasonProgress1932={values,refresh};
 })();
 </script>
+<style id="hf201Style">
+/* Sprint 20.1: isolated Daily Mission 2.0; no changes to legacy data schema. */
+#hf201Shade{position:fixed;inset:0;z-index:9400;display:none;align-items:center;justify-content:center;background:#0b1f36d9;padding:calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));box-sizing:border-box}
+#hf201Shade.hf201-visible{display:flex}
+#hf201Dialog{width:min(620px,100%);max-height:90dvh;overflow:auto;overscroll-behavior:contain;background:#fff;color:#18324a;border-radius:22px;padding:clamp(16px,4vw,28px);box-sizing:border-box;font:15px/1.5 system-ui;box-shadow:0 18px 65px #0005}
+#hf201Dialog button{min-height:44px;border:1px solid #c5d6e4;border-radius:12px;background:#f0f6fc;color:#173e60;font:600 15px system-ui;padding:10px 14px;cursor:pointer}
+#hf201Dialog button:focus-visible{outline:3px solid #e2b24e;outline-offset:2px}
+#hf201Dialog button.hf201-primary{background:#235982;color:#fff;border-color:#235982}
+#hf201Dialog button:disabled{opacity:.65;cursor:default}
+.hf201-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.hf201-head h2{margin:0;color:#18324a;font-size:clamp(19px,5vw,25px)}
+.hf201-muted{font-size:13px;color:#617487}.hf201-meter{height:9px;background:#e6edf4;border-radius:10px;overflow:hidden;margin:13px 0}.hf201-meter span{display:block;height:100%;background:#318a7c;transition:width .2s}
+.hf201-question{font-size:21px;font-weight:750;margin:16px 0}.hf201-choices{display:grid;gap:10px;margin:12px 0}.hf201-choices button{text-align:left;white-space:normal}.hf201-choices .hf201-right{background:#d7f2e4!important;border-color:#1c865d!important}.hf201-choices .hf201-wrong{background:#ffdfdc!important;border-color:#c45b53!important}
+.hf201-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:15px 0}.hf201-cards button{min-height:72px!important;padding:8px!important;overflow-wrap:anywhere;font-size:clamp(12px,3vw,16px)!important}.hf201-cards button.hf201-found{background:#d7f2e4!important;border-color:#21835c!important}
+.hf201-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.hf201-actions button{flex:1 1 140px}.hf201-feedback{min-height:28px;font-weight:650;margin-top:12px}.hf201-stage{font-weight:700;color:#24557c}.hf201-summary{background:#f0f7f6;padding:14px;border-radius:13px;margin:14px 0}
+@media(max-width:390px){.hf201-cards{gap:5px}.hf201-cards button{min-height:64px!important;padding:5px!important}.hf201-actions{display:grid}}
+</style>
+<script id="hf201Script">
+/* Sprint 20.1 — Daily Mission 2.0. Only writes a new, profile-scoped key via frankaStore.
+   Answer recording delegates to the established recordResult/Journey8 pipeline. */
+(()=>{'use strict';
+ const KEY='hiszpanskiFrankaDailyMission20V1', $=id=>document.getElementById(id);
+ const STAGES=['Słówka','Memory','Słuchanie','Dialog Junior'];
+ const profile=()=>window.hfProfiles19?.getMeta?.()?.profiles?.find(p=>p.id===window.hfProfiles19.getMeta().active)||{name:'Uczeń',id:'unknown'};
+ const norm=s=>String(s||'').normalize('NFC').trim().toLocaleLowerCase('es');
+ const random=a=>{const x=[...a];for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x};
+ const unique=a=>{const seen=new Set();return a.filter(x=>{const k=x.u+'|'+norm(x.es);if(seen.has(k))return false;seen.add(k);return true})};
+ function candidates(){if(typeof units==='undefined'||typeof masteryMap!=='function')return [];
+  const mastery=masteryMap(),now=Date.now();return unique([1,2,3,4].flatMap(u=>(units[u]?.cards||[]).filter(c=>c?.[1]&&c?.[2]).map(c=>{const r=mastery[trainingKey(u,c[1])];return {u,es:c[1],pl:c[2],emoji:c[0]||'📚',due:!!r&&Number(r.due||0)<=now,hard:!!r&&Number(r.wrong||0)>0&&!isMastered(r),fresh:!r,raw:c}})))}
+ function choose(){const all=candidates(),out=[],used=new Set();const take=(arr,n)=>{for(const x of arr){const k=x.u+'|'+norm(x.es);if(used.has(k))continue;out.push({u:x.u,es:x.es,pl:x.pl,emoji:x.emoji});used.add(k);if(out.length>=n)break}};
+  take(random(all.filter(x=>x.due&&x.hard)),3);take(random(all.filter(x=>x.due)),5);take(random(all.filter(x=>x.hard)),6);take(random(all.filter(x=>x.fresh)).sort((a,b)=>a.u-b.u),10);take(random(all),10);return out.slice(0,10)}
+ const dialogues=[{u:1,q:'¡Hola! ¿Cómo te llamas?',a:'Me llamo {name}.',bad:['Tengo frío.','Es una manzana.'],meaning:'Jak się nazywasz?'},{u:1,q:'¿Cómo estás?',a:'Estoy bien, gracias.',bad:['Tengo un libro.','Hace calor.'],meaning:'Jak się czujesz?'},{u:2,q:'¿Qué tiempo hace?',a:'Hace frío.',bad:['Me llamo {name}.','Soy una manzana.'],meaning:'Jaka jest pogoda?'},{u:2,q:'¿Qué tienes?',a:'Tengo un libro.',bad:['Hace sol.','Me llamo {name}.'],meaning:'Co masz?'},{u:3,q:'¿Qué te gusta?',a:'Me gusta jugar al fútbol.',bad:['Hace frío.','Tengo una bufanda.'],meaning:'Co lubisz?'},{u:4,q:'¿Qué quieres?',a:'Quiero agua, por favor.',bad:['Me llamo {name}.','Hace frío.'],meaning:'Czego chcesz?'}];
+ const display=s=>String(s).replaceAll('{name}',profile().name);
+ function read(){try{const v=JSON.parse(frankaStore.getItem(KEY)||'null');if(v?.schema===1&&v.profileId===profile().id&&Array.isArray(v.items)&&v.items.length>=6&&Number.isInteger(v.stage)&&v.stage>=0&&v.stage<=4)return v}catch(e){}return null}
+ function save(){if(!state)return;try{frankaStore.setItem(KEY,JSON.stringify(state))}catch(e){feedback('Nie udało się zapisać misji. Sprawdź wolne miejsce na urządzeniu.')}}
+ let state=null,openedFrom=null,flipTimer=null;
+ const card=x=>units[x.u]?.cards?.find(c=>norm(c[1])===norm(x.es))||null;
+ function record(x,ok,source){const c=card(x);if(!c)return false;recordResult(x.u,c,ok,source);if(typeof saved==='object'&&saved){saved.quizTotal=(Number(saved.quizTotal)||0)+1;if(ok)saved.quizCorrect=(Number(saved.quizCorrect)||0)+1;const i=units[x.u].cards.indexOf(c);if(i>=0){saved.words ||= {};saved.words[x.u+':'+i]=ok?'learned':'review'}if(typeof saveProgress==='function')saveProgress()}return true}
+ function say(t){if(typeof speak==='function')speak(display(t))}
+ function feedback(t){$('hf201Feedback').textContent=t||''}
+ function render(){if(!state)return;const stage=state.stage,done=stage>=4;
+  $('hf201Title').textContent='🌟 Misja '+profile().name+' — Daily Mission 2.0';$('hf201Step').textContent=done?'Misja zakończona':`Etap ${stage+1}/4 · ${STAGES[stage]}`;
+  $('hf201Meter').style.width=(done?100:stage*25)+'%';$('hf201Content').replaceChildren();$('hf201Actions').replaceChildren();feedback('');
+  if(done){summary();return}if(stage===0)vocab();else if(stage===1)memory();else if(stage===2)listening();else dialogue();
+ }
+ function node(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e}
+ function action(text,fn,primary=false){const b=node('button',text,primary?'hf201-primary':'');b.type='button';b.onclick=fn;$('hf201Actions').append(b);return b}
+ function choices(question,correct,others,onAnswer){const root=$('hf201Content');root.append(node('p',question,'hf201-question'));const wrap=node('div',undefined,'hf201-choices');root.append(wrap);
+  const opts=random([correct,...others.filter(x=>x!==correct).slice(0,3)]);for(const option of opts){const b=node('button',option);b.type='button';b.onclick=()=>{if(state.pending)return;state.pending=true;const ok=option===correct;wrap.querySelectorAll('button').forEach(z=>{z.disabled=true;if(z.textContent===correct)z.classList.add('hf201-right')});if(!ok)b.classList.add('hf201-wrong');onAnswer(ok);feedback(ok?'⭐ ¡Muy bien!':'💡 Poprawna odpowiedź: '+correct)};wrap.append(b)}
+ }
+ function next(){state.stage++;state.pending=false;state.step=0;state.memoryFound=[];state.memoryOpen=[];save();render();window.hfSeasonProgress1932?.refresh?.()}
+ function vocab(){const items=state.items.slice(0,3),x=items[state.step];if(!x){action('Dalej: Memory →',next,true);return}
+  const wrong=random(candidates().filter(y=>y.pl!==x.pl&&y.es!==x.es)).slice(0,3).map(y=>y.pl);
+  choices(x.emoji+' '+x.es,x.pl,wrong,ok=>{record(x,ok,'daily20-vocab');state.correct+=ok?1:0;state.attempts++;save();say(x.es);action(state.step===items.length-1?'Przejdź do Memory →':'Następne słówko →',()=>{state.step++;state.pending=false;save();render()},true)})
+ }
+ function memory(){const items=state.items.slice(3,7);if(items.length<3){feedback('Brak wystarczającej liczby kart.');action('Dalej →',next,true);return}
+  if(!Array.isArray(state.memoryDeck)||state.memoryDeck.length!==8){state.memoryDeck=random(items.flatMap((x,i)=>[{i,kind:'es'},{i,kind:'pl'}]));save()}
+  const board=node('div',undefined,'hf201-cards');$('hf201Content').append(node('p','Odkryj cztery pary: hiszpańskie słowo i polskie znaczenie.'));$('hf201Content').append(board);
+  state.memoryOpen=[];
+  function paint(){board.replaceChildren();state.memoryDeck.forEach((entry,pos)=>{const found=state.memoryFound.includes(entry.i),open=state.memoryOpen.includes(pos),b=node('button',found||open?(entry.kind==='es'?items[entry.i].es:items[entry.i].pl):'❔',found?'hf201-found':'');b.type='button';b.disabled=found||open||!!flipTimer;b.setAttribute('aria-label',found||open?b.textContent:'Odkryj kartę '+(pos+1));b.onclick=()=>{if(state.memoryOpen.length>=2||flipTimer)return;state.memoryOpen.push(pos);paint();if(state.memoryOpen.length===2){const [a,c]=state.memoryOpen.map(k=>state.memoryDeck[k]);if(a.i===c.i&&a.kind!==c.kind){if(!state.memoryFound.includes(a.i)){state.memoryFound.push(a.i);record(items[a.i],true,'daily20-memory');state.correct++;state.attempts++;save();say(items[a.i].es)}state.memoryOpen=[];feedback('⭐ ¡Muy bien! Para znaleziona.');paint();if(state.memoryFound.length===4)action('Dalej: słuchanie →',next,true)}else{feedback('Spróbuj ponownie — to nie ta para.');flipTimer=setTimeout(()=>{flipTimer=null;state.memoryOpen=[];paint()},850)}}};board.append(b)})}
+  paint();if(state.memoryFound.length===4)action('Dalej: słuchanie →',next,true)
+ }
+ function listening(){const items=state.items.slice(7,10),x=items[state.step];if(!x){action('Dalej: dialog →',next,true);return}
+  const listen=node('button','🔊 Posłuchaj po hiszpańsku');listen.type='button';listen.onclick=()=>say(x.es);$('hf201Content').append(node('p','Posłuchaj i wybierz znaczenie. Możesz odtwarzać dźwięk ponownie.'));$('hf201Content').append(listen);
+  const wrong=random(candidates().filter(y=>y.pl!==x.pl)).slice(0,3).map(y=>y.pl);
+  choices('🎧 Co usłyszałeś?',x.pl,wrong,ok=>{record(x,ok,'daily20-listening');state.correct+=ok?1:0;state.attempts++;save();say(x.es);action(state.step===items.length-1?'Przejdź do dialogu →':'Następne nagranie →',()=>{state.step++;state.pending=false;save();render()},true)})
+ }
+ function dialogue(){const d=state.dialog,answer=display(d.a),others=d.bad.map(display);$('hf201Content').append(node('p','Krótka rozmowa: '+d.meaning));const play=node('button','🔊 Posłuchaj pytania');play.onclick=()=>say(d.q);$('hf201Content').append(play);
+  choices('💬 '+d.q,answer,others,ok=>{ // Record one sentence result through the existing Journey8 event; no lesson completion.
+   window.dispatchEvent(new CustomEvent('franka:s7sentence',{detail:{u:d.u,es:d.a.includes('{name}')?display(d.a):d.a,correct:ok}}));state.correct+=ok?1:0;state.attempts++;save();say(d.q+' '+answer);action('🏁 Zakończ misję',next,true)
+  })
+ }
+ function summary(){const pct=state.attempts?Math.round(state.correct/state.attempts*100):0;
+  const box=node('div',undefined,'hf201-summary');box.append(node('h3','🎉 ¡Excelente, '+profile().name+'!'));
+  box.append(node('p','Poprawne odpowiedzi: '+state.correct+' / '+state.attempts+' ('+pct+'%).'));
+  box.append(node('p','Etapy: słówka, Memory, słuchanie i dialog — ukończone.'));
+  box.append(node('p',pct>=80?'Świetnie! W kolejnej misji utrwalimy nowe słówka.':'Warto wrócić do trudniejszych słówek i odsłuchać je ponownie.'));
+  box.append(node('p','Opanowanie materiału może się zmienić; ukończenie lekcji pozostaje niezależne.','hf201-muted'));
+  $('hf201Content').append(box);action('Zamknij',close,true);window.hfSeasonProgress1932?.refresh?.();if(typeof updateStats==='function')updateStats()
+ }
+ function start(){const existing=read();if(existing&&!existing.completed){state=existing;if(state.pending){state.pending=false;state.step++;if(state.stage===0&&state.step>=3){state.stage=1;state.step=0}else if(state.stage===2&&state.step>=3){state.stage=3;state.step=0}else if(state.stage===3){state.stage=4;state.step=0}save()}}else{const items=choose();if(items.length<10){alert('Za mało słówek do przygotowania misji.');return}const season=Number($('uxUnit')?.value||1);const ds=dialogues.filter(d=>d.u===season);const d=(ds.length?ds:dialogues)[Math.floor(Math.random()*(ds.length||dialogues.length))];state={schema:1,profileId:profile().id,createdAt:new Date().toISOString(),stage:0,step:0,items,dialog:d,correct:0,attempts:0,pending:false,memoryFound:[],memoryOpen:[],memoryDeck:null,completed:false};save()}
+  openedFrom=document.activeElement;$('hf201Shade').classList.add('hf201-visible');render();$('hf201Close').focus()
+ }
+ function close(){if(flipTimer){clearTimeout(flipTimer);flipTimer=null}if(state){if(state.stage>=4){state.completed=true;save()}else if(state.pending){ // pending answer already counted; resume at next question safely
+   state.pending=false;state.step++;if(state.stage===0&&state.step>=3){state.stage=1;state.step=0}else if(state.stage===2&&state.step>=3){state.stage=3;state.step=0}else if(state.stage===3){state.stage=4;state.step=0}save()
+  }else save()}
+  $('hf201Shade').classList.remove('hf201-visible');openedFrom?.focus?.();window.hfSeasonProgress1932?.refresh?.()
+ }
+ function init(){if($('hf201Shade'))return;const shade=node('div');shade.id='hf201Shade';shade.innerHTML='<section id="hf201Dialog" role="dialog" aria-modal="true" aria-labelledby="hf201Title"><div class="hf201-head"><div><h2 id="hf201Title"></h2><p id="hf201Step" class="hf201-stage"></p></div><button id="hf201Close" type="button" aria-label="Zamknij misję">✕</button></div><div class="hf201-meter"><span id="hf201Meter"></span></div><div id="hf201Content"></div><p id="hf201Feedback" class="hf201-feedback" aria-live="polite"></p><div id="hf201Actions" class="hf201-actions"></div><p class="hf201-muted">Misja zapisuje się lokalnie w aktywnym profilu. Możesz wrócić później.</p></section>';
+  document.body.append(shade);$('hf201Close').onclick=close;shade.addEventListener('click',e=>{if(e.target===shade)close()});shade.addEventListener('keydown',e=>{if(e.key==='Escape')close();if(e.key==='Tab'){const bs=[...shade.querySelectorAll('button:not([disabled])')].filter(x=>x.getClientRects().length);if(!bs.length)return;const first=bs[0],last=bs[bs.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
+  const go=$('s15DailyGo');if(go)go.onclick=start;
+  const old=$('hf193Shade');if(old)old.setAttribute('aria-hidden','true');
+  const savedMission=read();if(go&&savedMission&&!savedMission.completed)go.textContent='▶ Wznów dzisiejszą misję';
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,80));else setTimeout(init,80);
+ window.hfDailyMission20={read,start};
+})();
+</script>
 </body></html>
