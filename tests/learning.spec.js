@@ -93,9 +93,21 @@ test('L05 — path completion belongs to the chosen season', async ({ page }) =>
   await page.reload();
   await expect.poll(() => page.evaluate(() => !!window.frankaPath10)).toBe(true);
   await expect(page.locator('#s10PathProgress')).toContainText('1/');
-  await page.locator('#uxUnit').selectOption('2');
+  // The select is intentionally hidden in the current UI. Use the same programmatic
+  // value update + change event that the visible season buttons use in the application.
+  await page.evaluate(() => {
+    const season = document.querySelector('#uxUnit');
+    season.value = '2';
+    season.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await expect(page.locator('#uxUnit')).toHaveValue('2');
   await expect(page.locator('#s10PathProgress')).toContainText('0/');
-  await page.locator('#uxUnit').selectOption('1');
+  await page.evaluate(() => {
+    const season = document.querySelector('#uxUnit');
+    season.value = '1';
+    season.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await expect(page.locator('#uxUnit')).toHaveValue('1');
   await expect(page.locator('#s10PathProgress')).toContainText('1/');
 });
 

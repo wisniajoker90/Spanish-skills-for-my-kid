@@ -73,7 +73,18 @@ test('A06 — exclusive TTS ownership rejects competing audio while Car Mode pla
   await page.locator('#carResume').click();
   const locked = await page.evaluate(() => ({ owner: window.hf27bAudio.owner, canClaim: window.hf27bAudio.claim('general') }));
   expect(locked).toEqual({ owner: 'car26', canClaim: false });
+  // A paused session is still active: the coordinator must keep competing audio blocked.
   await page.locator('#carPause').click();
+  const paused = await page.evaluate(() => ({
+    active: window.hfCar26.isRunning(),
+    owner: window.hf27bAudio.owner,
+    canClaim: window.hf27bAudio.claim('general')
+  }));
+  expect(paused).toEqual({ active: true, owner: null, canClaim: false });
+
+  // Only ending the Car Mode session frees the controller for other activities.
+  await page.locator('#carStop').click();
+  expect(await page.evaluate(() => window.hfCar26.isRunning())).toBe(false);
   const free = await page.evaluate(() => {
     const claimed = window.hf27bAudio.claim('general');
     const owner = window.hf27bAudio.owner;
