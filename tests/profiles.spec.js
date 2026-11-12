@@ -1,5 +1,13 @@
 const { test, expect } = require('@playwright/test');
 // Each Playwright test uses a fresh isolated browser context; never point at the live site.
+async function runAndReload(page, expression) {
+  await Promise.all([
+    page.waitForEvent('load', { timeout: 15000 }),
+    page.evaluate(expression),
+  ]);
+  await expect.poll(async () => page.evaluate(() => !!window.hfProfiles19 && !!window.frankaStore)).toBe(true);
+}
+
 async function ready(page) {
   await page.goto('/');
   await expect.poll(async () => page.evaluate(() => !!window.hfProfiles19 && !!window.frankaStore)).toBe(true);
@@ -14,7 +22,7 @@ test('F01 — first visit creates a valid default profile', async ({ page }) => 
 
 test('F02 — new profile is created with a distinct id', async ({ page }) => {
   await ready(page);
-  await page.evaluate(() => window.hfProfiles19.createProfile('Testowy Uczeń', '🦊'));
+  await runAndReload(page, () => { setTimeout(() => window.hfProfiles19.createProfile('Testowy Uczeń', '🦊'), 0); });
   await expect.poll(async () => page.evaluate(() => window.hfProfiles19.getMeta().profiles.length)).toBe(2);
   const meta = await page.evaluate(() => window.hfProfiles19.getMeta());
   expect(meta.active).not.toBe('franek');
@@ -24,11 +32,11 @@ test('F02 — new profile is created with a distinct id', async ({ page }) => {
 test('F03 — switching profiles isolates learning data', async ({ page }) => {
   await ready(page);
   await page.evaluate(() => window.frankaStore.setItem('hiszpanskiFrankaRegression28', 'franek-only'));
-  await page.evaluate(() => window.hfProfiles19.createProfile('Test', '🦊'));
+  await runAndReload(page, () => { setTimeout(() => window.hfProfiles19.createProfile('Test', '🦊'), 0); });
   await expect.poll(async () => page.evaluate(() => window.hfProfiles19.getMeta().active)).not.toBe('franek');
   expect(await page.evaluate(() => window.frankaStore.getItem('hiszpanskiFrankaRegression28'))).toBeNull();
   await page.evaluate(() => window.frankaStore.setItem('hiszpanskiFrankaRegression28', 'test-only'));
-  await page.evaluate(() => window.hfProfiles19.switchTo('franek'));
+  await runAndReload(page, () => { setTimeout(() => window.hfProfiles19.switchTo('franek'), 0); });
   await expect.poll(async () => page.evaluate(() => window.hfProfiles19.getMeta().active)).toBe('franek');
   expect(await page.evaluate(() => window.frankaStore.getItem('hiszpanskiFrankaRegression28'))).toBe('franek-only');
 });
