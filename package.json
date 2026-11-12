@@ -1,10 +1,13 @@
 {
   "name": "hiszpanski-franka-regression",
   "private": true,
-  "version": "28.1.0",
+  "version": "28.2.0",
   "scripts": {
     "test": "playwright test",
     "test:foundation": "playwright test tests/profiles.spec.js",
+    "test:learning": "playwright test tests/learning.spec.js",
+    "test:audio": "playwright test tests/car-mode.spec.js",
+    "test:regression": "playwright test tests/profiles.spec.js tests/learning.spec.js tests/car-mode.spec.js",
     "test:report": "playwright show-report"
   },
   "devDependencies": {
