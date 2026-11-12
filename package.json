@@ -1,0 +1,13 @@
+{
+  "name": "hiszpanski-franka-regression",
+  "private": true,
+  "version": "28.1.0",
+  "scripts": {
+    "test": "playwright test",
+    "test:foundation": "playwright test tests/profiles.spec.js",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0"
+  }
+}
