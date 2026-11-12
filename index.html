@@ -310,6 +310,8 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 const native=window.localStorage, META='hf18:meta', PREFIX='hf18:p:', SNAP='hf18:legacy-snapshot';
 const valid=k=>/^(hiszpanskiFranka[A-Za-z0-9_-]{0,100}|franka(?:Ux|Learning|Progress)[A-Za-z0-9_-]{0,100})$/i.test(k);
 const read=(k,d)=>{try{return JSON.parse(native.getItem(k))??d}catch{return d}};
+// Temporary import data are never visible as profiles; clean orphaned staging entries.
+try{const stale=[];for(let i=0;i<native.length;i++){const k=native.key(i);if(k&&k.startsWith('hf27:stage:'))stale.push(k)}for(const k of stale)native.removeItem(k)}catch(e){}
 const rawLegacy=()=>{const d={};for(let i=0;i<native.length;i++){const k=native.key(i);if(valid(k))d[k]=native.getItem(k)}return d};
 let meta=read(META,null), error='';
 try{
@@ -326,7 +328,7 @@ const active=()=>meta?.active||null;
 const key=k=>PREFIX+active()+':'+k;
 window.frankaStore={
  getItem(k){return active()?native.getItem(key(k)):native.getItem(k)},
- setItem(k,v){if(!active())throw Error('Profile migration failed');native.setItem(key(k),String(v))},
+ setItem(k,v){if(!active())throw Error('Profile migration failed');try{native.setItem(key(k),String(v))}catch(e){window.hf27WriteFailure?.('zapis danych: '+k);throw e}},
  removeItem(k){if(!active())throw Error('Profile migration failed');native.removeItem(key(k))},
  key(i){return Object.keys(this.dump())[i]??null},
  get length(){return Object.keys(this.dump()).length},
@@ -342,7 +344,20 @@ function checkPayload(o){if(o?.format!=='hiszpanski-franka-backup'||![1,2].inclu
  else {if(!Array.isArray(o.profiles)||!o.profiles.length||o.profiles.length>12||!o.data||typeof o.data!=='object')throw Error('Nieprawidłowe profile');for(const p of o.profiles){if(!/^[a-z0-9-]{1,50}$/.test(p.id)||typeof p.name!=='string'||p.name.length>40||!o.data[p.id])throw Error('Nieprawidłowy profil');entries.push(...Object.entries(o.data[p.id]))}}
  if(entries.length>300||entries.some(([k,v])=>!valid(k)||typeof v!=='string'||v.length>700000))throw Error('Nieprawidłowe klucze');
  if(o.schema===2){const ids=o.profiles.map(p=>p.id);if(new Set(ids).size!==ids.length)throw Error('Powtórzone identyfikatory profili');}
- for(const [,v] of entries){const parsed=JSON.parse(v);if(parsed===null||typeof parsed!=='object'||Array.isArray(parsed))throw Error('Nieprawidłowa struktura danych profilu');}
+ for(const [k,v] of entries){
+ const parsed=JSON.parse(v);
+ if(parsed===null||typeof parsed!=='object'||Array.isArray(parsed))throw Error('Nieprawidłowa struktura danych profilu: '+k);
+ const objectField=(field)=>{if(parsed[field]!==undefined&&(!parsed[field]||typeof parsed[field]!=='object'||Array.isArray(parsed[field])))throw Error('Nieprawidłowe pole '+field+' w '+k)};
+ if(k==='hiszpanskiFrankaProgressV1'){
+  for(const f of ['points','unit','index','quizCorrect','quizTotal'])if(parsed[f]!==undefined&&(!Number.isFinite(parsed[f])||parsed[f]<0))throw Error('Nieprawidłowy licznik '+f);
+  objectField('words');objectField('mastery');
+ }
+ if(k==='hiszpanskiFrankaCar26V1'){
+  if(parsed.sessions!==undefined&&!Array.isArray(parsed.sessions))throw Error('Nieprawidłowa historia Car Mode');
+  if(parsed.pending!==undefined){objectField('pending');if(parsed.pending?.queue!==undefined&&!Array.isArray(parsed.pending.queue))throw Error('Nieprawidłowa kolejka Car Mode')}
+ }
+ if(k==='hiszpanskiFrankaInsights25V1')objectField('profiles');
+}
  return o}
 function render(){const host=document.getElementById('s15ParentSlot')||document.getElementById('parentNotes')||document.querySelector('main')||document.body;
  const section=document.createElement('section');section.className='s16-box';section.id='s18Profiles';section.innerHTML='<h3>👨‍👩‍👦 Profile i bezpieczeństwo</h3><p id="hf18status" role="status"></p><div class="s16-controls"><select id="hf18select" aria-label="Wybierz profil"></select><button id="hf18switch" type="button">Przełącz profil</button><button id="hf18new" type="button">＋ Nowy profil</button></div><div class="s16-controls"><button id="hf18export" type="button">↓ Kopia wszystkich profili JSON</button><button id="hf18import" type="button">↑ Import JSON</button><input id="hf18file" type="file" accept=".json,application/json" hidden></div><p class="s16-offline">Postępy są lokalne na tym urządzeniu. Aktualizacja kodu nie usuwa danych. Przed testem importu wykonaj eksport i użyj drugiego profilu przeglądarki.</p>';
@@ -357,8 +372,37 @@ function render(){const host=document.getElementById('s15ParentSlot')||document.
   if(!confirm('Import utworzy NOWE profile z kopii, nie nadpisze istniejących. Kontynuować?'))return;
   const incoming=o.schema===1?[{name:'Import 17.1',data:o.data}]:o.profiles.map(p=>({name:p.name+' (import)',data:o.data[p.id]}));
   if(meta.profiles.length+incoming.length>12)throw Error('Przekroczono limit 12 profili');
-  const created=[];try{for(const p of incoming){const id='imp-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);for(const [k,v] of Object.entries(p.data)){native.setItem(PREFIX+id+':'+k,v);created.push(PREFIX+id+':'+k)}created.push({id,name:p.name,createdAt:new Date().toISOString()})}saveMeta({...meta,profiles:[...meta.profiles,...created.filter(x=>typeof x==='object')]});status('Import zakończony. Nowe profile dodano bez nadpisywania obecnych. Odśwież stronę, aby zobaczyć je na liście.')}catch(e){let rollbackFailed=false;for(const k of created.filter(x=>typeof x==='string')){try{native.removeItem(k)}catch{rollbackFailed=true}}if(rollbackFailed)window.hf27WriteFailure?.('wycofanie importu');throw e}}
-  catch(e){status('Import przerwany: '+e.message)}finally{$('hf18file').value=''}};
+  const created=[],staged=[],transaction='hf27:stage:'+Date.now().toString(36)+':'+Math.random().toString(36).slice(2)+':';
+  let committed=false;
+  try{
+   for(const p of incoming){
+    const id='imp-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);
+    const entries=Object.entries(p.data);
+    for(let j=0;j<entries.length;j++){
+     const [k,v]=entries[j],temp=transaction+id+':'+k;
+     native.setItem(temp,v);if(native.getItem(temp)!==v)throw Error('Weryfikacja zapisu tymczasowego');
+     staged.push({temp,target:PREFIX+id+':'+k,value:v});
+    }
+    created.push({id,name:p.name,createdAt:new Date().toISOString()});
+   }
+   for(const item of staged){
+    native.setItem(item.target,item.value);
+    if(native.getItem(item.target)!==item.value)throw Error('Weryfikacja importu');
+   }
+   saveMeta({...meta,profiles:[...meta.profiles,...created]});
+   committed=true;
+   status('Import zakończony. Nowe profile dodano bez nadpisywania obecnych. Odśwież stronę, aby zobaczyć je na liście.');
+  }catch(e){
+   if(!committed){
+    let rollbackFailed=false;
+    for(const item of staged){try{native.removeItem(item.target)}catch{rollbackFailed=true}}
+    if(rollbackFailed)window.hf27WriteFailure?.('wycofanie importu');
+   }
+   throw e;
+  }finally{
+   for(const item of staged){try{native.removeItem(item.temp)}catch{}}
+  }
+  }catch(e){status('Import przerwany: '+e.message)}finally{$('hf18file').value=''}};
  if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render);else render();
@@ -400,7 +444,7 @@ function pause(){if(!active||paused)return;paused=true;clear();setStage('paused'
 function resume(){if(!active||!paused)return;paused=false;token++;setStage('question','Wracamy do słuchania.');startTimer();view();next()}
 function startTimer(){clearInterval(timer);timer=setInterval(()=>{if(!active||paused)return;seconds=Math.max(0,seconds-1);view();if(seconds===0)finish(true)},1000)}
 function mastery(){try{return typeof masteryMap==='function'?masteryMap():{}}catch{return {}}}
-function build(){const u=Number($('carUnit').value),m=mastery(),seen=new Set(),items=[];const seasons=u===-1?[1,2,3]:[u];for(const s of seasons){for(const c of units[s]?.cards||[]){if(!c?.[1]||!c?.[2])continue;const id=s+'|'+norm(c[1]);if(seen.has(id))continue;seen.add(id);const key=typeof trainingKey==='function'?trainingKey(s,c[1]):id;const r=m[key]||{};const wrong=Math.max(0,Number(r.wrong)||0),right=Math.max(0,Number(r.right)||0),due=Number(r.due)||0,level=Math.max(0,Number(r.level)||0);const studied=right+wrong>0;items.push({u:s,es:c[1],pl:c[2],studied,score:wrong*3+(studied&&right<2?2:0)+(studied&&due<=Date.now()?3:0)-level*.3+Math.random()*1.8})}}const practiced=items.filter(x=>x.studied);const eligible=practiced.length?practiced:items;eligible.sort((a,b)=>b.score-a.score);if(!eligible.length)return[];const max=Math.min(90,Math.max(12,Math.round(duration/12)));const chosen=[];for(let i=0;i<max;i++){const pool=eligible.filter(x=>!chosen.slice(-Math.min(eligible.length-1,5)).some(y=>y.es===x.es));const list=pool.length?pool:eligible;chosen.push(list[i%list.length])}return chosen}
+function build(){const u=Number($('carUnit').value),m=mastery(),seen=new Set(),items=[];const seasons=u===-1?[1,2,3]:[u];for(const s of seasons){for(const c of units[s]?.cards||[]){if(!c?.[1]||!c?.[2])continue;const id=s+'|'+norm(c[1]);if(seen.has(id))continue;seen.add(id);const key=typeof trainingKey==='function'?trainingKey(s,c[1]):id;const r=m[key]||{};const wrong=Math.max(0,Number(r.wrong)||0),right=Math.max(0,Number(r.right)||0),due=Number(r.due)||0,level=Math.max(0,Number(r.level)||0);const studied=right+wrong>0;items.push({u:s,es:c[1],pl:c[2],studied,score:wrong*3+(studied&&right<2?2:0)+(studied&&due<=Date.now()?3:0)-level*.3+Math.random()*1.8})}}const practiced=items.filter(x=>x.studied);const eligible=practiced;eligible.sort((a,b)=>b.score-a.score);if(!eligible.length)return[];const max=Math.min(90,Math.max(12,Math.round(duration/12)));const chosen=[];for(let i=0;i<max;i++){const pool=eligible.filter(x=>!chosen.slice(-Math.min(eligible.length-1,5)).some(y=>y.es===x.es));const list=pool.length?pool:eligible;chosen.push(list[i%list.length])}return chosen}
 function launch(saved){if(active)return;if(!('speechSynthesis'in window)){setStage('ready','To urządzenie nie obsługuje odtwarzania mowy.');return}clear();duration=saved?.duration||DUR[Number($('carDuration').value)]||600;seconds=saved?.seconds??duration;queue=saved?.queue?.length?saved.queue:build();index=saved?.index||0;completed=saved?.completed||0;if(!queue.length){setStage('ready','Brak dostępnego materiału do tej sesji.');return}active=true;paused=false;startedAt=Date.now();$('carVoiceWarning').hidden=!!speechSynthesis.getVoices().some(v=>v.lang.toLowerCase().startsWith('es'));setStage('question','Zaczynamy! Słuchaj i odpowiadaj na głos.');savePending();view();startTimer();next()}
 $('carStart').onclick=()=>launch();$('carPause').onclick=()=>paused?resume():pause();$('carStop').onclick=()=>finish(false);$('carResume').onclick=()=>{const p=read().pending;if(p?.profile===profile()&&Array.isArray(p.queue)&&p.queue.length>0&&p.queue.length<=120&&p.queue.every(x=>x&&typeof x.es==='string'&&typeof x.pl==='string'&&Number.isInteger(x.u))&&Number.isInteger(p.index)&&p.index>=0&&p.index<=p.queue.length&&Number.isFinite(p.seconds)&&p.seconds>=0&&Number.isFinite(p.duration)&&p.duration>0&&p.seconds<=p.duration&&Date.now()-Number(p.at)<30*86400000)launch(p);else{const d=read();delete d.pending;write(d);view()}};
 $('carNew').onclick=()=>{setStage('ready','Gotowe do kolejnej sesji.');view()};$('carParked').onchange=e=>{$('carQuiz').disabled=!e.target.checked};$('carQuiz').onclick=()=>{if(!$('carParked').checked)return;if(active)finish(false);$('startGame').click();window.frankaNav15_2?.go('carQuiz')||$('game').scrollIntoView({behavior:'smooth',block:'start'})};
