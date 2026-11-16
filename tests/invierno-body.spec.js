@@ -82,33 +82,70 @@ test('IV31-06 — body content contains no English matching tasks or new game mo
  expect(result.body.flat().join(' ')).not.toMatch(/\b(arm|hand|head|leg)\b/i);
 });
 
-test('IV31-07 — new Invierno lessons are visible first and can launch immediately without old completions',async({page})=>{
+
+test('IV31-07 — new school stages are woven through Invierno without becoming first or last',async({page})=>{
  await ready(page);
- await page.evaluate(()=>{const season=document.querySelector('#uxUnit');season.value='2';season.dispatchEvent(new Event('change',{bubbles:true}));window.frankaNav15_2.go('path',{focus:false})});
- const buttons=page.locator('#s10Steps button.s10-step');
- await expect(buttons).toHaveCount(7);
- expect(await buttons.first().getAttribute('data-journey-stage-id')).toBe('school:s31-invierno-body-1');
- expect(await buttons.nth(1).getAttribute('data-journey-stage-id')).toBe('school:s31-invierno-body-2');
- expect(await buttons.nth(2).getAttribute('data-journey-stage-id')).toBe('school:s31-invierno-body-3');
- for(let i=0;i<3;i++)await expect(buttons.nth(i)).toBeEnabled();
- await expect(page.locator('#s10Steps')).toContainText('możesz rozpocząć od razu');
- await buttons.first().click();
- await expect(page.locator('#s10Lesson')).toBeVisible();
- await expect(page.locator('#s10LessonHeading')).toContainText('Części ciała');
- const state=await stored(page,pathKey);
- expect(Object.values(state?.['2']||{}).filter(x=>x.done)).toHaveLength(0);
+ const stages=await page.evaluate(()=>window.frankaPath10.stages(2).map(s=>({id:s.id,kind:s.kind})));
+ const positions=stages.flatMap((s,i)=>s.id.startsWith('school:s31-invierno-body-')?[i]:[]);
+ expect(positions).toHaveLength(3);
+ expect(positions[0]).toBeGreaterThan(0);
+ expect(positions[2]).toBeLessThan(stages.length-4);
+ expect(positions[0]).toBeLessThan(positions[1]);
+ expect(positions[1]).toBeLessThan(positions[2]);
+ expect(positions[1]-positions[0]).toBeGreaterThan(1);
+ const oldStages=stages.filter(s=>!s.id.startsWith('school:s31-invierno-body-'));
+ expect(oldStages[0].id).toBe('school:invierno~muñeco de nieve~guantes~botas~chaqueta');
+ expect(oldStages.at(-2).id).toBe('checkpoint');
+ expect(oldStages.at(-1).id).toBe('finale-v1');
 });
-test('IV31-08 — practicing body words cannot bypass historical Invierno journey gates',async({page})=>{
+test('IV31-08 — testing shortcut launches a real lesson without saving or unlocking progress',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{const s=document.querySelector('#uxUnit');s.value='2';s.dispatchEvent(new Event('change',{bubbles:true}));window.frankaNav15_2.go('path',{focus:false})});
+ const tools=page.locator('.s31-test-tools');
+ await expect(tools).toBeVisible();
+ await expect(tools.getByRole('button')).toHaveCount(3);
+ const stages=page.locator('#s10Steps button.s10-step');
+ await expect(stages.first()).not.toHaveAttribute('data-journey-stage-id',/s31-invierno-body/);
+ const newStage=stages.locator('[data-journey-stage-id="school:s31-invierno-body-1"]');
+ // New stage is on the normal journey, so it is initially locked for fresh users.
+ await expect(newStage).toBeDisabled();
+ const before=await stored(page,progressKey);
+ const journeyBefore=await stored(page,pathKey);
+ await tools.getByRole('button').first().click();
+ await expect(page.locator('#s10Lesson')).toBeVisible();
+ await expect(page.locator('#s10LessonHeading')).toContainText('części ciała');
+ await page.locator('#s10LessonBody').getByRole('button',{name:'Spróbuję odpowiedzieć'}).click();
+ const spanish=await page.locator('#s10LessonBody .s10-question').textContent();
+ const meaning=await page.evaluate(es=>window.frankaInvierno31.bodyCards.find(c=>c[1]===es)?.[2],spanish);
+ await page.locator('#s10LessonBody .s10-answer-grid').getByRole('button',{name:meaning,exact:true}).click();
+ expect(await stored(page,progressKey)).toEqual(before);
+ expect(await stored(page,pathKey)).toEqual(journeyBefore);
+ await page.reload();
+ await expect.poll(()=>page.evaluate(()=>!!window.frankaPath10)).toBe(true);
+ expect(await stored(page,progressKey)).toEqual(before);
+ expect(await stored(page,pathKey)).toEqual(journeyBefore);
+});
+test('IV31-09 — the original old lesson gate remains locked even if a new stage was previously finished',async({page})=>{
  await ready(page);
  const result=await page.evaluate(({pathKey})=>{
   const steps=window.frankaPath10.stages(2),firstNew=steps.find(x=>x.id==='school:s31-invierno-body-1');
-  const completed={'2':{[firstNew.id]:{done:true,date:'2026-11-16'}}};
-  window.frankaStore.setItem(pathKey,JSON.stringify(completed));
+  window.frankaStore.setItem(pathKey,JSON.stringify({'2':{[firstNew.id]:{done:true,date:'2026-11-16'}}}));
   const sel=document.querySelector('#uxUnit');sel.value='2';sel.dispatchEvent(new Event('change',{bubbles:true}));
-  const old=[...document.querySelectorAll('#s10Steps button.s10-step')].filter(x=>!x.dataset.journeyStageId.startsWith('school:s31-invierno-body-'));
-  return {old:old.map(x=>({id:x.dataset.journeyStageId,disabled:x.disabled})),newSteps:[...document.querySelectorAll('#s10Steps button.s10-step')].filter(x=>x.dataset.journeyStageId.startsWith('school:s31-invierno-body-')).map(x=>({id:x.dataset.journeyStageId,disabled:x.disabled}))};
+  return [...document.querySelectorAll('#s10Steps button.s10-step')].map(x=>({id:x.dataset.journeyStageId,disabled:x.disabled}));
  },{pathKey});
- expect(result.old[0].disabled).toBe(false);
- expect(result.old[1].disabled).toBe(true);
- expect(result.newSteps.every(x=>x.disabled===false)).toBe(true);
+ const old=result.filter(x=>!x.id.startsWith('school:s31-invierno-body-'));
+ expect(old[0].disabled).toBe(false);
+ expect(old[1].disabled).toBe(true);
+});
+test('IV31-10 — new authored PL-ES dialogues reuse the existing Invierno Junior flow',async({page})=>{
+ await ready(page);
+ const dialog=await page.evaluate(()=>{
+  const s=document.querySelector('#uxUnit');s.value='2';s.dispatchEvent(new Event('change',{bubbles:true}));
+  document.querySelector('[data-ux-activity="dialogues"]').click();
+  document.querySelector('#uxStart').click();
+  return {count:document.querySelector('#a1Stage .jr-dialog')?.getAttribute('aria-label'),text:document.querySelector('#a1Stage')?.textContent};
+ });
+ expect(dialog.count).toContain('Dialog Junior');
+ // Existing UI is unchanged and newly authored content occurs in the normal ordered rotation.
+ expect(dialog.text).toContain('Posłuchaj');
 });
