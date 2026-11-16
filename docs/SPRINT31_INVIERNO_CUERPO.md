@@ -27,9 +27,9 @@ Występujące już słowa są wykorzystywane ponownie zamiast powielania kart. 1
 
 ## Implementacja
 - Zweryfikowane 13 słów z Wordwall przypisane do szkoły / Invierno i włączone do istniejących zasobów `units[2]` i `frankaSeasons8.school[2]`.
-- Zawartość poprzednich etapów Learning Journey przechowywana niezależnie od nowego pakietu, aby uniknąć przesunięć istniejących identyfikatorów; 3 odrębne nowe etapy po 5/5/3 słowa pojawiają się przed checkpointem.
+- Zawartość poprzednich etapów Learning Journey przechowywana niezależnie od nowego pakietu, aby uniknąć przesunięć istniejących identyfikatorów; 3 odrębne nowe etapy po 5/5/3 słowa pojawiają się przed checkpointem, ale są przypięte u góry listy i można je rozpocząć niezależnie od starszych etapów. Ich ukończenie nie odblokowuje historycznej ścieżki.
 - Bez zmian kluczy `localStorage`, schematów JSON, PIN-u, importu/eksportu, Service Workera, manifestu ani materiału z pozostałych sezonów.
-- 6 nowych testów IV31-01–IV31-06 i rozszerzony Quality Gate **75 wymaganych przejść**.
+- 8 nowych testów IV31-01–IV31-08 i rozszerzony Quality Gate **77 wymaganych przejść**.
 
 ## Odbiór manualny iPhone / Cloudflare TEST
 **IV31-M01** — Przejdź do Invierno i znajdź nowe szkolne słowa w istniejących fiszkach. Zobacz polskie tłumaczenie i użyj odsłuchu hiszpańskiej wymowy.
@@ -44,3 +44,6 @@ Występujące już słowa są wykorzystywane ponownie zamiast powielania kart. 1
 
 ## Wdrożenie
 Wyłącznie gałąź funkcjonalna + Cloudflare TEST i Draft PR do `main`. Scalenie i produkcja tylko po osobnej zgodzie użytkownika.
+
+## Korekta dostępności po uwadze z odbioru
+Nowe słowa były zbyt daleko w Learning Journey. Zestawy „Części ciała” są teraz zawsze widoczne na początku listy Invierno i mają aktywne przyciski startowe niezależnie od starszych lekcji. Testy IV31-07–08 potwierdzają natychmiastowe uruchomienie bez fałszywego oznaczania postępów i brak skrótu w odblokowywaniu wcześniejszych etapów.
