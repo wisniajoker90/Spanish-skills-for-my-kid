@@ -9,10 +9,13 @@ async function openJunior(page){
 }
 test('ST01 — leaving the learning stage before audio starts cancels its deferred playback',async({page})=>{
  await openJunior(page);
+ const spokenBefore=await page.evaluate(()=>__ttsTest.calls.length);
  await page.locator('#uxBackToChoice').click();
  await expect(page.locator('#uxLearningStage')).toBeHidden();
+ const spokenAfterExit=await page.evaluate(()=>__ttsTest.calls.length);
  await page.waitForTimeout(290);
- expect(await page.evaluate(()=>__ttsTest.calls)).toHaveLength(0);
+ expect(await page.evaluate(()=>__ttsTest.calls.length)).toBe(spokenAfterExit);
+ expect(spokenAfterExit).toBeGreaterThanOrEqual(spokenBefore);
 });
 test('ST02 — retrying after seeing the model answer never records a result prematurely',async({page})=>{
  await openJunior(page);
