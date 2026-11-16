@@ -72,3 +72,50 @@ test('SC05 — installed PWA-like mobile panels use vertical scrolling and respe
  }
  await noHorizontalOverflow(page,'base 320px');
 });
+
+test('SC06 — opening a Learning Journey lesson brings lesson into view without horizontal overflow',async({page})=>{
+ await page.setViewportSize({width:375,height:667});await ready(page);
+ await page.evaluate(()=>window.frankaNav15_2.go('path',{focus:false}));
+ await page.locator('#s10Steps button.s10-step:not([disabled])').first().click();
+ await expect(page.locator('#s10Lesson')).toBeVisible();
+ await expect.poll(()=>page.locator('#s10Lesson').evaluate(el=>el.getBoundingClientRect().top)).toBeGreaterThanOrEqual(-20);
+ await noHorizontalOverflow(page,'learning journey lesson');
+});
+test('SC07 — opening Memory on a phone displays playable cards and keeps page width constrained',async({page})=>{
+ await page.setViewportSize({width:320,height:640});await ready(page);
+ expect(await page.evaluate(()=>window.frankaNav15_2.go('memory',{focus:false}))).toBe(true);
+ await expect(page.locator('#epicStage')).toBeVisible();
+ await expect(page.locator('#epicContent button.epic-card').first()).toBeVisible();
+ await noHorizontalOverflow(page,'memory board');
+});
+test('SC08 — profile and parent overlays stay within a short mobile viewport and remain scrollable',async({page})=>{
+ await page.setViewportSize({width:320,height:568});await ready(page);
+ await page.locator('#hf19Launcher').click();
+ await expect(page.locator('#hf19Overlay')).toHaveClass(/hf19-open/);
+ const profile=page.locator('#hf19Dialog');
+ const p=await profile.boundingBox();expect(p).toBeTruthy();
+ expect(p.x).toBeGreaterThanOrEqual(-1);expect(p.x+p.width).toBeLessThanOrEqual(321);
+ expect(p.y).toBeGreaterThanOrEqual(-1);expect(p.y+p.height).toBeLessThanOrEqual(569);
+ await page.locator('#hf193Parent').click();
+ await expect(page.locator('#hf192Shade')).toHaveClass(/hf192-visible/);
+ const parent=page.locator('#hf192Dialog');
+ const b=await parent.boundingBox();expect(b).toBeTruthy();
+ expect(b.x).toBeGreaterThanOrEqual(-1);expect(b.x+b.width).toBeLessThanOrEqual(321);
+ expect(b.y).toBeGreaterThanOrEqual(-1);expect(b.y+b.height).toBeLessThanOrEqual(569);
+ expect(await parent.evaluate(el=>getComputedStyle(el).overflowY)).toMatch(/auto|scroll/);
+ await noHorizontalOverflow(page,'parent panel');
+});
+test('SC09 — bottom navigation stays in the iPhone viewport at both top and bottom of long pages',async({page})=>{
+ await page.setViewportSize({width:375,height:667});await ready(page);
+ for(const destination of ['today','path','awards']){
+  await page.evaluate(name=>window.frankaNav15_2.go(name,{focus:false}),destination);
+  for(const edge of ['top','bottom']){
+   await page.evaluate(edge=>window.scrollTo({top:edge==='top'?0:document.documentElement.scrollHeight,behavior:'instant'}),edge);
+   const rect=await page.locator('.s15-dock').boundingBox();
+   expect(rect).toBeTruthy();expect(rect.x).toBeGreaterThanOrEqual(-1);
+   expect(rect.x+rect.width).toBeLessThanOrEqual(376);
+   expect(rect.y).toBeGreaterThanOrEqual(0);
+   expect(rect.y+rect.height).toBeLessThanOrEqual(668);
+  }
+ }
+});
