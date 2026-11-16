@@ -435,6 +435,65 @@ window.hf27bAudio={
  canSpeak(name){return !this.owner||this.owner===name}
 };
 </script>
+<script id="hf29AudioReliability">
+/* Sprint 29: isolate season announcements from active lesson speech and guard stale TTS callbacks. */
+(function(){
+'use strict';
+let playbackId=0, seasonTicket=0, seasonTimer=null, current=null;
+const owner=()=>window.hf27bAudio;
+function cancelSeasonAnnouncement(){
+  seasonTicket++;
+  if(seasonTimer!==null){clearTimeout(seasonTimer);seasonTimer=null}
+}
+function play(text,rate,kind){
+  if(!('speechSynthesis' in window)||typeof SpeechSynthesisUtterance!=='function')return false;
+  // A nonessential season announcement never interrupts a lesson word or another module.
+  if(kind==='season'&&(current?.kind==='word'||(owner()?.owner&&owner().owner!=='general')))return false;
+  if(!owner()?.claim('general'))return false;
+  const id=++playbackId; // invalidate callbacks before cancellation can emit onerror
+  try{
+    speechSynthesis.cancel();
+    const utterance=new SpeechSynthesisUtterance(String(text));
+    utterance.lang='es-ES';utterance.rate=rate;
+    // Safari may return an empty voice list without ever firing voiceschanged.
+    // Explicit language is sufficient for the browser to choose its own voice.
+    let voices=[];try{voices=speechSynthesis.getVoices?.()||[]}catch(e){}
+    const spanish=voices.find(v=>v?.lang?.toLowerCase()==='es-es')||voices.find(v=>v?.lang?.toLowerCase().startsWith('es'));
+    if(spanish)utterance.voice=spanish;
+    const finish=()=>{
+      if(id!==playbackId)return;
+      current=null;
+      owner()?.release('general');
+    };
+    utterance.onend=finish;
+    utterance.onerror=finish;
+    current={id,kind};
+    speechSynthesis.speak(utterance);
+    return true;
+  }catch(e){
+    if(id===playbackId){current=null;owner()?.release('general')}
+    console.warn('Hiszpański Franka: TTS unavailable',e);
+    return false;
+  }
+}
+function speakWord(text){
+  // An explicitly requested lesson word always takes priority over a pending season label.
+  cancelSeasonAnnouncement();
+  return play(text,.78,'word');
+}
+function announceSeason(text){
+  cancelSeasonAnnouncement();
+  if(!text||current?.kind==='word'||(owner()?.owner&&owner().owner!=='general'))return;
+  const ticket=seasonTicket;
+  seasonTimer=setTimeout(()=>{
+    seasonTimer=null;
+    if(ticket!==seasonTicket||current?.kind==='word')return;
+    play(text,.82,'season');
+  },100);
+}
+window.hf29Audio={speakWord,announceSeason};
+})();
+</script>
 <script id="hf26Script">
 /* Sprint 27B — Car Mode 2.0: exclusive audio ownership, complete task boundary, diversified review. Existing data untouched. */
 (()=>{'use strict';
@@ -597,7 +656,7 @@ const STORAGE_KEY='hiszpanskiFrankaProgressV1';
 let saved={points:0,unit:0,index:0,words:{},quizCorrect:0,quizTotal:0};
 try{const raw=frankaStore.getItem(STORAGE_KEY);if(raw){const parsed=JSON.parse(raw);if(parsed&&typeof parsed==='object')saved={...saved,...parsed,words:parsed.words||{}}}}catch(e){}
 points=Number(saved.points)||0;unit=Math.min(4,Math.max(0,Number(saved.unit)||0));index=Math.max(0,Number(saved.index)||0);
-function speak(text){if(!window.hf27bAudio?.claim('general'))return;if(!('speechSynthesis'in window)){alert('To urządzenie nie udostępnia syntezatora mowy.');window.hf27bAudio?.release('general');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='es-ES';u.rate=.78;u.onend=()=>window.hf27bAudio?.release('general');u.onerror=()=>window.hf27bAudio?.release('general');const chooseVoice=()=>{const vs=speechSynthesis.getVoices();const v=vs.find(x=>x.lang.toLowerCase()==='es-es')||vs.find(x=>x.lang.toLowerCase().startsWith('es'));if(v)u.voice=v;speechSynthesis.speak(u)};if(speechSynthesis.getVoices().length){chooseVoice()}else{speechSynthesis.addEventListener('voiceschanged',chooseVoice,{once:true});speechSynthesis.getVoices()}}
+function speak(text){return window.hf29Audio.speakWord(text)}
 // Sprint 4 — stable keys (unit title + normalized Spanish wording); compatible with earlier saved.words index markers.
 function trainingKey(unitIndex,spanish){return unitIndex+'|'+spanish.normalize('NFC').trim().toLocaleLowerCase('es').replace(/\s+/g,' ')}
 function masteryMap(){if(!saved.mastery||typeof saved.mastery!=='object'||Array.isArray(saved.mastery))saved.mastery={};return saved.mastery}
@@ -2334,22 +2393,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 /* Seasonal navigation announces only the season name, not a random vocabulary item. */
 (()=>{
  const names={1:'Otoño',2:'Invierno',3:'Primavera',4:'Verano'};
- let ticket=0;
  function announce(u){
-   const id=++ticket;
-   if(!names[u]||!('speechSynthesis' in window))return;
-   try{speechSynthesis.cancel()}catch(e){}
-   // Wait until synchronous season-change handlers finish; cancel their queued speech.
-   setTimeout(()=>{
-     if(id!==ticket)return;
-     try{
-       speechSynthesis.cancel();
-       const phrase=new SpeechSynthesisUtterance(names[u]);phrase.lang='es-ES';phrase.rate=.82;
-       const voices=speechSynthesis.getVoices();const v=voices.find(x=>x.lang.toLowerCase()==='es-es')||voices.find(x=>x.lang.toLowerCase().startsWith('es'));
-       if(v)phrase.voice=v;
-       speechSynthesis.speak(phrase);
-     }catch(e){}
-   },100);
+   if(names[u])window.hf29Audio?.announceSeason(names[u]);
  }
  function init(){
    const selector=document.getElementById('uxUnit');if(!selector)return;

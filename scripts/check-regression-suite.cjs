@@ -11,6 +11,7 @@ const expected = {
   'parent.spec.js': 4,
   'backup.spec.js': 4,
   'ui-offline.spec.js': 5,
+  'ios-audio.spec.js': 8,
 };
 let total = 0;
 for (const [filename, count] of Object.entries(expected)) {
@@ -24,5 +25,5 @@ for (const [filename, count] of Object.entries(expected)) {
   total += matches.length;
   console.log(`tests/${filename}: ${count} scenarios`);
 }
-if (total !== 33) throw new Error(`Expected 33 tests, found ${total}`);
+if (total !== 41) throw new Error(`Expected 41 tests, found ${total}`);
 console.log(`PASS: all ${total} mandatory Playwright scenarios are defined.`);
