@@ -1090,6 +1090,15 @@ topics[0].sentences.push(...topics[3].sentences,...topics[4].sentences);
 topics[0].dialogs.push(...topics[3].dialogs,...topics[4].dialogs);
 // Sprint 17.1: model sentences/dialogues applying the photographed winter phrases.
 // Only their individual phrases come from the notebook; questions are authored A1 practice.
+// Sprint 31: integrate new school vocabulary into existing sentence/dialogue practice.
+// Questions are original PL↔ES examples; Wordwall screenshots contain vocabulary, not dialogues.
+topics[1].sentences.splice(2,0,
+ ['🙂','Esta es mi cara.','To jest moja twarz.'],
+ ['👂','Tengo dos orejas.','Mam dwoje uszu.'],
+ ['🖐️','Esta es mi mano.','To jest moja dłoń.']);
+topics[1].dialogs.splice(1,0,
+ ['¿Dónde está tu nariz?','Aquí está mi nariz.','Gdzie jest twój nos?','Tutaj jest mój nos.','👃'],
+ ['¿Qué es esto?','Es mi mano.','Co to jest?','To moja dłoń.','🖐️']);
 topics[1].source='Zeszyt Franka — Invierno (15 wyrażeń na zdjęciu z 06.11.2026). Pytania i dialogi to osobne ćwiczenia autorskie, nie cytaty z zeszytu.';
 topics[1].sentences.push(
  ['🥶','Tengo frío.','Jest mi zimno.'],
@@ -1676,12 +1685,16 @@ for(const step of paced){
  }
 }
 if(u===2){
- // Reuse the existing school vocabulary exercise engine. Never mutate completed stages.
- const extra=chunks(S31_BODY_CARDS,5);
- extra.forEach((cards,i)=>out.push({
+ // Interleave the new school vocabulary with the existing journey, preserving all prior IDs.
+ // Do not change old stages' content, ordering relative to one another or their stored keys.
+ const body=chunks(S31_BODY_CARDS,5).map((cards,i)=>({
   kind:'school',raw:cards,id:'school:s31-invierno-body-'+(i+1),
-  title:'Części ciała · zestaw '+(i+1),note:'Nowy materiał szkolny Invierno · słówka i odsłuch',emoji:'🧍'
+  title:'Szkolne słówka · części ciała '+(i+1),note:'Invierno · nowe słowa w zwykłej ścieżce',emoji:'🧍'
  }));
+ const original=out.length;
+ // Short spaced practice: early, middle and later within vocabulary/review progression.
+ const slots=[Math.min(2,original),Math.min(Math.max(4,Math.floor(original/2)),original),Math.min(Math.max(6,Math.floor(original*3/4)),original)];
+ for(let i=body.length-1;i>=0;i--)out.splice(slots[i],0,body[i]);
 }
 out.push(entry('sentence',sentenceBank[u]||[],'Buduję proste zdania','Rozumiem i powtarzam pełne wypowiedzi','🗣️'));
 out.push({kind:'checkpoint',id:'checkpoint',raw:[],title:'Checkpoint szkolny',note:'Sprawdzam materiał z rozdziału',emoji:'📋'});
@@ -1695,13 +1708,19 @@ function status(u,s){return data[u]?.[s.id]||null}
 function done(u,s){return !!status(u,s)?.done}
 function unlocked(u,i){
  const list=stages(u),stage=list[i];if(!stage)return false;
- // Sprint 31: new school content is immediately available, but must never unlock old lessons by shortcut.
- const isNew=x=>x?.id?.startsWith('school:s31-invierno-body-');
  if(u!==2)return i===0||done(u,stage)||done(u,list[i-1])||list.slice(i+1).some(x=>done(u,x));
- if(isNew(stage))return true;
- const original=list.filter(x=>!isNew(x)),at=original.findIndex(x=>x.id===stage.id);
- return at===0||done(u,stage)||done(u,original[at-1])||original.slice(at+1).some(x=>done(u,x));
+ const newStage=x=>x?.id?.startsWith('school:s31-invierno-body-');
+ const original=list.filter(x=>!newStage(x));
+ // Old lessons use their original progression, unaffected by new inserts.
+ if(!newStage(stage)){
+  const at=original.findIndex(x=>x.id===stage.id);
+  return at===0||done(u,stage)||done(u,original[at-1])||original.slice(at+1).some(x=>done(u,x));
+ }
+ // New school content unlocks naturally when the preceding old lesson is completed.
+ const prior=list.slice(0,i).reverse().find(x=>!newStage(x));
+ return !prior||done(u,stage)||done(u,prior)||original.slice(original.findIndex(x=>x.id===prior.id)+1).some(x=>done(u,x));
 }
+const s31TestHost=location.hostname==='hiszpanski-franka-test.pages.dev';
 let session=null,showAll=false;
 function h(tag,cl,txt){const e=document.createElement(tag);if(cl)e.className=cl;if(txt!==undefined)e.textContent=txt;return e}
 function button(txt,onClick,cl='secondary'){const b=h('button',cl,txt);b.type='button';b.onclick=onClick;return b}
@@ -1723,14 +1742,16 @@ function display(){if(!session)return;const x=session,body=$('s10LessonBody');bo
  for(const val of choices){grid.append(button(val,()=>{
  if(x.answered)return;x.answered=true;const right=val===pl;if(right){x.correct++;frankaPraiseInSpanish(es)}
  // Feed the same smart-learning engine used by Memory, checkpoints and daily sessions.
- if(sentence)window.dispatchEvent(new CustomEvent('franka:s7sentence',{detail:{u:x.u,es,pl,correct:right,kind:'learning-path'}}));
- else recordResult(x.u,row,right,'learning-path');
+ if(!x.preview){
+  if(sentence)window.dispatchEvent(new CustomEvent('franka:s7sentence',{detail:{u:x.u,es,pl,correct:right,kind:'learning-path'}}));
+  else recordResult(x.u,row,right,'learning-path');
+ }
  grid.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.textContent===pl)b.classList.add('right');else if(b.textContent===val&&!right)b.classList.add('wrong')});
  const fb=$('s10LessonFeedback');fb.className='s10-feedback '+(right?'good':'bad');fb.textContent=right?'✅ Świetnie!':'❌ Poprawnie: '+pl;
  const next=h('div','s10-center');next.append(button(x.pos===x.list.length-1?'🏆 Zakończ etap':'➡️ Następne pytanie',()=>{x.pos++;x.answered=false;display()},'epic-primary'));body.append(next);
  },'secondary'))}
 }
-function begin(u,i){const items=stages(u),s=items[i];if(!s||!unlocked(u,i))return;
+function begin(u,i,preview=false){const items=stages(u),s=items[i];if(!s||(!preview&&!unlocked(u,i)))return;
  if(s.kind==='speaking'){
   if(!window.hfSpeaking202?.openJourney)return;
   window.hfSpeaking202.openJourney(u,s.raw,()=>{complete(u,s,{practiced:s.raw.length,mode:'speaking'});window.frankaNav15_2?.go('path',{focus:false});window.hf22FocusNext?.(u,s.id)});
@@ -1738,22 +1759,27 @@ function begin(u,i){const items=stages(u),s=items[i];if(!s||!unlocked(u,i))retur
  }
  if(s.kind==='checkpoint'){$('s10Lesson').hidden=true;$('s6SchoolStart').click();return}
  if(!s.raw.length){complete(u,s,{empty:true});return}
- session={u,stage:s,list:shuffle(s.raw),pos:0,correct:0,answered:false};$('s10Lesson').hidden=false;display();window.frankaNav15_2?.go('lesson') || $('s10Lesson').scrollIntoView({behavior:'smooth',block:'nearest'});
+ session={u,stage:s,list:shuffle(s.raw),pos:0,correct:0,answered:false,preview:!!(preview&&s31TestHost&&u===2)};$('s10Lesson').hidden=false;display();window.frankaNav15_2?.go('lesson') || $('s10Lesson').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function finish(){if(!session)return;const x=session,ok=x.correct>=Math.ceil(x.list.length*(x.stage.kind==='finale'?.85:.75)),body=$('s10LessonBody');body.replaceChildren();
  body.append(h('p','s10-question',ok?'🏆 Etap zaliczony!':'🌱 Poćwiczmy jeszcze trochę'));
- body.append(h('p','',`Poprawne odpowiedzi: ${x.correct}/${x.list.length}. ${ok?'Odblokowany jest kolejny etap.':'Możesz powtórzyć ten zestaw.'}`));
- if(ok){complete(x.u,x.stage,{correct:x.correct,total:x.list.length});if(x.stage.kind==='finale')celebration('🏆 ¡Bravo! Mistrz '+({1:'Otoño',2:'Invierno',3:'Primavera',4:'Verano'}[x.u]||'sezonu')+'!');else celebration('⭐ Brawo! Nowy etap odblokowany!');} 
- const wrap=h('div','s10-center');wrap.append(button(ok?'🏠 Wróć do ścieżki':'🔁 Powtórz zestaw',()=>{if(ok){$('s10Lesson').hidden=true;session=null;draw();window.frankaNav15_2?.go('path',{focus:false});window.hf22FocusNext?.(x.u,x.stage.id)}else begin(x.u,stages(x.u).findIndex(s=>s.id===x.stage.id))},'epic-primary'));body.append(wrap);session=null;
+ body.append(h('p','',`Poprawne odpowiedzi: ${x.correct}/${x.list.length}. ${x.preview?'Podgląd TEST — postępy nie zostały zapisane.':ok?'Odblokowany jest kolejny etap.':'Możesz powtórzyć ten zestaw.'}`));
+ if(ok&&!x.preview){complete(x.u,x.stage,{correct:x.correct,total:x.list.length});if(x.stage.kind==='finale')celebration('🏆 ¡Bravo! Mistrz '+({1:'Otoño',2:'Invierno',3:'Primavera',4:'Verano'}[x.u]||'sezonu')+'!');else celebration('⭐ Brawo! Nowy etap odblokowany!');} 
+ const wrap=h('div','s10-center');wrap.append(button(x.preview?'🏠 Wróć do ścieżki':ok?'🏠 Wróć do ścieżki':'🔁 Powtórz zestaw',()=>{if(ok||x.preview){$('s10Lesson').hidden=true;session=null;draw();window.frankaNav15_2?.go('path',{focus:false});window.hf22FocusNext?.(x.u,x.stage.id)}else begin(x.u,stages(x.u).findIndex(s=>s.id===x.stage.id))},'epic-primary'));body.append(wrap);session=null;
 }
 function draw(){const u=Number($('uxUnit')?.value||1),root=$('s10Steps');if(!root)return;const all=stages(u),completed=all.filter(s=>done(u,s)).length,next=all.findIndex(s=>!done(u,s));
  $('s10PathProgress').textContent=`${completed}/${all.length} etapów`+(done(u,all[all.length-1])?' · 🏆 Mistrz sezonu':'');
  root.replaceChildren();
- const isNew=i=>u===2&&all[i].id.startsWith('school:s31-invierno-body-');
- // Pin the three fresh school lessons above older content: no 20-lesson prerequisite to try them.
- const visible=all.map((s,i)=>i).filter(i=>showAll||isNew(i)||i<=3||i>=Math.max(0,next-1)&&i<=next+2)
-  .sort((a,b)=>Number(isNew(b))-Number(isNew(a))||a-b);
- if(u===2)root.append(h('p','s31-school-intro','🆕 Nowy materiał szkolny: części ciała. Te trzy lekcje możesz rozpocząć od razu — bez zaliczania starszych etapów.'));
+ const visible=all.map((s,i)=>i).filter(i=>showAll||i<=3||i>=Math.max(0,next-1)&&i<=next+2);
+ if(u===2&&s31TestHost){
+  const tools=h('div','s31-test-tools');
+  tools.append(h('p','','🧪 TEST: podgląd nowych treści bez zaliczania lekcji i bez zmiany postępów.'));
+  for(const [i,stage] of all.entries()){
+   if(!stage.id.startsWith('school:s31-invierno-body-'))continue;
+   tools.append(button('Podejrzyj słówka '+stage.raw.map(c=>c[1]).join(', '),()=>begin(u,i,true),'secondary'));
+  }
+  root.append(tools);
+ }
  for(const i of visible){const s=all[i],passed=done(u,s),open=unlocked(u,i),item=button('',()=>begin(u,i),'s10-step'+(passed?' done':open?' active':''));item.disabled=!open;item.dataset.journeyStageId=s.id;item.dataset.journeySeason=String(u);if(i===next)item.classList.add('hf22-next-stage');
  item.append(h('span','s10-step-ico',s.emoji));const content=h('span','s10-step-main');content.append(h('strong','',s.title));content.append(h('small','',s.note+(s.kind!=='checkpoint'?` · ${s.raw.length} zadań`:'')));item.append(content);item.append(h('span','s10-step-mark',passed?'✓ Gotowe':open?'▶ Start':'🔒'));root.append(item)}
  if(all.length>visible.length)root.append(button(`📖 ${showAll?'Pokaż mniej':'Pokaż wszystkie etapy'} (${all.length})`,()=>{showAll=!showAll;draw()},'secondary'));
