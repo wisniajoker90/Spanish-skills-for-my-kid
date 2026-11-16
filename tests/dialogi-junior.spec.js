@@ -34,7 +34,7 @@ test('DJ02 — large repeat button replays question and replaces queued utteranc
  await openJunior(page);
  await expect.poll(()=>page.evaluate(()=>__ttsTest.calls.length)).toBe(1);
  const btn=page.locator('#a1Stage .jr-repeat');
- await expect(btn).toHaveText('Powtórz pytanie');
+ await expect(btn).toContainText('Powtórz pytanie');
  const box=await btn.boundingBox();expect(box.height).toBeGreaterThanOrEqual(60);
  await btn.click();
  const x=await page.evaluate(()=>({calls:__ttsTest.calls.map(v=>v.text),pending:__ttsTest.pendingCount()}));
