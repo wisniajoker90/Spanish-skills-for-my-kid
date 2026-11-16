@@ -9,7 +9,7 @@ const counts = ['expected','skipped','unexpected','flaky'].map(k => stats[k]);
 if (!counts.every(Number.isInteger)) throw new Error('Playwright JSON report does not expose expected, skipped, unexpected, flaky stats');
 const [expected, skipped, unexpected, flaky] = counts;
 console.log(`Playwright results: expected=${expected}, skipped=${skipped}, failed=${unexpected}, flaky=${flaky}`);
-if (expected !== 75 || skipped !== 0 || unexpected !== 0 || flaky !== 0) {
-  throw new Error('STOP: GitHub Pages must NOT deploy unless all 75 test cases passed cleanly.');
+if (expected !== 77 || skipped !== 0 || unexpected !== 0 || flaky !== 0) {
+  throw new Error('STOP: GitHub Pages must NOT deploy unless all 77 test cases passed cleanly.');
 }
-console.log('PASS: all 75 tests passed cleanly. Publishing may proceed if enabled.');
+console.log('PASS: all 77 tests passed cleanly. Publishing may proceed if enabled.');
