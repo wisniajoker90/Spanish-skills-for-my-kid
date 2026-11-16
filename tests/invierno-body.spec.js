@@ -81,3 +81,34 @@ test('IV31-06 — body content contains no English matching tasks or new game mo
  expect(result.labels).toEqual(['words','sentences','dialogues','listening','speaking']);
  expect(result.body.flat().join(' ')).not.toMatch(/\b(arm|hand|head|leg)\b/i);
 });
+
+test('IV31-07 — new Invierno lessons are visible first and can launch immediately without old completions',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{const season=document.querySelector('#uxUnit');season.value='2';season.dispatchEvent(new Event('change',{bubbles:true}));window.frankaNav15_2.go('path',{focus:false})});
+ const buttons=page.locator('#s10Steps button.s10-step');
+ await expect(buttons).toHaveCount(7);
+ expect(await buttons.first().getAttribute('data-journey-stage-id')).toBe('school:s31-invierno-body-1');
+ expect(await buttons.nth(1).getAttribute('data-journey-stage-id')).toBe('school:s31-invierno-body-2');
+ expect(await buttons.nth(2).getAttribute('data-journey-stage-id')).toBe('school:s31-invierno-body-3');
+ for(let i=0;i<3;i++)await expect(buttons.nth(i)).toBeEnabled();
+ await expect(page.locator('#s10Steps')).toContainText('możesz rozpocząć od razu');
+ await buttons.first().click();
+ await expect(page.locator('#s10Lesson')).toBeVisible();
+ await expect(page.locator('#s10LessonHeading')).toContainText('Części ciała');
+ const state=await stored(page,pathKey);
+ expect(Object.values(state?.['2']||{}).filter(x=>x.done)).toHaveLength(0);
+});
+test('IV31-08 — practicing body words cannot bypass historical Invierno journey gates',async({page})=>{
+ await ready(page);
+ const result=await page.evaluate(({pathKey})=>{
+  const steps=window.frankaPath10.stages(2),firstNew=steps.find(x=>x.id==='school:s31-invierno-body-1');
+  const completed={'2':{[firstNew.id]:{done:true,date:'2026-11-16'}}};
+  window.frankaStore.setItem(pathKey,JSON.stringify(completed));
+  const sel=document.querySelector('#uxUnit');sel.value='2';sel.dispatchEvent(new Event('change',{bubbles:true}));
+  const old=[...document.querySelectorAll('#s10Steps button.s10-step')].filter(x=>!x.dataset.journeyStageId.startsWith('school:s31-invierno-body-'));
+  return {old:old.map(x=>({id:x.dataset.journeyStageId,disabled:x.disabled})),newSteps:[...document.querySelectorAll('#s10Steps button.s10-step')].filter(x=>x.dataset.journeyStageId.startsWith('school:s31-invierno-body-')).map(x=>({id:x.dataset.journeyStageId,disabled:x.disabled}))};
+ },{pathKey});
+ expect(result.old[0].disabled).toBe(false);
+ expect(result.old[1].disabled).toBe(true);
+ expect(result.newSteps.every(x=>x.disabled===false)).toBe(true);
+});
