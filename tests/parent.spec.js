@@ -4,7 +4,11 @@ const { ready } = require('./helpers');
 
 async function openParent(page) {
   await ready(page);
-  await page.locator('#hf192Open').click();
+  // #hf192Open is intentionally hidden in v27C (iOS overlap fix).
+  // Use the same visible profile menu that parents use on desktop and mobile.
+  await page.locator('#hf19Launcher').click();
+  await expect(page.locator('#hf19Overlay')).toHaveClass(/hf19-open/);
+  await page.locator('#hf193Parent').click();
   await expect(page.locator('#hf192Shade')).toHaveClass(/hf192-visible/);
 }
 async function setupPin(page, pin='1234') {
@@ -60,8 +64,7 @@ test('P03 — five wrong PIN attempts trigger persistent lockout', async ({ page
   const lock = await page.evaluate(() => JSON.parse(localStorage.getItem('hf192:lock')));
   expect(lock.until).toBeGreaterThan(Date.now());
   await page.reload();
-  await expect(page.locator('#hf192Open')).toBeAttached();
-  await page.locator('#hf192Open').click();
+  await openParent(page);
   await page.locator('#hf192Pin').fill('1234');
   await page.locator('#hf192Login').click();
   await expect(page.locator('#hf192Message')).toContainText('Zbyt wiele prób');
@@ -82,7 +85,7 @@ test('P04 — 7/30-day parent insights respect selected profile', async ({ page 
     localStorage.setItem('hf18:p:p-qa-parent:hiszpanskiFrankaInsights25V1',JSON.stringify({schema:1,events:[]}));
   });
   await page.reload();
-  await page.locator('#hf192Open').click();
+  await openParent(page);
   await setupPin(page);
   const days7=page.locator('#hf25Panel .hf25-tile').filter({hasText:'Aktywne dni · 7 dni'}).locator('strong');
   const days30=page.locator('#hf25Panel .hf25-tile').filter({hasText:'Aktywne dni · 30 dni'}).locator('strong');
