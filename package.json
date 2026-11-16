@@ -1,7 +1,7 @@
 {
   "name": "hiszpanski-franka-regression",
   "private": true,
-  "version": "29.0.0",
+  "version": "30.1.0",
   "scripts": {
     "test": "playwright test",
     "test:foundation": "playwright test tests/profiles.spec.js",
@@ -9,7 +9,7 @@
     "test:audio": "playwright test tests/car-mode.spec.js",
     "test:parent": "playwright test tests/parent.spec.js",
     "test:backup": "playwright test tests/backup.spec.js",
-    "test:ui": "playwright test tests/ui-offline.spec.js tests/ios-audio.spec.js",
+    "test:ui": "playwright test tests/ui-offline.spec.js tests/ios-audio.spec.js tests/pwa-transfer.spec.js",
     "test:regression": "playwright test tests/profiles.spec.js tests/learning.spec.js tests/car-mode.spec.js tests/parent.spec.js tests/backup.spec.js tests/ui-offline.spec.js tests/ios-audio.spec.js",
     "test:report": "playwright show-report"
   },
