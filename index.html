@@ -1693,7 +1693,15 @@ return out;
 }
 function status(u,s){return data[u]?.[s.id]||null}
 function done(u,s){return !!status(u,s)?.done}
-function unlocked(u,i){const list=stages(u);return i===0||done(u,list[i])||done(u,list[i-1])||list.slice(i+1).some(x=>done(u,x))}
+function unlocked(u,i){
+ const list=stages(u),stage=list[i];if(!stage)return false;
+ // Sprint 31: new school content is immediately available, but must never unlock old lessons by shortcut.
+ const isNew=x=>x?.id?.startsWith('school:s31-invierno-body-');
+ if(u!==2)return i===0||done(u,stage)||done(u,list[i-1])||list.slice(i+1).some(x=>done(u,x));
+ if(isNew(stage))return true;
+ const original=list.filter(x=>!isNew(x)),at=original.findIndex(x=>x.id===stage.id);
+ return at===0||done(u,stage)||done(u,original[at-1])||original.slice(at+1).some(x=>done(u,x));
+}
 let session=null,showAll=false;
 function h(tag,cl,txt){const e=document.createElement(tag);if(cl)e.className=cl;if(txt!==undefined)e.textContent=txt;return e}
 function button(txt,onClick,cl='secondary'){const b=h('button',cl,txt);b.type='button';b.onclick=onClick;return b}
@@ -1741,7 +1749,11 @@ function finish(){if(!session)return;const x=session,ok=x.correct>=Math.ceil(x.l
 function draw(){const u=Number($('uxUnit')?.value||1),root=$('s10Steps');if(!root)return;const all=stages(u),completed=all.filter(s=>done(u,s)).length,next=all.findIndex(s=>!done(u,s));
  $('s10PathProgress').textContent=`${completed}/${all.length} etapów`+(done(u,all[all.length-1])?' · 🏆 Mistrz sezonu':'');
  root.replaceChildren();
- const visible=all.map((s,i)=>i).filter(i=>showAll||i<=3||i>=Math.max(0,next-1)&&i<=next+2);
+ const isNew=i=>u===2&&all[i].id.startsWith('school:s31-invierno-body-');
+ // Pin the three fresh school lessons above older content: no 20-lesson prerequisite to try them.
+ const visible=all.map((s,i)=>i).filter(i=>showAll||isNew(i)||i<=3||i>=Math.max(0,next-1)&&i<=next+2)
+  .sort((a,b)=>Number(isNew(b))-Number(isNew(a))||a-b);
+ if(u===2)root.append(h('p','s31-school-intro','🆕 Nowy materiał szkolny: części ciała. Te trzy lekcje możesz rozpocząć od razu — bez zaliczania starszych etapów.'));
  for(const i of visible){const s=all[i],passed=done(u,s),open=unlocked(u,i),item=button('',()=>begin(u,i),'s10-step'+(passed?' done':open?' active':''));item.disabled=!open;item.dataset.journeyStageId=s.id;item.dataset.journeySeason=String(u);if(i===next)item.classList.add('hf22-next-stage');
  item.append(h('span','s10-step-ico',s.emoji));const content=h('span','s10-step-main');content.append(h('strong','',s.title));content.append(h('small','',s.note+(s.kind!=='checkpoint'?` · ${s.raw.length} zadań`:'')));item.append(content);item.append(h('span','s10-step-mark',passed?'✓ Gotowe':open?'▶ Start':'🔒'));root.append(item)}
  if(all.length>visible.length)root.append(button(`📖 ${showAll?'Pokaż mniej':'Pokaż wszystkie etapy'} (${all.length})`,()=>{showAll=!showAll;draw()},'secondary'));
