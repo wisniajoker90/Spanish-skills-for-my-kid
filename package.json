@@ -10,7 +10,7 @@
     "test:parent": "playwright test tests/parent.spec.js",
     "test:backup": "playwright test tests/backup.spec.js",
     "test:ui": "playwright test tests/ui-offline.spec.js tests/ios-audio.spec.js",
-    "test:regression": "playwright test tests/profiles.spec.js tests/learning.spec.js tests/car-mode.spec.js tests/parent.spec.js tests/backup.spec.js tests/ui-offline.spec.js",
+    "test:regression": "playwright test tests/profiles.spec.js tests/learning.spec.js tests/car-mode.spec.js tests/parent.spec.js tests/backup.spec.js tests/ui-offline.spec.js tests/ios-audio.spec.js",
     "test:report": "playwright show-report"
   },
   "devDependencies": { "@playwright/test": "^1.58.0" }
