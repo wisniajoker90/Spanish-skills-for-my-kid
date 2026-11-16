@@ -107,7 +107,7 @@ test('IV31-08 — testing shortcut launches a real lesson without saving or unlo
  const stages=page.locator('#s10Steps button.s10-step');
  await expect(stages.first()).not.toHaveAttribute('data-journey-stage-id',/s31-invierno-body/);
  await page.locator('#s10Steps').getByRole('button',{name:/Pokaż wszystkie etapy/}).click();
- const newStage=stages.locator('[data-journey-stage-id="school:s31-invierno-body-1"]');
+ const newStage=page.locator('#s10Steps button.s10-step[data-journey-stage-id="school:s31-invierno-body-1"]');
  // New stage is on the normal journey, so it is initially locked for fresh users.
  await expect(newStage).toBeDisabled();
  const before=await stored(page,progressKey);
