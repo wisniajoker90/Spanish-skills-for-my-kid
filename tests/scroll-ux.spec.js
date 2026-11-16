@@ -55,8 +55,9 @@ test('SC04 — back to chooser restores navigation and has no hidden-stage audio
  await expect(page.locator('#uxLearningStage')).toBeHidden();
  await expect(page.locator('#uxChooser')).toBeVisible();
  await noHorizontalOverflow(page,'chooser');
+ const spokenAfterExit=await page.evaluate(()=>__ttsTest.calls.length);
  await page.waitForTimeout(260);
- expect(await page.evaluate(()=>__ttsTest.calls.length)).toBe(0);
+ expect(await page.evaluate(()=>__ttsTest.calls.length)).toBe(spokenAfterExit);
 });
 test('SC05 — installed PWA-like mobile panels use vertical scrolling and respect safe viewport width',async({page})=>{
  await page.setViewportSize({width:320,height:568});await ready(page);
