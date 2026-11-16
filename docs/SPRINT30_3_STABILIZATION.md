@@ -7,7 +7,7 @@ Doprecyzować UX i zachowanie audio po wdrożeniu Sprintu 30.2, bez zmian treśc
 1. **Wyjście z nauki:** kliknięcie „Wróć do wyboru” anuluje oczekujący automatyczny odsłuch dialogu. Zabezpieczenie timerów sprawdza również, czy ekran ćwiczenia jest widoczny i czy karta nie jest ukryta.
 2. **Podpowiedź:** pierwsze słowo odpowiedzi zamiast pierwszych dwóch. Podpowiedź nie ujawnia całej bardzo krótkiej odpowiedzi, a polskie znaczenie pytania pozostaje.
 3. **Bezpieczne ponowienie:** po zobaczeniu wzoru można wrócić do pytania przyciskiem „Spróbuję odpowiedzieć jeszcze raz”. Sama ponowna próba nie zwiększa statystyk.
-4. **Kontrola jakości:** do istniejących 56 testów dodano ST01–ST04 oraz SC01–SC05 (przewijanie); produkcyjne wdrożenie wymaga 65/65 czystych przejść.
+4. **Kontrola jakości:** do istniejących 56 testów dodano ST01–ST04 oraz SC01–SC09 (przewijanie); produkcyjne wdrożenie wymaga 69/69 czystych przejść.
 
 ## Manualne testy odbiorowe iPhone / Cloudflare TEST
 - **ST-M01:** W Otoño → Dialogi otwórz pytanie, natychmiast wybierz „Wróć do wyboru”. Żaden opóźniony głos z dialogu nie powinien się uruchomić.
@@ -34,3 +34,11 @@ Doprecyzować UX i zachowanie audio po wdrożeniu Sprintu 30.2, bez zmian treśc
 3. Przejdź między Dzisiaj, Nauka, Postęp; szczególnie sprawdź powrót do wyboru ćwiczenia oraz Memory.
 4. Otwórz profile, panel rodzica i mówienie na małym ekranie. Przy przewijaniu całe okno powinno być dostępne, a przyciski zamknięcia nie ginąć poza ekranem.
 5. Sprawdź przewijanie przy otwartej klawiaturze/PIN-ie, a także dolną nawigację względem bezpiecznego obszaru iPhone’a.
+
+### Dodatkowe scenariusze SC06–SC09
+- SC06: przejście do lekcji z Learning Journey i pozycja widocznego etapu;
+- SC07: Memory, karty i przewijanie na 320 px;
+- SC08: faktyczna geometria i przewijanie paneli profili i rodzica w małym ekranie;
+- SC09: położenie dolnej nawigacji na górze i dole długiej strony.
+
+Regresja mobilna Playwright jest emulacją rozmiaru ekranu w Chromium. Końcowy odbiór zachowania Safari i PWA iOS należy wykonać manualnie przed produkcją.
