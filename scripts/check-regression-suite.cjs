@@ -1,6 +1,6 @@
 'use strict';
 // Sprint 28.4: fail CLOSED if a regression file or scenario is missing.
-// Counts the 60 required top-level Playwright test(...) declarations.
+// Counts the 65 required top-level Playwright test(...) declarations.
 const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
@@ -15,6 +15,7 @@ const expected = {
   'pwa-transfer.spec.js': 7,
   'dialogi-junior.spec.js': 8,
   'dialogue-stabilization.spec.js': 4,
+  'scroll-ux.spec.js': 5,
 };
 let total = 0;
 for (const [filename, count] of Object.entries(expected)) {
@@ -28,5 +29,5 @@ for (const [filename, count] of Object.entries(expected)) {
   total += matches.length;
   console.log(`tests/${filename}: ${count} scenarios`);
 }
-if (total !== 60) throw new Error(`Expected 60 tests, found ${total}`);
+if (total !== 65) throw new Error(`Expected 65 tests, found ${total}`);
 console.log(`PASS: all ${total} mandatory Playwright scenarios are defined.`);
