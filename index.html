@@ -680,6 +680,30 @@ for(const u of S8_SEASONS){
 }
 window.frankaSeasons8={ids:S8_SEASONS,names:S8_NAMES,school:S8_SCHOOL,origin:S8_ORIGIN};
 
+/* Sprint 31 — Invierno / partes del cuerpo.
+   Teacher screenshots (Wordwall): school vocabulary in Spanish + Polish only.
+   Preserve the exact pre-Sprint31 lesson list and existing stage identifiers.
+   English matching and new game types are explicitly out of scope. */
+const S31_LEGACY_INV_WORDS=units[2].cards.slice();
+const S31_LEGACY_INV_SCHOOL=new Set(S8_SCHOOL[2].map(c=>c[1].normalize('NFC').trim().toLocaleLowerCase('es')));
+const S31_BODY_SOURCE=[
+ ['🙂','Cara','Twarz'],['💇','Pelo','Włosy'],['👁️','Ojo','Oko'],['👀','Ojos','Oczy'],
+ ['👂','Oreja','Ucho'],['👃','Nariz','Nos'],['👄','Boca','Usta'],['🙂','Cabeza','Głowa'],
+ ['💪','Brazo','Ramię'],['🖐️','Mano','Dłoń / ręka'],['🧍','Barriga','Brzuch'],
+ ['🦵','Pierna','Noga'],['🦶','Pie','Stopa']
+];
+const S31_BODY_CARDS=S31_BODY_SOURCE.map(candidate=>{
+ const key=candidate[1].normalize('NFC').trim().toLocaleLowerCase('es');
+ const card=units[2].cards.find(c=>c[1].normalize('NFC').trim().toLocaleLowerCase('es')===key)||candidate;
+ if(!units[2].cards.includes(card))units[2].cards.push(card);
+ if(!S8_SCHOOL[2].some(c=>c[1].normalize('NFC').trim().toLocaleLowerCase('es')===key))S8_SCHOOL[2].push(card);
+ S8_ORIGIN['2|'+key]='szkoła — Invierno: części ciała, zdjęcia Wordwall, listopad 2026';
+ return card;
+});
+units[2].sub+=' · Części ciała: 13 słów z nowych materiałów szkolnych';
+window.frankaInvierno31={bodyCards:S31_BODY_CARDS,legacyWords:S31_LEGACY_INV_WORDS,source:'Invierno — części ciała; Wordwall, listopad 2026'};
+
+
 const chatTopics=["Poznajmy się","Jak się czujesz?","Moja rodzina","O mnie","Uprzejme zwroty"];
 function renderDailyChat(){const root=document.getElementById('chatGroups');if(!root)return;root.innerHTML='';const cards=units[5].cards;for(let g=0;g<chatTopics.length;g++){const section=document.createElement('div');section.className='chat-group';const heading=document.createElement('h3');heading.textContent=chatTopics[g];section.appendChild(heading);cards.slice(g*5,g*5+5).forEach(card=>{const line=document.createElement('div');line.className='chat-line';const es=document.createElement('div');es.className='chat-es';es.textContent=card[1];const pl=document.createElement('div');pl.className='chat-pl';pl.textContent=card[2];const listen=document.createElement('button');listen.className='secondary chat-say';listen.textContent='🔊 Posłuchaj';listen.addEventListener('click',()=>speak(card[1]));line.append(es,pl,listen);section.appendChild(line)});root.appendChild(section)}}
 let unit=0,index=0,points=0,question=0,answered=false;
@@ -1618,7 +1642,12 @@ const sentenceBank={
 2:[['Hoy hace frío.','Dziś jest zimno.'],['Tengo un libro.','Mam książkę.'],['Llevo una bufanda.','Noszę szalik.'],['El gato es pequeño.','Kot jest mały.']],
 3:[['Veo una mariposa.','Widzę motyla.'],['Me gusta jugar al fútbol.','Lubię grać w piłkę nożną.'],['Quiero agua, por favor.','Poproszę wodę.'],['Es una flor.','To jest kwiat.']],
 4:[['En verano hace calor.','Latem jest gorąco.'],['Bebo agua.','Piję wodę.'],['Voy a la playa.','Idę na plażę.'],['Me gusta el sol.','Lubię słońce.']]};
-function stages(u){const words=unique(u),schoolSets=chunks(words.filter(c=>school(u,c)),5),a1Sets=chunks(words.filter(c=>!school(u,c)),5),out=[];
+function stages(u){
+ // Keep all pre-Sprint31 school/A1/review/speaking stage IDs stable for Invierno.
+ // New verified body vocabulary is added in distinct steps before the checkpoint.
+ const words=u===2?S31_LEGACY_INV_WORDS:unique(u);
+ const schoolPreviously=c=>u===2?S31_LEGACY_INV_SCHOOL.has(normal(c[1])):school(u,c);
+ const schoolSets=chunks(words.filter(schoolPreviously),5),a1Sets=chunks(words.filter(c=>!schoolPreviously(c)),5),out=[];
 const entry=(kind,raw,title,note,emoji)=>({kind,raw,title,note,emoji,id:kind+':'+raw.map(c=>normal(kind==='sentence'?c[0]:c[1])).join('~')});
 // School always has first place, then introduce A1 expansions at a steady pace.
 let si=0,ai=0;
@@ -1645,6 +1674,14 @@ for(const step of paced){
   if(uniquePhrases.length){speakingNo++;out.push({kind:'speaking',id:'speaking-journey-'+speakingNo,raw:uniquePhrases,title:'Mówię i słucham · część '+speakingNo,note:'Słucham, powtarzam i ćwiczę własną wymowę',emoji:'🎙️'});}
   segment=[];
  }
+}
+if(u===2){
+ // Reuse the existing school vocabulary exercise engine. Never mutate completed stages.
+ const extra=chunks(S31_BODY_CARDS,5);
+ extra.forEach((cards,i)=>out.push({
+  kind:'school',raw:cards,id:'school:s31-invierno-body-'+(i+1),
+  title:'Części ciała · zestaw '+(i+1),note:'Nowy materiał szkolny Invierno · słówka i odsłuch',emoji:'🧍'
+ }));
 }
 out.push(entry('sentence',sentenceBank[u]||[],'Buduję proste zdania','Rozumiem i powtarzam pełne wypowiedzi','🗣️'));
 out.push({kind:'checkpoint',id:'checkpoint',raw:[],title:'Checkpoint szkolny',note:'Sprawdzam materiał z rozdziału',emoji:'📋'});
