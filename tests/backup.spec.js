@@ -5,7 +5,9 @@ const { ready } = require('./helpers');
 
 async function openBackup(page) {
   await ready(page);
-  await page.evaluate(() => window.frankaNav15_2.go('progress',{focus:false}));
+  // The v27C router has no 'progress' destination; use the actual UI tab.
+  await page.locator('.s15-dock [data-s15-view="progress"]').click();
+  await expect(page.locator('#s15Progress')).toHaveClass(/s15-active/);
   const fold=page.locator('details.s15-parentfold');
   if (!(await fold.evaluate(el=>el.open))) await fold.locator('summary').click();
   await expect(page.locator('#hf18export')).toBeVisible();
