@@ -1298,6 +1298,7 @@ function showLearning(){
  $('uxLearningStage').hidden=false;
  $('uxWordsSlot').hidden=kind!=='words'||isFoundation(unit);$('uxA1Pane').hidden=kind==='words'||isFoundation(unit);$('uxFoundationSlot').hidden=!isFoundation(unit);
  $('uxStageTitle').textContent=choice.options[choice.selectedIndex].text+' · '+display[kind];
+ $('s15ChooserDetails')?.classList.remove('s30-show-chooser');
  if(isFoundation(unit)){document.dispatchEvent(new CustomEvent('franka:foundationStart',{detail:{index:unit-100}}))}
  if(kind!=='words'){const button=document.querySelector('[data-a1-view="'+kind+'"]');if(button)button.click()}
  try{frankaStore.setItem(uxKey,JSON.stringify({unit,kind}))}catch(e){}
@@ -1862,7 +1863,7 @@ window.frankaLevel14={render,definitions,weekStart};
    case 'learning':reveal('learning','lessons');target=$('s15Seasons');break;
    case 'path':reveal('learning','lessons');target=$('s10Steps');break;
    case 'lesson':reveal('learning','lessons');target=$('s10Lesson');break;
-   case 'chooser':reveal('learning','lessons');if(chooser)chooser.open=true;target=$('uxChooser');break;
+   case 'chooser':reveal('learning','lessons');if(chooser){chooser.classList.add('s30-show-chooser');chooser.open=true}target=$('uxChooser');break;
    case 'learningStage':viewTo('learning');if(chooser)chooser.open=true;target=$('uxLearningStage');break;
    case 'games':reveal('learning','games');if($('epicGames')?.hidden)$('uxGames')?.click();target=$('epicGames');break;
    case 'memory':return startDailyMemory();
@@ -2403,6 +2404,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <style id="hf203UXStyle">
 /* Simplified learning journey: no data model or storage changes. */
 #s15ChooserDetails{display:none!important}
+/* Explicit 'Zmień ćwiczenie' returns to the chooser without restoring deprecated secondary navigation by default. */
+#s15ChooserDetails.s30-show-chooser{display:block!important}
 #hf202Launch{display:none!important}
 #hf203Checkpoints{margin:20px 0 6px;padding:20px;border-radius:22px;background:linear-gradient(135deg,#f0f8ff,#f3f9f0);border:1px solid #d4e6df;box-shadow:0 6px 22px #183e4b0a}
 #hf203Checkpoints h3{margin:0 0 5px;color:#174d52;font-size:clamp(19px,3vw,24px)}
