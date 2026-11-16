@@ -37,6 +37,10 @@
 .jr-good{background:#e7f8ee!important;color:#1b6a41!important;border:1px solid #b6e8c8!important}
 .jr-help{background:#f2f2fb!important;color:#4e5190!important;border:1px solid #dadcf5!important}
 .jr-celebrate{font-size:4.5rem}
+/* Sprint 30.3 scroll audit: visible anchor positions, wrapped copy and touch-safe modals. */
+#uxLearningStage,#uxChooser,#s10Lesson,#s7Session,#smartReview,#s6TestingPanel,#s10Steps{scroll-margin-top:18px}
+.jr-dialog,.jr-dialog .jr-question-card,.jr-dialog .jr-hint{min-width:0;max-width:100%;overflow-wrap:anywhere}
+#hf19Dialog,#hf192Dialog,#hf193Dialog,#hf201Dialog,#hf202Panel{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 /* Sprint 30.2: one large action, child-friendly optional hint and repeat audio. */
 .jr-question-card{display:grid;gap:10px;padding:20px 14px;border-radius:20px;background:#f1f5ff;text-align:center}
 .jr-question-card .jr-question{margin:0}
@@ -1175,10 +1179,23 @@ function jrAudio(text){
  juniorAutoplay=setTimeout(()=>{
   juniorAutoplay=null;
   const stage=$('a1Stage');
-  if(ticket!==juniorSpeechTicket||view!=='dialogues'||!stage?.querySelector('.jr-dialog'))return;
+  if(ticket!==juniorSpeechTicket||document.hidden||view!=='dialogues'||$('uxLearningStage')?.hidden||!stage?.querySelector('.jr-dialog'))return;
   jrSpeak(text); // If iOS blocks non-gesture autoplay, the repeat button remains available.
  },190);
 }
+function jrScrollToCurrentStep(){
+ // After a child taps the action at the bottom of a tall step, show the next prompt,
+ // not an arbitrary piece of a shorter page. Never change scroll on initial entry.
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  const stage=$('uxLearningStage'),card=$('a1Stage')?.querySelector('.jr-dialog');
+  if(view!=='dialogues'||stage?.hidden||!card?.isConnected)return;
+  const rect=card.getBoundingClientRect(),top=Math.max(0,window.scrollY+rect.top-16);
+  if(Math.abs(window.scrollY-top)>12)window.scrollTo({top,behavior:'instant'});
+  card.setAttribute('tabindex','-1');
+  try{card.focus({preventScroll:true})}catch(e){}
+ }));
+}
+function jrGoStep(step){jrCancelAutoplay();juniorStep=step;render();jrScrollToCurrentStep()}
 function dialogue(){
  const t=pickTopic(),n=active%t.dialogs.length,d=t.dialogs[n],signature=t.id+'|'+n;
  if(juniorTopicSignature!==signature){jrCancelAutoplay();juniorStep=0;juniorHint=false;juniorTopicSignature=signature}
@@ -1198,9 +1215,13 @@ function dialogue(){
   root.append(mk('p','jr-flow-note','Powiedz odpowiedź sam. Mikrofon nie jest potrzebny.'));
   if(juniorHint){
    const hint=mk('div','jr-hint');hint.setAttribute('role','status');
-   hint.append(mk('strong','','Podpowiedź 💡'),mk('span','',d[2]||'Przypomnij sobie pytanie.'),mk('p','', 'Zacznij odpowiedź: '+String(d[1]).split(/\s+/).slice(0,2).join(' ')+'…'));root.append(hint);
+   hint.append(mk('strong','','Podpowiedź 💡'),mk('span','',d[2]||'Przypomnij sobie pytanie.'));
+   // Never accidentally reveal a complete two-word answer in a supposedly partial hint.
+   const answerWords=String(d[1]).trim().split(/\s+/);
+   if(answerWords.length>1)hint.append(mk('p','', 'Zacznij odpowiedź: '+answerWords[0]+' …'));
+   root.append(hint);
   }
-  root.append(button('🎤 Odpowiedziałem!',()=>{jrCancelAutoplay();juniorStep=1;render()},'jr-main'));
+  root.append(button('🎤 Odpowiedziałem!',()=>jrGoStep(1),'jr-main'));
   if(!juniorHint)root.append(button('💡 Potrzebuję podpowiedzi',()=>{jrCancelAutoplay();juniorHint=true;render()},'jr-quiet'));
   $('a1Stage').replaceChildren(root);
   if(!juniorHint)jrAudio(d[0]);return;
@@ -1210,22 +1231,23 @@ function dialogue(){
   root.append(mk('div','jr-answer',d[1]));
   root.append(mk('p','jr-translation',d[3]||''));
   root.append(button('🔊 Posłuchaj odpowiedzi',()=>jrSpeak(d[1]),'jr-repeat'));
-  root.append(button('Dalej →',()=>{juniorStep=2;render()},'jr-main'));
+  root.append(button('Dalej →',()=>jrGoStep(2),'jr-main'));
+  root.append(button('↩️ Spróbuję odpowiedzieć jeszcze raz',()=>jrGoStep(0),'jr-quiet'));
   $('a1Stage').replaceChildren(root);return;
  }
  if(juniorStep===2){
   root.append(mk('p','jr-helper','3. Jak Ci poszło?'));
   root.append(mk('div','jr-answer',d[1]));
   const options=mk('div','jr-options');
-  if(!juniorHint)options.append(button('⭐ Powiedziałem sam!',()=>{recordDialogue(t,d,'yes');juniorStep=3;render()},'jr-good'));
-  options.append(button(juniorHint?'🤝 Ćwiczyłem z podpowiedzią':'🤝 Potrzebuję jeszcze pomocy',()=>{recordDialogue(t,d,'help');juniorStep=3;render()},'jr-help'));
+  if(!juniorHint)options.append(button('⭐ Powiedziałem sam!',()=>{recordDialogue(t,d,'yes');jrGoStep(3)},'jr-good'));
+  options.append(button(juniorHint?'🤝 Ćwiczyłem z podpowiedzią':'🤝 Potrzebuję jeszcze pomocy',()=>{recordDialogue(t,d,'help');jrGoStep(3)},'jr-help'));
   root.append(options,mk('p','jr-caption','To Twoja ocena. Aplikacja nie ocenia wymowy.'));
   $('a1Stage').replaceChildren(root);return;
  }
  root.append(mk('div','jr-celebrate','🌟'),mk('div','jr-question','¡Muy bien!'));
  root.append(mk('p','jr-helper','Brawo za rozmowę! Każda próba to postęp.'));
  root.append(button(n===t.dialogs.length-1?'🔁 Jeszcze jedna runda':'Następna rozmowa →',()=>{
-  jrCancelAutoplay();active++;juniorStep=0;juniorHint=false;juniorTopicSignature='';render()
+  jrCancelAutoplay();active++;juniorStep=0;juniorHint=false;juniorTopicSignature='';render();jrScrollToCurrentStep()
  },'jr-main'));
  $('a1Stage').replaceChildren(root);
 }
@@ -1240,6 +1262,7 @@ function render(){renderStats();if(view==='sentences')sentence();if(view==='dial
 const select=$('a1Topic');topics.forEach((t,i)=>select.add(new Option(t.label,i)));select.value='0';select.onchange=()=>{jrCancelAutoplay();current=Number(select.value);active=0;juniorStep=0;juniorHint=false;juniorTopicSignature='';render();$('a1SourceLabel').textContent=pickTopic().source};
 document.querySelectorAll('[data-a1-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.a1View)));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)jrCancelAutoplay()});
+window.addEventListener('franka:junior-leave',jrCancelAutoplay);
 $('a1SourceLabel').textContent=pickTopic().source;render();renderSkills();
 })();
 </script>
@@ -1275,6 +1298,7 @@ function showLearning(){
  $('uxLearningStage').hidden=false;
  $('uxWordsSlot').hidden=kind!=='words'||isFoundation(unit);$('uxA1Pane').hidden=kind==='words'||isFoundation(unit);$('uxFoundationSlot').hidden=!isFoundation(unit);
  $('uxStageTitle').textContent=choice.options[choice.selectedIndex].text+' · '+display[kind];
+ $('s15ChooserDetails')?.classList.remove('s30-show-chooser');
  if(isFoundation(unit)){document.dispatchEvent(new CustomEvent('franka:foundationStart',{detail:{index:unit-100}}))}
  if(kind!=='words'){const button=document.querySelector('[data-a1-view="'+kind+'"]');if(button)button.click()}
  try{frankaStore.setItem(uxKey,JSON.stringify({unit,kind}))}catch(e){}
@@ -1289,7 +1313,7 @@ function refreshResume(){
 choice.onchange=()=>{choose(getUnit(),selected);$('uxLearningStage').hidden=true;$('epicGames').hidden=true};
 activities.forEach(b=>b.onclick=()=>{choose(getUnit(),b.dataset.uxActivity);$('uxLearningStage').hidden=true;$('epicGames').hidden=true});
 $('uxStart').onclick=showLearning;
-$('uxBackToChoice').onclick=()=>{$('uxLearningStage').hidden=true;window.frankaNav15_2?.go('chooser') || $('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
+$('uxBackToChoice').onclick=()=>{window.dispatchEvent(new Event('franka:junior-leave'));$('uxLearningStage').hidden=true;window.frankaNav15_2?.go('chooser') || $('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
 $('uxResume').onclick=()=>{let v;try{v=JSON.parse(frankaStore.getItem(uxKey)||'null')}catch(e){}if(v&&supported(v.unit,v.kind)){choose(v.unit,v.kind);showLearning()}};
 function openGames(startMemory){
  const n=getUnit();
@@ -1839,7 +1863,7 @@ window.frankaLevel14={render,definitions,weekStart};
    case 'learning':reveal('learning','lessons');target=$('s15Seasons');break;
    case 'path':reveal('learning','lessons');target=$('s10Steps');break;
    case 'lesson':reveal('learning','lessons');target=$('s10Lesson');break;
-   case 'chooser':reveal('learning','lessons');if(chooser)chooser.open=true;target=$('uxChooser');break;
+   case 'chooser':reveal('learning','lessons');if(chooser){chooser.classList.add('s30-show-chooser');chooser.open=true}target=$('uxChooser');break;
    case 'learningStage':viewTo('learning');if(chooser)chooser.open=true;target=$('uxLearningStage');break;
    case 'games':reveal('learning','games');if($('epicGames')?.hidden)$('uxGames')?.click();target=$('epicGames');break;
    case 'memory':return startDailyMemory();
@@ -2380,6 +2404,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <style id="hf203UXStyle">
 /* Simplified learning journey: no data model or storage changes. */
 #s15ChooserDetails{display:none!important}
+/* Explicit 'Zmień ćwiczenie' returns to the chooser without restoring deprecated secondary navigation by default. */
+#s15ChooserDetails.s30-show-chooser{display:block!important}
 #hf202Launch{display:none!important}
 #hf203Checkpoints{margin:20px 0 6px;padding:20px;border-radius:22px;background:linear-gradient(135deg,#f0f8ff,#f3f9f0);border:1px solid #d4e6df;box-shadow:0 6px 22px #183e4b0a}
 #hf203Checkpoints h3{margin:0 0 5px;color:#174d52;font-size:clamp(19px,3vw,24px)}
