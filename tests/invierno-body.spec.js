@@ -79,5 +79,5 @@ test('IV31-06 — body content contains no English matching tasks or new game mo
   labels:[...document.querySelectorAll('[data-ux-activity]')].map(x=>x.dataset.uxActivity)
  }));
  expect(result.labels).toEqual(['words','sentences','dialogues','listening','speaking']);
- expect(result.body.flat().join(' ')).not.toMatch(/\\b(arm|hand|head|leg)\\b/i);
+ expect(result.body.flat().join(' ')).not.toMatch(/\b(arm|hand|head|leg)\b/i);
 });
