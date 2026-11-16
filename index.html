@@ -37,6 +37,18 @@
 .jr-good{background:#e7f8ee!important;color:#1b6a41!important;border:1px solid #b6e8c8!important}
 .jr-help{background:#f2f2fb!important;color:#4e5190!important;border:1px solid #dadcf5!important}
 .jr-celebrate{font-size:4.5rem}
+/* Sprint 30.2: one large action, child-friendly optional hint and repeat audio. */
+.jr-question-card{display:grid;gap:10px;padding:20px 14px;border-radius:20px;background:#f1f5ff;text-align:center}
+.jr-question-card .jr-question{margin:0}
+.jr-repeat{display:block!important;width:100%;min-height:66px!important;font-size:1.14rem!important;border:2px solid #7773d5!important;background:#f1efff!important;color:#37318b!important}
+.jr-hint{background:#fff9e9;border:1px solid #efd99c;border-radius:15px;padding:14px;color:#5a4519;line-height:1.5}
+.jr-hint strong{display:block;margin-bottom:5px}
+.jr-quiet{display:block!important;width:100%;min-height:48px!important;background:transparent!important;color:#4d508d!important;border:1px solid #d9dcf6!important;font-size:.96rem!important}
+.jr-flow-note{font-size:.95rem;color:#566078;margin:0;line-height:1.5}
+.jr-dialog .jr-options{grid-template-columns:1fr 1fr}
+.jr-dialog .jr-question-card{width:100%}
+@media(max-width:520px){.jr-dialog .jr-options{grid-template-columns:1fr}.jr-repeat{min-height:72px!important}}
+
 @media(max-width:420px){.jr-options{grid-template-columns:1fr}.jr-dialog{padding:20px 15px!important}}
 @media(prefers-reduced-motion:reduce){.jr-dialog button,.jr-meter span{transition:none!important}}
 
@@ -1149,48 +1161,72 @@ const button=(txt,click,cls='secondary')=>{const b=mk('button',cls,txt);b.type='
 function say(str){speak(str)}
 function renderStats(){const topic=topics[current],s=stat(topic);$('a1Stats').textContent=`${topic.school?'📚 Ćwiczenia ze słownictwa szkolnego':'🚀 Dodatkowy kurs A1'} · Rozumienie zdań: ${s.listeningCorrect}/${s.listeningAttempts} poprawnych · Wypowiedzi przećwiczone na głos: ${s.spoken}. To licznik ćwiczeń, nie certyfikat A1.`}
 function pickTopic(){return topics[current]}
-function setView(v){view=v;active=0;answered=false;juniorStep=0;juniorTopicSignature='';document.querySelectorAll('[data-a1-view]').forEach(b=>b.classList.toggle('active',b.dataset.a1View===v));render()}
+function setView(v){jrCancelAutoplay();view=v;active=0;answered=false;juniorStep=0;juniorHint=false;juniorTopicSignature='';document.querySelectorAll('[data-a1-view]').forEach(b=>b.classList.toggle('active',b.dataset.a1View===v));render()}
 function common(root,n,len){const s=mk('p','a1-step',`Ćwiczenie ${n+1} z ${len}`);root.append(s)}
 function sentence(){const t=pickTopic(),item=t.sentences[active%t.sentences.length];const root=mk('div','a1-card');common(root,active%t.sentences.length,t.sentences.length);root.append(mk('div','a1-illustration',item[0]),mk('div','a1-es',item[1]));const pl=mk('div','a1-pl',item[2]);pl.hidden=true;const controls=mk('div','a1-toolbar');controls.append(button('🔊 Posłuchaj',()=>say(item[1]),'a1-speaker'),button('🇵🇱 Pokaż tłumaczenie',()=>{pl.hidden=!pl.hidden},'secondary'),button('➡️ Następne zdanie',()=>{active++;render()},'a1-next'));root.append(pl,controls);$('a1Stage').replaceChildren(root)}
-/* Sprint 17 · Dialogi Junior: one clear activity and one learning action per step. */
-let juniorStep=0,juniorAutoplay=null,juniorTopicSignature='';
-function jrAudio(utterance){if(juniorAutoplay)clearTimeout(juniorAutoplay);juniorAutoplay=setTimeout(()=>{const stage=$('a1Stage');if(view==='dialogues'&&stage?.querySelector('.jr-dialog'))say(utterance)},160)}
+/* Sprint 30.2 · Dialogi Junior: one question, a clear hint, and a single main next action.
+   Same existing dialogue content and stored A1 progress schema; no microphone requirement. */
+let juniorStep=0,juniorAutoplay=null,juniorTopicSignature='',juniorHint=false,juniorSpeechTicket=0;
+function jrCancelAutoplay(){juniorSpeechTicket++;if(juniorAutoplay!==null){clearTimeout(juniorAutoplay);juniorAutoplay=null}}
+function jrSpeak(text){return window.hf29Audio?.speakWord(text)===true}
+function jrAudio(text){
+ jrCancelAutoplay();
+ const ticket=juniorSpeechTicket;
+ juniorAutoplay=setTimeout(()=>{
+  juniorAutoplay=null;
+  const stage=$('a1Stage');
+  if(ticket!==juniorSpeechTicket||view!=='dialogues'||!stage?.querySelector('.jr-dialog'))return;
+  jrSpeak(text); // If iOS blocks non-gesture autoplay, the repeat button remains available.
+ },190);
+}
 function dialogue(){
  const t=pickTopic(),n=active%t.dialogs.length,d=t.dialogs[n],signature=t.id+'|'+n;
- if(juniorTopicSignature!==signature){juniorStep=0;juniorTopicSignature=signature}
- if(juniorAutoplay)clearTimeout(juniorAutoplay);
+ if(juniorTopicSignature!==signature){jrCancelAutoplay();juniorStep=0;juniorHint=false;juniorTopicSignature=signature}
+ if(juniorAutoplay!==null){clearTimeout(juniorAutoplay);juniorAutoplay=null}
  const root=mk('div','a1-card jr-dialog');
  root.setAttribute('aria-label','Dialog Junior — '+(n+1)+' z '+t.dialogs.length);
- const top=mk('div','jr-top');top.append(mk('span','jr-eyebrow','🗣️ Dialog Junior'),mk('span','jr-progress',(n+1)+' / '+t.dialogs.length));root.append(top);
- const progressLine=mk('div','jr-meter');const fill=mk('span');fill.style.width=100*(n+1)/t.dialogs.length+'%';progressLine.append(fill);root.append(progressLine);
+ root.dataset.jrStep=String(juniorStep);
+ const top=mk('div','jr-top');
+ top.append(mk('span','jr-eyebrow','💬 Rozmawiam po hiszpańsku'),mk('span','jr-progress',(n+1)+' / '+t.dialogs.length));root.append(top);
+ const meter=mk('div','jr-meter'),fill=mk('span');fill.style.width=100*(n+1)/t.dialogs.length+'%';meter.append(fill);root.append(meter);
  const picture=mk('div','jr-picture',d[4]||'💬');picture.setAttribute('aria-hidden','true');root.append(picture);
  if(juniorStep===0){
-  root.append(mk('p','jr-helper','Posłuchaj i odpowiedz na głos'));
-  root.append(mk('div','jr-question',d[0]));
-  const audio=button('🔊 Posłuchaj jeszcze raz',()=>say(d[0]),'jr-audio');audio.setAttribute('aria-label','Odtwórz pytanie po hiszpańsku');root.append(audio);
-  root.append(button('🎤 Już odpowiedziałem',()=>{juniorStep=1;render()},'jr-main'));
-  root.append(mk('p','jr-caption','Nie musisz używać mikrofonu. Spróbuj powiedzieć odpowiedź sam.'));
-  $('a1Stage').replaceChildren(root);jrAudio(d[0]);return;
+  root.append(mk('p','jr-helper','1. Posłuchaj pytania i odpowiedz na głos'));
+  const card=mk('div','jr-question-card');card.append(mk('div','jr-question',d[0]));
+  const repeat=button('🔊 Powtórz pytanie',()=>{jrCancelAutoplay();jrSpeak(d[0])},'jr-repeat');
+  repeat.setAttribute('aria-label','Powtórz pytanie po hiszpańsku');card.append(repeat);root.append(card);
+  root.append(mk('p','jr-flow-note','Powiedz odpowiedź sam. Mikrofon nie jest potrzebny.'));
+  if(juniorHint){
+   const hint=mk('div','jr-hint');hint.setAttribute('role','status');
+   hint.append(mk('strong','','Podpowiedź 💡'),mk('span','',d[2]||'Przypomnij sobie pytanie.'),mk('p','', 'Zacznij odpowiedź: '+String(d[1]).split(/\s+/).slice(0,2).join(' ')+'…'));root.append(hint);
+  }
+  root.append(button('🎤 Odpowiedziałem!',()=>{jrCancelAutoplay();juniorStep=1;render()},'jr-main'));
+  if(!juniorHint)root.append(button('💡 Potrzebuję podpowiedzi',()=>{jrCancelAutoplay();juniorHint=true;render()},'jr-quiet'));
+  $('a1Stage').replaceChildren(root);
+  if(!juniorHint)jrAudio(d[0]);return;
  }
  if(juniorStep===1){
-  root.append(mk('p','jr-helper','Sprawdź swoją odpowiedź'));
+  root.append(mk('p','jr-helper','2. Sprawdź swoją odpowiedź'));
   root.append(mk('div','jr-answer',d[1]));
-  const pl=mk('p','jr-translation',d[3]||'');root.append(pl);
-  root.append(button('🔊 Posłuchaj odpowiedzi',()=>say(d[1]),'jr-audio'));
-  root.append(button('Dalej',()=>{juniorStep=2;render()},'jr-main'));
-  $('a1Stage').replaceChildren(root);jrAudio(d[1]);return;
+  root.append(mk('p','jr-translation',d[3]||''));
+  root.append(button('🔊 Posłuchaj odpowiedzi',()=>jrSpeak(d[1]),'jr-repeat'));
+  root.append(button('Dalej →',()=>{juniorStep=2;render()},'jr-main'));
+  $('a1Stage').replaceChildren(root);return;
  }
  if(juniorStep===2){
-  root.append(mk('p','jr-helper','Jak Ci poszło?'));
-  root.append(mk('div','jr-question',d[1]));
+  root.append(mk('p','jr-helper','3. Jak Ci poszło?'));
+  root.append(mk('div','jr-answer',d[1]));
   const options=mk('div','jr-options');
-  options.append(button('⭐ Powiedziałem sam!',()=>{recordDialogue(t,d,'yes');juniorStep=3;render()},'jr-good'),button('🤝 Potrzebuję pomocy',()=>{recordDialogue(t,d,'help');juniorStep=3;render()},'jr-help'));
-  root.append(options,mk('p','jr-caption','To Twoja ocena, aplikacja nie sprawdza wymowy.'));
+  if(!juniorHint)options.append(button('⭐ Powiedziałem sam!',()=>{recordDialogue(t,d,'yes');juniorStep=3;render()},'jr-good'));
+  options.append(button(juniorHint?'🤝 Ćwiczyłem z podpowiedzią':'🤝 Potrzebuję jeszcze pomocy',()=>{recordDialogue(t,d,'help');juniorStep=3;render()},'jr-help'));
+  root.append(options,mk('p','jr-caption','To Twoja ocena. Aplikacja nie ocenia wymowy.'));
   $('a1Stage').replaceChildren(root);return;
  }
  root.append(mk('div','jr-celebrate','🌟'),mk('div','jr-question','¡Muy bien!'));
  root.append(mk('p','jr-helper','Brawo za rozmowę! Każda próba to postęp.'));
- const next=button(n===t.dialogs.length-1?'🔁 Jeszcze jedna runda':'Następna rozmowa →',()=>{active++;juniorStep=0;juniorTopicSignature='';render()},'jr-main');root.append(next);
+ root.append(button(n===t.dialogs.length-1?'🔁 Jeszcze jedna runda':'Następna rozmowa →',()=>{
+  jrCancelAutoplay();active++;juniorStep=0;juniorHint=false;juniorTopicSignature='';render()
+ },'jr-main'));
  $('a1Stage').replaceChildren(root);
 }
 function choicesFor(t,idx){const correct=t.sentences[idx];const others=t.sentences.map((s,i)=>({s,i})).filter(x=>x.i!==idx&&x.s[0]!==correct[0]);for(let i=others.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[others[i],others[j]]=[others[j],others[i]]}const out=[{s:correct,i:idx},...others.slice(0,2)];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
@@ -1201,8 +1237,9 @@ const reveal=mk('div','a1-pl',d[1]);reveal.hidden=true;const translation=mk('p',
 root.append(button('👀 Sprawdź przykładową odpowiedź',()=>{reveal.hidden=!reveal.hidden;translation.hidden=reveal.hidden},'secondary'),reveal,translation,button('🔊 Posłuchaj wzoru',()=>say(d[1]),'a1-speaker'));
 const label=mk('p','a1-instruction','Czy spróbowałeś odpowiedzieć na głos?'),rating=mk('div','a1-rating');rating.append(button('✅ Tak, spróbowałem!',()=>{if(answered)return;answered=true;stat(t).spoken++;saveSpeaking(t,d);frankaPraiseInSpanish(d[1]);save();renderStats();label.textContent='⭐ Brawo za próbę!';rating.replaceChildren()},'secondary'),button('➡️ Jeszcze poćwiczę',()=>{label.textContent='Możesz posłuchać pytania i spróbować ponownie.'},'secondary'));root.append(label,rating,button('➡️ Następne pytanie',()=>{active++;render()},'a1-next'));$('a1Stage').replaceChildren(root)}
 function render(){renderStats();if(view==='sentences')sentence();if(view==='dialogues')dialogue();if(view==='listening')listening();if(view==='speaking')speaking()}
-const select=$('a1Topic');topics.forEach((t,i)=>select.add(new Option(t.label,i)));select.value='0';select.onchange=()=>{current=Number(select.value);active=0;render();$('a1SourceLabel').textContent=pickTopic().source};
+const select=$('a1Topic');topics.forEach((t,i)=>select.add(new Option(t.label,i)));select.value='0';select.onchange=()=>{jrCancelAutoplay();current=Number(select.value);active=0;juniorStep=0;juniorHint=false;juniorTopicSignature='';render();$('a1SourceLabel').textContent=pickTopic().source};
 document.querySelectorAll('[data-a1-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.a1View)));
+document.addEventListener('visibilitychange',()=>{if(document.hidden)jrCancelAutoplay()});
 $('a1SourceLabel').textContent=pickTopic().source;render();renderSkills();
 })();
 </script>
