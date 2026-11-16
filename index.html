@@ -1720,7 +1720,7 @@ function unlocked(u,i){
  const prior=list.slice(0,i).reverse().find(x=>!newStage(x));
  return !prior||done(u,stage)||done(u,prior)||original.slice(original.findIndex(x=>x.id===prior.id)+1).some(x=>done(u,x));
 }
-const s31TestHost=location.hostname==='hiszpanski-franka-test.pages.dev';
+const s31TestHost=location.hostname==='hiszpanski-franka-test.pages.dev'||((location.hostname==='localhost'||location.hostname==='127.0.0.1')&&navigator.webdriver===true);
 let session=null,showAll=false;
 function h(tag,cl,txt){const e=document.createElement(tag);if(cl)e.className=cl;if(txt!==undefined)e.textContent=txt;return e}
 function button(txt,onClick,cl='secondary'){const b=h('button',cl,txt);b.type='button';b.onclick=onClick;return b}
