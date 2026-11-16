@@ -1179,6 +1179,19 @@ function jrAudio(text){
   jrSpeak(text); // If iOS blocks non-gesture autoplay, the repeat button remains available.
  },190);
 }
+function jrScrollToCurrentStep(){
+ // After a child taps the action at the bottom of a tall step, show the next prompt,
+ // not an arbitrary piece of a shorter page. Never change scroll on initial entry.
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  const stage=$('uxLearningStage'),card=$('a1Stage')?.querySelector('.jr-dialog');
+  if(view!=='dialogues'||stage?.hidden||!card?.isConnected)return;
+  const rect=card.getBoundingClientRect(),top=Math.max(0,window.scrollY+rect.top-16);
+  if(Math.abs(window.scrollY-top)>12)window.scrollTo({top,behavior:'instant'});
+  card.setAttribute('tabindex','-1');
+  try{card.focus({preventScroll:true})}catch(e){}
+ }));
+}
+function jrGoStep(step){jrCancelAutoplay();juniorStep=step;render();jrScrollToCurrentStep()}
 function dialogue(){
  const t=pickTopic(),n=active%t.dialogs.length,d=t.dialogs[n],signature=t.id+'|'+n;
  if(juniorTopicSignature!==signature){jrCancelAutoplay();juniorStep=0;juniorHint=false;juniorTopicSignature=signature}
@@ -1204,7 +1217,7 @@ function dialogue(){
    if(answerWords.length>1)hint.append(mk('p','', 'Zacznij odpowiedź: '+answerWords[0]+' …'));
    root.append(hint);
   }
-  root.append(button('🎤 Odpowiedziałem!',()=>{jrCancelAutoplay();juniorStep=1;render()},'jr-main'));
+  root.append(button('🎤 Odpowiedziałem!',()=>jrGoStep(1),'jr-main'));
   if(!juniorHint)root.append(button('💡 Potrzebuję podpowiedzi',()=>{jrCancelAutoplay();juniorHint=true;render()},'jr-quiet'));
   $('a1Stage').replaceChildren(root);
   if(!juniorHint)jrAudio(d[0]);return;
@@ -1214,23 +1227,23 @@ function dialogue(){
   root.append(mk('div','jr-answer',d[1]));
   root.append(mk('p','jr-translation',d[3]||''));
   root.append(button('🔊 Posłuchaj odpowiedzi',()=>jrSpeak(d[1]),'jr-repeat'));
-  root.append(button('Dalej →',()=>{juniorStep=2;render()},'jr-main'));
-  root.append(button('↩️ Spróbuję odpowiedzieć jeszcze raz',()=>{jrCancelAutoplay();juniorStep=0;render()},'jr-quiet'));
+  root.append(button('Dalej →',()=>jrGoStep(2),'jr-main'));
+  root.append(button('↩️ Spróbuję odpowiedzieć jeszcze raz',()=>jrGoStep(0),'jr-quiet'));
   $('a1Stage').replaceChildren(root);return;
  }
  if(juniorStep===2){
   root.append(mk('p','jr-helper','3. Jak Ci poszło?'));
   root.append(mk('div','jr-answer',d[1]));
   const options=mk('div','jr-options');
-  if(!juniorHint)options.append(button('⭐ Powiedziałem sam!',()=>{recordDialogue(t,d,'yes');juniorStep=3;render()},'jr-good'));
-  options.append(button(juniorHint?'🤝 Ćwiczyłem z podpowiedzią':'🤝 Potrzebuję jeszcze pomocy',()=>{recordDialogue(t,d,'help');juniorStep=3;render()},'jr-help'));
+  if(!juniorHint)options.append(button('⭐ Powiedziałem sam!',()=>{recordDialogue(t,d,'yes');jrGoStep(3)},'jr-good'));
+  options.append(button(juniorHint?'🤝 Ćwiczyłem z podpowiedzią':'🤝 Potrzebuję jeszcze pomocy',()=>{recordDialogue(t,d,'help');jrGoStep(3)},'jr-help'));
   root.append(options,mk('p','jr-caption','To Twoja ocena. Aplikacja nie ocenia wymowy.'));
   $('a1Stage').replaceChildren(root);return;
  }
  root.append(mk('div','jr-celebrate','🌟'),mk('div','jr-question','¡Muy bien!'));
  root.append(mk('p','jr-helper','Brawo za rozmowę! Każda próba to postęp.'));
  root.append(button(n===t.dialogs.length-1?'🔁 Jeszcze jedna runda':'Następna rozmowa →',()=>{
-  jrCancelAutoplay();active++;juniorStep=0;juniorHint=false;juniorTopicSignature='';render()
+  jrCancelAutoplay();active++;juniorStep=0;juniorHint=false;juniorTopicSignature='';render();jrScrollToCurrentStep()
  },'jr-main'));
  $('a1Stage').replaceChildren(root);
 }
