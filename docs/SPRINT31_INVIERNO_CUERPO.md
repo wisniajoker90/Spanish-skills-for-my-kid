@@ -27,14 +27,14 @@ Występujące już słowa są wykorzystywane ponownie zamiast powielania kart. 1
 
 ## Implementacja
 - Zweryfikowane 13 słów z Wordwall przypisane do szkoły / Invierno i włączone do istniejących zasobów `units[2]` i `frankaSeasons8.school[2]`.
-- Zawartość poprzednich etapów Learning Journey przechowywana niezależnie od nowego pakietu, aby uniknąć przesunięć istniejących identyfikatorów; 3 odrębne nowe etapy po 5/5/3 słowa pojawiają się przed checkpointem, ale są przypięte u góry listy i można je rozpocząć niezależnie od starszych etapów. Ich ukończenie nie odblokowuje historycznej ścieżki.
+- Zawartość poprzednich etapów Learning Journey przechowywana niezależnie od nowego pakietu, aby uniknąć przesunięć istniejących identyfikatorów; 3 nowe etapy po 5/5/3 słowa są naturalnie przeplatane z istniejącymi etapami, bez zmiany identyfikatorów starszych lekcji. Zwykły tryb respektuje poprzednie blokady, a oddzielny podgląd QA działa tylko na TEST.
 - Bez zmian kluczy `localStorage`, schematów JSON, PIN-u, importu/eksportu, Service Workera, manifestu ani materiału z pozostałych sezonów.
 - 8 nowych testów IV31-01–IV31-10 i rozszerzony Quality Gate **79 wymaganych przejść**.
 
 ## Odbiór manualny iPhone / Cloudflare TEST
 **IV31-M01** — Przejdź do Invierno i znajdź nowe szkolne słowa w istniejących fiszkach. Zobacz polskie tłumaczenie i użyj odsłuchu hiszpańskiej wymowy.
 
-**IV31-M02** — Otwórz Learning Journey dla Invierno. Sprawdź nowe etapy „Części ciała” (13 słów w 3 zestawach), nie powinny resetować wcześniej ukończonych lekcji. Jeśli etapy są zablokowane, sprawdź jedynie ich obecność — nie wymuszaj ukończenia wcześniejszych etapów.
+**IV31-M02** — Na Cloudflare TEST wybierz Invierno → Learning Journey. Użyj panelu podglądu QA, aby sprawdzić słowa bez zaliczania starszych lekcji. Następnie sprawdź normalną listę etapów — trzy zestawy są w środku, nie na początku/końcu. Podgląd nie zapisuje wyników.
 
 **IV31-M03** — Uruchom istniejące Memory, quiz i szkolny checkpoint w Invierno. Sprawdź, czy nowe słowa występują w puli zadań, pamiętając że losowanie nie gwarantuje natychmiastowego trafienia konkretnego słowa.
 
@@ -45,8 +45,8 @@ Występujące już słowa są wykorzystywane ponownie zamiast powielania kart. 1
 ## Wdrożenie
 Wyłącznie gałąź funkcjonalna + Cloudflare TEST i Draft PR do `main`. Scalenie i produkcja tylko po osobnej zgodzie użytkownika.
 
-## Korekta dostępności po uwadze z odbioru
-Nowe słowa były zbyt daleko w Learning Journey. Zestawy „Części ciała” są teraz zawsze widoczne na początku listy Invierno i mają aktywne przyciski startowe niezależnie od starszych lekcji. Testy IV31-07–08 potwierdzają natychmiastowe uruchomienie bez fałszywego oznaczania postępów i brak skrótu w odblokowywaniu wcześniejszych etapów.
+## Korekta dostępności po uwagach z odbioru
+Nie wprowadzamy skrótów na produkcji. Podgląd na środowisku TEST służy wyłącznie weryfikacji szkolnej zawartości, a zestawy naturalnie występują w historycznej ścieżce Learning Journey.
 
 ## Produkt docelowy a QA — decyzja końcowa
 - Produkcja: naturalna ścieżka Invierno. Trzy zestawy słownictwa są ROZŁOŻONE między dotychczasowymi etapami nauki. Bez przypinania na początku, bez bezwarunkowego odblokowania. Zachowane klucze historycznych etapów. Przykładowe autorskie zdania i dialogi PL/ES w istniejącej sekcji ćwiczeń.
