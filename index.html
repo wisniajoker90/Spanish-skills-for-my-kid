@@ -37,6 +37,10 @@
 .jr-good{background:#e7f8ee!important;color:#1b6a41!important;border:1px solid #b6e8c8!important}
 .jr-help{background:#f2f2fb!important;color:#4e5190!important;border:1px solid #dadcf5!important}
 .jr-celebrate{font-size:4.5rem}
+/* Sprint 30.3 scroll audit: visible anchor positions, wrapped copy and touch-safe modals. */
+#uxLearningStage,#uxChooser,#s10Lesson,#s7Session,#smartReview,#s6TestingPanel,#s10Steps{scroll-margin-top:18px}
+.jr-dialog,.jr-dialog .jr-question-card,.jr-dialog .jr-hint{min-width:0;max-width:100%;overflow-wrap:anywhere}
+#hf19Dialog,#hf192Dialog,#hf193Dialog,#hf201Dialog,#hf202Panel{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 /* Sprint 30.2: one large action, child-friendly optional hint and repeat audio. */
 .jr-question-card{display:grid;gap:10px;padding:20px 14px;border-radius:20px;background:#f1f5ff;text-align:center}
 .jr-question-card .jr-question{margin:0}
