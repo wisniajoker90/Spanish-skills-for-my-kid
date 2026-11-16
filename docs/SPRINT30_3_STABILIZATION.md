@@ -7,7 +7,7 @@ Doprecyzować UX i zachowanie audio po wdrożeniu Sprintu 30.2, bez zmian treśc
 1. **Wyjście z nauki:** kliknięcie „Wróć do wyboru” anuluje oczekujący automatyczny odsłuch dialogu. Zabezpieczenie timerów sprawdza również, czy ekran ćwiczenia jest widoczny i czy karta nie jest ukryta.
 2. **Podpowiedź:** pierwsze słowo odpowiedzi zamiast pierwszych dwóch. Podpowiedź nie ujawnia całej bardzo krótkiej odpowiedzi, a polskie znaczenie pytania pozostaje.
 3. **Bezpieczne ponowienie:** po zobaczeniu wzoru można wrócić do pytania przyciskiem „Spróbuję odpowiedzieć jeszcze raz”. Sama ponowna próba nie zwiększa statystyk.
-4. **Kontrola jakości:** do istniejących 56 testów dodano ST01–ST04; produkcyjne wdrożenie wymaga 60/60 czystych przejść.
+4. **Kontrola jakości:** do istniejących 56 testów dodano ST01–ST04 oraz SC01–SC05 (przewijanie); produkcyjne wdrożenie wymaga 65/65 czystych przejść.
 
 ## Manualne testy odbiorowe iPhone / Cloudflare TEST
 - **ST-M01:** W Otoño → Dialogi otwórz pytanie, natychmiast wybierz „Wróć do wyboru”. Żaden opóźniony głos z dialogu nie powinien się uruchomić.
@@ -20,3 +20,17 @@ Doprecyzować UX i zachowanie audio po wdrożeniu Sprintu 30.2, bez zmian treśc
 - Brak migracji localStorage i zmian eksportu/importu JSON.
 - Bez modyfikacji manifestu, service workera i danych podręcznikowych.
 - PR wyłącznie Draft, wydanie produkcyjne wyłącznie po osobnej, świadomej zgodzie użytkownika.
+
+## Audyt przewijania — rozszerzenie Sprintu 30.3
+- SC01: brak poziomego przewijania na ekranach Dzisiaj, Nauka, Postęp, przy szerokościach iPhone 320/390px.
+- SC02: przyciski i treść dialogów mieszczą się w ekranie o szerokości 320px na wszystkich czterech etapach.
+- SC03: po przejściu do nowego etapu dialogu aplikacja przewija do początku aktywnego pytania/odpowiedzi; zachowuje czytelny fokus.
+- SC04: powrót do wyboru ćwiczenia przywraca poprawny ekran i nie wywołuje spóźnionego audio.
+- SC05: panele rodzica / profili / mówienia są ograniczone wysokością i pozwalają przewijać zawartość pionowo.
+
+### Test ręczny przewijania na iPhonie
+1. W Otoño → Dialogi przewiń na dół długiego kroku, wybierz główny przycisk i zweryfikuj, że nowy krok pojawia się od początku (nie od środka).
+2. Przełącz kilkakrotnie dialog → podpowiedź → wzór → ponowienie → samoocena, bez poziomego przesuwania strony.
+3. Przejdź między Dzisiaj, Nauka, Postęp; szczególnie sprawdź powrót do wyboru ćwiczenia oraz Memory.
+4. Otwórz profile, panel rodzica i mówienie na małym ekranie. Przy przewijaniu całe okno powinno być dostępne, a przyciski zamknięcia nie ginąć poza ekranem.
+5. Sprawdź przewijanie przy otwartej klawiaturze/PIN-ie, a także dolną nawigację względem bezpiecznego obszaru iPhone’a.
