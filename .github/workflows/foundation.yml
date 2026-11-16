@@ -1,26 +1,132 @@
-name: Sprint 28.3 Full Regression Tests
+name: Sprint 28.4 - Verified Pages Release
+
 on:
-  pull_request:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      gate_probe:
+        description: 'Safe gate check: normal or intentionally block the release'
+        type: choice
+        required: true
+        default: normal
+        options:
+          - normal
+          - block_deployment
+
+# GitHub Pages must be set to Source: GitHub Actions before enabling release.
+# PAGES_RELEASE_GATE_ENABLED repository variable defaults to absent/false.
+# Until explicitly set to 'true', tests run but no deployment occurs.
+permissions:
+  contents: read
+
+concurrency:
+  group: franka-verified-pages-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   regression:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+    name: 'Quality gate - 33 Playwright tests'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout exact commit
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
-      - run: npm install --no-audit --no-fund
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:regression
-      - uses: actions/upload-artifact@v4
+          package-manager-cache: false
+
+      - name: Assert unchanged regression suite (33 cases)
+        run: node scripts/check-regression-suite.cjs
+
+      - name: Install project dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Run all 33 regression tests and produce JSON evidence
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_FILE: test-results/regression.json
+        run: npm run test:regression -- --forbid-only --reporter=list,html,json
+
+      - name: Require exactly 33 clean passes (no skips, failures or flaky tests)
+        run: node scripts/verify-results.cjs test-results/regression.json
+
+      # No modifications to index.html/tests. A controlled, intentional failure
+      # proves the release gate blocks publishing even when all 33 tests pass.
+      - name: Manual negative gate test - deliberately block deployment
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.gate_probe == 'block_deployment' }}
+        run: |
+          echo 'Release gate probe: deliberate failure after the 33 tests.'
+          exit 1
+
+      - name: Upload Playwright diagnostic reports
         if: always()
+        uses: actions/upload-artifact@v6
         with:
-          name: playwright-report-sprint28-3
+          name: playwright-report-sprint28-4
           path: |
             playwright-report/
             test-results/
+          if-no-files-found: warn
           retention-days: 7
+
+  package:
+    name: 'Package production PWA - only after PASS'
+    needs: regression
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.PAGES_RELEASE_GATE_ENABLED == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout same verified commit
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js for packaging
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      - name: Build isolated production artifact (no test files)
+        env:
+          PAGES_BUILD_DIR: ${{ runner.temp }}/hiszpanski-franka-pages
+        run: node scripts/prepare-pages.cjs
+
+      - name: Set up GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload production site for Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ runner.temp }}/hiszpanski-franka-pages
+
+  deploy:
+    name: 'Publish GitHub Pages - gated'
+    needs: [regression, package]
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.PAGES_RELEASE_GATE_ENABLED == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy only the tested site artifact
+        id: deployment
+        uses: actions/deploy-pages@v4
