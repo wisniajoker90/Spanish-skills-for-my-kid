@@ -61,6 +61,8 @@ test('SC04 — back to chooser restores navigation and has no hidden-stage audio
 });
 test('SC05 — installed PWA-like mobile panels use vertical scrolling and respect safe viewport width',async({page})=>{
  await page.setViewportSize({width:320,height:568});await ready(page);
+ // Daily Mission and Speaking dialogs are created shortly after DOMContentLoaded.
+ await expect.poll(()=>page.evaluate(()=>['hf19Dialog','hf192Dialog','hf193Dialog','hf201Dialog','hf202Panel'].every(id=>!!document.getElementById(id)))).toBe(true);
  const styles=await page.evaluate(()=>{
   const ids=['hf19Dialog','hf192Dialog','hf193Dialog','hf201Dialog','hf202Panel'];
   return ids.map(id=>{const el=document.getElementById(id),c=el?getComputedStyle(el):null;return {id,present:!!el,overflowY:c?.overflowY,maxHeight:c?.maxHeight}});
