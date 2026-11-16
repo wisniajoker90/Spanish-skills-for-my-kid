@@ -361,7 +361,16 @@ function checkPayload(o){if(o?.format!=='hiszpanski-franka-backup'||![1,2].inclu
  return o}
 function render(){const host=document.getElementById('s15ParentSlot')||document.getElementById('parentNotes')||document.querySelector('main')||document.body;
  const section=document.createElement('section');section.className='s16-box';section.id='s18Profiles';section.innerHTML='<h3>👨‍👩‍👦 Profile i bezpieczeństwo</h3><p id="hf18status" role="status"></p><div class="s16-controls"><select id="hf18select" aria-label="Wybierz profil"></select><button id="hf18switch" type="button">Przełącz profil</button><button id="hf18new" type="button">＋ Nowy profil</button></div><div class="s16-controls"><button id="hf18export" type="button">↓ Kopia wszystkich profili JSON</button><button id="hf18import" type="button">↑ Import JSON</button><input id="hf18file" type="file" accept=".json,application/json" hidden></div><p class="s16-offline">Postępy są lokalne na tym urządzeniu. Aktualizacja kodu nie usuwa danych. Przed testem importu wykonaj eksport i użyj drugiego profilu przeglądarki.</p>';
- host.append(section);section.classList.add('hf19-legacy-backups');const $=id=>document.getElementById(id),status=t=>$('hf18status').textContent=t;
+ host.append(section);section.classList.add('hf19-legacy-backups');
+ // Sprint 30.1: standalone PWA and Safari use separate local storage.
+ const standalone=window.navigator.standalone===true||window.matchMedia?.('(display-mode: standalone)')?.matches===true;
+ const guide=document.createElement('section');guide.id='hf30TransferGuide';
+ guide.setAttribute('aria-label','Przenieś postępy Safari i aplikacja');
+ guide.style.cssText='margin:14px 0;padding:16px;border:1px solid #c9d7e6;border-radius:15px;background:#f3f8fe;color:#183b60';
+ guide.innerHTML='<h3 style="margin:0 0 7px">📲 Przenieś postępy Safari ↔ aplikacja</h3><p id="hf30TransferContext"></p><ol style="padding-left:22px;line-height:1.7"><li>W Safari otwórz produkcyjną aplikację i wybierz „Kopia wszystkich profili JSON”.</li><li>Zapisz plik w Plikach na iPhonie. Nie usuwaj danych Safari.</li><li>Otwórz aplikację z ekranu początkowego, wybierz „Import JSON” i wskaż plik.</li><li>Po imporcie kliknij „Przejdź do zaimportowanego profilu”, aby zobaczyć odzyskane statystyki.</li></ol><p style="font-size:.85rem">Import dodaje nowe profile — nie nadpisuje istniejących. Postępy Safari i aplikacji nie synchronizują się automatycznie. Zachowaj kopię do czasu weryfikacji.</p><div id="hf30ImportedActions" hidden><label for="hf30ImportedSelect">Zaimportowany profil:</label><select id="hf30ImportedSelect" aria-label="Wybierz zaimportowany profil" style="width:100%;margin:8px 0"></select><button type="button" id="hf30Activate" style="width:100%">Przejdź do zaimportowanego profilu</button></div>';
+ guide.querySelector('#hf30TransferContext').textContent=standalone?'Jesteś w aplikacji z ekranu początkowego. Jej pamięć jest oddzielna od Safari.':'Jesteś w przeglądarce. Aplikacja dodana do ekranu początkowego może mieć oddzielne postępy.';
+ section.append(guide);
+ const $=id=>document.getElementById(id),status=t=>$('hf18status').textContent=t;
  if(!meta){status('⚠️ Migracja nie powiodła się: '+error+'. Oryginalne dane pozostają nietknięte. Nie zapisuj nowych postępów, dopóki nie rozwiążesz problemu.');section.querySelectorAll('button,select').forEach(el=>el.disabled=true);return}
  for(const p of meta.profiles){const opt=document.createElement('option');opt.value=p.id;opt.textContent=p.name;$('hf18select').append(opt)}$('hf18select').value=meta.active;status('Aktywny profil: '+meta.profiles.find(p=>p.id===meta.active).name+' · postępy zachowane.');
  $('hf18switch').onclick=()=>switchTo($('hf18select').value);
@@ -369,7 +378,9 @@ function render(){const host=document.getElementById('s15ParentSlot')||document.
  $('hf18export').onclick=()=>{try{download(exportAll());status('Pobrano kopię wszystkich profili.')}catch(e){status('Błąd eksportu: '+e.message)}};
  $('hf18import').onclick=()=>$('hf18file').click();
  $('hf18file').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;if(file.size>3*1024*1024){status('Limit pliku: 3 MB');return}try{const o=checkPayload(JSON.parse(await file.text()));
-  if(!confirm('Import utworzy NOWE profile z kopii, nie nadpisze istniejących. Kontynuować?'))return;
+  const sourceProfiles=o.schema===1?['Import 17.1']:o.profiles.map(p=>p.name);
+  const label='Kopia z '+(typeof o.exportedAt==='string'?o.exportedAt.slice(0,10):'nieznanej daty')+' — '+sourceProfiles.length+' profil(e): '+sourceProfiles.join(', ')+'.';
+  if(!confirm(label+'\\n\\nImport DODA nowe profile. Istniejące dane nie zostaną nadpisane. Po imporcie wybierz odzyskany profil, aby zobaczyć statystyki. Kontynuować?'))return;
   const incoming=o.schema===1?[{name:'Import 17.1',data:o.data}]:o.profiles.map(p=>({name:p.name+' (import)',data:o.data[p.id]}));
   if(meta.profiles.length+incoming.length>12)throw Error('Przekroczono limit 12 profili');
   const created=[],staged=[],transaction='hf27:stage:'+Date.now().toString(36)+':'+Math.random().toString(36).slice(2)+':';
@@ -391,7 +402,12 @@ function render(){const host=document.getElementById('s15ParentSlot')||document.
    }
    saveMeta({...meta,profiles:[...meta.profiles,...created]});
    committed=true;
-   status('Import zakończony. Nowe profile dodano bez nadpisywania obecnych. Odśwież stronę, aby zobaczyć je na liście.');
+   // Explicit profile activation; never overwrite or silently replace the active profile.
+   const restored=$('hf30ImportedSelect'),actions=$('hf30ImportedActions');restored.replaceChildren();
+   for(const profile of created){const option=document.createElement('option');option.value=profile.id;option.textContent=profile.name;restored.append(option)}
+   $('hf30Activate').onclick=()=>switchTo(restored.value);
+   actions.hidden=false;
+   status('Import zakończony. Nowe profile dodano bez nadpisywania obecnych. Wybierz profil i kliknij „Przejdź do zaimportowanego profilu”, aby zobaczyć postępy.');
   }catch(e){
    if(!committed){
     let rollbackFailed=false;
