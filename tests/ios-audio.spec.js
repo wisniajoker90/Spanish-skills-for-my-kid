@@ -5,7 +5,7 @@ const { ready, installTTS, seedCarSession } = require('./helpers');
 // Browser-event simulations complement, but do not replace, actual iPhone Safari testing.
 async function openOtonoWords(page) {
   await ready(page);
-  await page.evaluate(() => window.frankaNav15_2.go('chooser', { focus: false }));
+  await page.evaluate(() => window.frankaNav15_2.go('path', { focus: false }));
   await page.locator('#uxStart').click();
   await expect(page.locator('#listen')).toBeVisible();
 }
