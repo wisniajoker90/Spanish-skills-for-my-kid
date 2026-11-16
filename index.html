@@ -1175,7 +1175,7 @@ function jrAudio(text){
  juniorAutoplay=setTimeout(()=>{
   juniorAutoplay=null;
   const stage=$('a1Stage');
-  if(ticket!==juniorSpeechTicket||view!=='dialogues'||!stage?.querySelector('.jr-dialog'))return;
+  if(ticket!==juniorSpeechTicket||document.hidden||view!=='dialogues'||$('uxLearningStage')?.hidden||!stage?.querySelector('.jr-dialog'))return;
   jrSpeak(text); // If iOS blocks non-gesture autoplay, the repeat button remains available.
  },190);
 }
@@ -1198,7 +1198,11 @@ function dialogue(){
   root.append(mk('p','jr-flow-note','Powiedz odpowiedź sam. Mikrofon nie jest potrzebny.'));
   if(juniorHint){
    const hint=mk('div','jr-hint');hint.setAttribute('role','status');
-   hint.append(mk('strong','','Podpowiedź 💡'),mk('span','',d[2]||'Przypomnij sobie pytanie.'),mk('p','', 'Zacznij odpowiedź: '+String(d[1]).split(/\s+/).slice(0,2).join(' ')+'…'));root.append(hint);
+   hint.append(mk('strong','','Podpowiedź 💡'),mk('span','',d[2]||'Przypomnij sobie pytanie.'));
+   // Never accidentally reveal a complete two-word answer in a supposedly partial hint.
+   const answerWords=String(d[1]).trim().split(/\s+/);
+   if(answerWords.length>1)hint.append(mk('p','', 'Zacznij odpowiedź: '+answerWords[0]+' …'));
+   root.append(hint);
   }
   root.append(button('🎤 Odpowiedziałem!',()=>{jrCancelAutoplay();juniorStep=1;render()},'jr-main'));
   if(!juniorHint)root.append(button('💡 Potrzebuję podpowiedzi',()=>{jrCancelAutoplay();juniorHint=true;render()},'jr-quiet'));
@@ -1211,6 +1215,7 @@ function dialogue(){
   root.append(mk('p','jr-translation',d[3]||''));
   root.append(button('🔊 Posłuchaj odpowiedzi',()=>jrSpeak(d[1]),'jr-repeat'));
   root.append(button('Dalej →',()=>{juniorStep=2;render()},'jr-main'));
+  root.append(button('↩️ Spróbuję odpowiedzieć jeszcze raz',()=>{jrCancelAutoplay();juniorStep=0;render()},'jr-quiet'));
   $('a1Stage').replaceChildren(root);return;
  }
  if(juniorStep===2){
@@ -1240,6 +1245,7 @@ function render(){renderStats();if(view==='sentences')sentence();if(view==='dial
 const select=$('a1Topic');topics.forEach((t,i)=>select.add(new Option(t.label,i)));select.value='0';select.onchange=()=>{jrCancelAutoplay();current=Number(select.value);active=0;juniorStep=0;juniorHint=false;juniorTopicSignature='';render();$('a1SourceLabel').textContent=pickTopic().source};
 document.querySelectorAll('[data-a1-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.a1View)));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)jrCancelAutoplay()});
+window.addEventListener('franka:junior-leave',jrCancelAutoplay);
 $('a1SourceLabel').textContent=pickTopic().source;render();renderSkills();
 })();
 </script>
@@ -1289,7 +1295,7 @@ function refreshResume(){
 choice.onchange=()=>{choose(getUnit(),selected);$('uxLearningStage').hidden=true;$('epicGames').hidden=true};
 activities.forEach(b=>b.onclick=()=>{choose(getUnit(),b.dataset.uxActivity);$('uxLearningStage').hidden=true;$('epicGames').hidden=true});
 $('uxStart').onclick=showLearning;
-$('uxBackToChoice').onclick=()=>{$('uxLearningStage').hidden=true;window.frankaNav15_2?.go('chooser') || $('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
+$('uxBackToChoice').onclick=()=>{window.dispatchEvent(new Event('franka:junior-leave'));$('uxLearningStage').hidden=true;window.frankaNav15_2?.go('chooser') || $('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
 $('uxResume').onclick=()=>{let v;try{v=JSON.parse(frankaStore.getItem(uxKey)||'null')}catch(e){}if(v&&supported(v.unit,v.kind)){choose(v.unit,v.kind);showLearning()}};
 function openGames(startMemory){
  const n=getUnit();
