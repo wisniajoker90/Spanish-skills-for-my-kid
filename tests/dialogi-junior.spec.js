@@ -145,3 +145,69 @@ test('DJ08 — autoplay cannot interrupt active Car Mode audio',async({page})=>{
  expect(after).toEqual({...before,owner:'car26'});
  await page.locator('#carStop').click();
 });
+
+async function seasonalConversation(page, season, topic, prompts, childTurns) {
+ await installTTS(page);
+ await ready(page);
+ const pathKey='hiszpanskiFrankaPath10V2';
+ const stages=await page.evaluate(u=>frankaPath10.stages(u).map(s=>({kind:s.kind,id:s.id})),season);
+ const index=stages.findIndex(s=>s.kind==='dialogue');
+ expect(stages[index-1].kind).toBe('sentence');
+ expect(stages[index+1].kind).toBe('checkpoint');
+ for(const preview of [true,false]){
+  if(!preview){
+   await page.evaluate(({season,stages,index,pathKey})=>{
+    const completed=Object.fromEntries(stages.slice(0,index).map(s=>[s.id,{done:true}]));
+    frankaStore.setItem(pathKey,JSON.stringify({[season]:completed}));
+   },{season,stages,index,pathKey});
+   await page.reload();
+  }
+  await page.evaluate(u=>{
+   const select=document.getElementById('uxUnit');
+   select.value=String(u);
+   select.dispatchEvent(new Event('change',{bubbles:true}));
+   frankaNav15_2.go('path');
+  },season);
+  const before=await stored(page,pathKey);
+  const priorDialogs=(await stored(page,A1))?.[topic]?.dialogs||{};
+  if(preview)await page.getByRole('button',{name:/TEST · Podejrzyj rozmowę/}).click();
+  else{
+   await expect(page.locator('[data-journey-stage-id="checkpoint"]')).toBeEnabled();
+   await page.locator('[data-journey-stage-id="'+stages[index].id+'"]').click();
+  }
+  const stage=page.locator('#a1Stage');
+  for(const [turn,prompt] of prompts.entries()){
+   await expect(stage.locator('.jr-question')).toHaveText(prompt);
+   await expect(stage.locator('.jr-repeat')).toHaveCount(childTurns.includes(turn)?0:1);
+   if(turn===1)await stage.getByRole('button',{name:/Potrzebuję podpowiedzi/}).click();
+   await stage.locator('.jr-main').click();
+   await stage.locator('.jr-main').click();
+   await stage.locator('.jr-options button').first().click();
+   if(turn===0)await stage.locator('.jr-main').click();
+  }
+  if(season===3)await expect(stage).toContainText('Me gusta montar en bici.');
+  await stage.getByRole('button',{name:'Wróć do ścieżki',exact:true}).click();
+  await page.reload();
+  const result=await stored(page,pathKey);
+  const dialogs=(await stored(page,A1))?.[topic]?.dialogs||{};
+  if(preview){
+   expect(result).toEqual(before);
+   expect(dialogs).toEqual(priorDialogs);
+  }else{
+   expect(result[season][stages[index].id].done).toBe(true);
+   for(const [turn,prompt] of prompts.entries()){
+    const record=Object.entries(dialogs).find(([key])=>key.startsWith(prompt+'|'))?.[1];
+    expect(record).toMatchObject({practised:1,confident:turn===0?1:0,needsHelp:turn===1?1:0});
+   }
+  }
+ }
+}
+test('A134-01 — winter weather and clothes',async({page})=>{
+ await seasonalConversation(page,2,'invierno',['¿Qué tiempo hace?','¿Qué te pones?'],[]);
+});
+test('A134-02 — spring preferences and a question from the child',async({page})=>{
+ await seasonalConversation(page,3,'primavera',['¿Qué te gusta hacer?','Zapytaj kolegę, co on lubi robić.'],[1]);
+});
+test('A134-03 — summer request initiated by the child and a follow-up',async({page})=>{
+ await seasonalConversation(page,4,'verano_a1',['Jesteś w kiosku. Poproś po hiszpańsku o lody.','¿De chocolate?'],[0]);
+});

@@ -28,7 +28,7 @@ concurrency:
 
 jobs:
   regression:
-    name: 'Quality gate - 79 Playwright tests'
+    name: 'Quality gate - 82 Playwright tests'
     runs-on: ubuntu-24.04
     timeout-minutes: 18
     permissions:
@@ -45,7 +45,7 @@ jobs:
           node-version: '22'
           package-manager-cache: false
 
-      - name: Assert unchanged regression suite (79 cases)
+      - name: Assert unchanged regression suite (82 cases)
         run: node scripts/check-regression-suite.cjs
 
       - name: Install project dependencies
@@ -54,20 +54,20 @@ jobs:
       - name: Install Chromium for Playwright
         run: npx playwright install --with-deps chromium
 
-      - name: Run all 79 regression tests and produce JSON evidence
+      - name: Run all 82 regression tests and produce JSON evidence
         env:
           PLAYWRIGHT_JSON_OUTPUT_FILE: test-results/regression.json
         run: npm run test:regression -- --forbid-only --reporter=list,html,json
 
-      - name: Require exactly 79 clean passes (no skips, failures or flaky tests)
+      - name: Require exactly 82 clean passes (no skips, failures or flaky tests)
         run: node scripts/verify-results.cjs test-results/regression.json
 
       # No modifications to index.html/tests. A controlled, intentional failure
-      # proves the release gate blocks publishing even when all 79 tests pass.
+      # proves the release gate blocks publishing even when all 82 tests pass.
       - name: Manual negative gate test - deliberately block deployment
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.gate_probe == 'block_deployment' }}
         run: |
-          echo 'Release gate probe: deliberate failure after the 79 tests.'
+          echo 'Release gate probe: deliberate failure after the 82 tests.'
           exit 1
 
       - name: Upload Playwright diagnostic reports

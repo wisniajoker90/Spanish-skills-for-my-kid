@@ -1198,15 +1198,28 @@ const button=(txt,click,cls='secondary')=>{const b=mk('button',cls,txt);b.type='
 function say(str){speak(str)}
 function renderStats(){const topic=topics[current],s=stat(topic);$('a1Stats').textContent=`${topic.school?'📚 Ćwiczenia ze słownictwa szkolnego':'🚀 Dodatkowy kurs A1'} · Rozumienie zdań: ${s.listeningCorrect}/${s.listeningAttempts} poprawnych · Wypowiedzi przećwiczone na głos: ${s.spoken}. To licznik ćwiczeń, nie certyfikat A1.`}
 function pickTopic(){return topics[current]}
-function setView(v){pilotTurn=null;jrCancelAutoplay();view=v;active=0;answered=false;juniorStep=0;juniorHint=false;juniorTopicSignature='';document.querySelectorAll('[data-a1-view]').forEach(b=>b.classList.toggle('active',b.dataset.a1View===v));render()}
+function setView(v){conversationTurn=null;jrCancelAutoplay();view=v;active=0;answered=false;juniorStep=0;juniorHint=false;juniorTopicSignature='';document.querySelectorAll('[data-a1-view]').forEach(b=>b.classList.toggle('active',b.dataset.a1View===v));render()}
 function common(root,n,len){const s=mk('p','a1-step',`Ćwiczenie ${n+1} z ${len}`);root.append(s)}
 function sentence(){const t=pickTopic(),item=t.sentences[active%t.sentences.length];const root=mk('div','a1-card');common(root,active%t.sentences.length,t.sentences.length);root.append(mk('div','a1-illustration',item[0]),mk('div','a1-es',item[1]));const pl=mk('div','a1-pl',item[2]);pl.hidden=true;const controls=mk('div','a1-toolbar');controls.append(button('🔊 Posłuchaj',()=>say(item[1]),'a1-speaker'),button('🇵🇱 Pokaż tłumaczenie',()=>{pl.hidden=!pl.hidden},'secondary'),button('➡️ Następne zdanie',()=>{active++;render()},'a1-next'));root.append(pl,controls);$('a1Stage').replaceChildren(root)}
 /* Sprint 30.2 · Dialogi Junior: one question, a clear hint, and a single main next action.
    Same existing dialogue content and stored A1 progress schema; no microphone requirement. */
-// The pilot uses the same two dialogue records already practised in Otoño.
-const introduction = topics.find(topic => topic.id === 'hola').dialogs.slice(0, 2);
-let pilotTurn = null;
-let introductionPreview = false;
+const seasonsA1 = {
+ 1:{id:'dialogue:a1-introduction', title:'Poznajmy się', goal:'Przedstawiam się i podaję wiek', icon:'👋',
+    turns:topics.find(topic=>topic.id==='hola').dialogs.slice(0,2)},
+ 2:{id:'dialogue:a1-weather', title:'Wychodzimy na dwór', goal:'Opisuję pogodę i wybieram ubranie', icon:'🧣',
+    turns:[['¿Qué tiempo hace?','Hace frío.','Spójrz na śnieg. Jaka jest pogoda?','Jest zimno.','🌨️'],
+           ['¿Qué te pones?','Me pongo la bufanda.','Co założysz na taką pogodę?','Zakładam szalik.','🧣']]},
+ 3:{id:'dialogue:a1-interests', title:'Co lubisz robić?', goal:'Opowiadam o sobie i pytam rozmówcę', icon:'⚽',
+    turns:[['¿Qué te gusta hacer?','Me gusta jugar al fútbol.','Co lubisz robić? Wybierz sam.','Lubię grać w piłkę nożną.','⚽'],
+           ['Zapytaj kolegę, co on lubi robić.','¿Y a ti?','Możesz zapytać krótko: „A ty?”','A ty?','🚲']],
+    childStarts:[1], reply:'Me gusta montar en bici.', replyPl:'Lubię jeździć na rowerze.'},
+ 4:{id:'dialogue:a1-kiosk', title:'W kiosku', goal:'Proszę o lody i kończę rozmowę', icon:'🍦',
+    turns:[['Jesteś w kiosku. Poproś po hiszpańsku o lody.','Un helado, por favor.','Zacznij od tego, co chcesz zamówić.','Poproszę lody.','🍦'],
+           ['¿De chocolate?','Sí, gracias.','Sprzedawca proponuje czekoladowe. Zgódź się i podziękuj.','Tak, dziękuję.','🍫']],
+    childStarts:[0]}
+};
+window.frankaSeasonConversations=seasonsA1;
+let conversationTurn=null, conversationSeason=1, conversationPreview=false;
 let juniorStep=0,juniorAutoplay=null,juniorTopicSignature='',juniorHint=false,juniorSpeechTicket=0;
 function jrCancelAutoplay(){juniorSpeechTicket++;if(juniorAutoplay!==null){clearTimeout(juniorAutoplay);juniorAutoplay=null}}
 function jrSpeak(text){return window.hf29Audio?.speakWord(text)===true}
@@ -1232,31 +1245,34 @@ function jrScrollToCurrentStep(){
   try{card.focus({preventScroll:true})}catch(e){}
  }));
 }
-window.addEventListener('franka:open-introduction',event=>{
- introductionPreview = event.detail?.preview === true;
- pilotTurn=0;
+window.addEventListener('franka:open-season-conversation',event=>{
+ conversationSeason=event.detail.season;
+ conversationPreview = event.detail?.preview === true;
+ conversationTurn=0;
  jrGoStep(0);
 });
 function jrGoStep(step){jrCancelAutoplay();juniorStep=step;render();jrScrollToCurrentStep()}
 function dialogue(){
- const t=pickTopic(), pilot=pilotTurn!==null;
- const list=pilot?introduction:t.dialogs;
- const n=pilot?pilotTurn:active%list.length,d=list[n],signature=t.id+'|'+(pilot?'intro:':'')+n;
+ const t=pickTopic(), pilot=conversationTurn!==null;
+ const scenario=seasonsA1[conversationSeason];
+ const list=pilot?scenario.turns:t.dialogs;
+ const n=pilot?conversationTurn:active%list.length,d=list[n],signature=t.id+'|'+(pilot?'intro:':'')+n;
+ const childStarts=pilot && scenario.childStarts?.includes(n);
  if(juniorTopicSignature!==signature){jrCancelAutoplay();juniorStep=0;juniorHint=false;juniorTopicSignature=signature}
  if(juniorAutoplay!==null){clearTimeout(juniorAutoplay);juniorAutoplay=null}
  const root=mk('div','a1-card jr-dialog');
  root.setAttribute('aria-label','Dialog Junior — '+(n+1)+' z '+list.length);
  root.dataset.jrStep=String(juniorStep);
  const top=mk('div','jr-top');
- top.append(mk('span','jr-eyebrow',pilot?'👋 Poznajmy się':'💬 Rozmawiam po hiszpańsku'),mk('span','jr-progress',(n+1)+' / '+list.length));root.append(top);
+ top.append(mk('span','jr-eyebrow',pilot?scenario.icon+' '+scenario.title:'💬 Rozmawiam po hiszpańsku'),mk('span','jr-progress',(n+1)+' / '+list.length));root.append(top);
  const meter=mk('div','jr-meter'),fill=mk('span');fill.style.width=100*(n+1)/list.length+'%';meter.append(fill);root.append(meter);
  const picture=mk('div','jr-picture',d[4]||'💬');picture.setAttribute('aria-hidden','true');root.append(picture);
  if(juniorStep===0){
-  root.append(mk('p','jr-helper','1. Posłuchaj pytania i odpowiedz na głos'));
+  root.append(mk('p','jr-helper',childStarts?'Twoja kolej. Zacznij po hiszpańsku.':'1. Posłuchaj pytania i odpowiedz na głos'));
   const card=mk('div','jr-question-card');card.append(mk('div','jr-question',d[0]));
   const repeat=button('🔊 Powtórz pytanie',()=>{jrCancelAutoplay();jrSpeak(d[0])},'jr-repeat');
-  repeat.setAttribute('aria-label','Powtórz pytanie po hiszpańsku');card.append(repeat);root.append(card);
-  root.append(mk('p','jr-flow-note','Powiedz odpowiedź sam. Mikrofon nie jest potrzebny.'));
+  repeat.setAttribute('aria-label','Powtórz pytanie po hiszpańsku');if(!childStarts)card.append(repeat);root.append(card);
+  root.append(mk('p','jr-flow-note',childStarts?'Powiedz swoją kwestię na głos.':pilot&&conversationSeason===3?'Powiedz, co naprawdę lubisz.':'Powiedz odpowiedź sam. Mikrofon nie jest potrzebny.'));
   if(juniorHint){
    const hint=mk('div','jr-hint');hint.setAttribute('role','status');
    hint.append(mk('strong','','Podpowiedź 💡'),mk('span','',d[2]||'Przypomnij sobie pytanie.'));
@@ -1265,13 +1281,13 @@ function dialogue(){
    if(answerWords.length>1)hint.append(mk('p','', 'Zacznij odpowiedź: '+answerWords[0]+' …'));
    root.append(hint);
   }
-  root.append(button('🎤 Odpowiedziałem!',()=>jrGoStep(1),'jr-main'));
+  root.append(button(childStarts?'🎤 Powiedziałem!':'🎤 Odpowiedziałem!',()=>jrGoStep(1),'jr-main'));
   if(!juniorHint)root.append(button('💡 Potrzebuję podpowiedzi',()=>{jrCancelAutoplay();juniorHint=true;render()},'jr-quiet'));
   $('a1Stage').replaceChildren(root);
-  if(!juniorHint)jrAudio(d[0]);return;
+  if(!juniorHint && !childStarts)jrAudio(d[0]);return;
  }
  if(juniorStep===1){
-  root.append(mk('p','jr-helper','2. Sprawdź swoją odpowiedź'));
+  root.append(mk('p','jr-helper',pilot?'2. Porównaj z przykładem':'2. Sprawdź swoją odpowiedź'));
   root.append(mk('div','jr-answer',d[1]));
   root.append(mk('p','jr-translation',d[3]||''));
   root.append(button('🔊 Posłuchaj odpowiedzi',()=>jrSpeak(d[1]),'jr-repeat'));
@@ -1283,9 +1299,9 @@ function dialogue(){
   root.append(mk('p','jr-helper','3. Jak Ci poszło?'));
   root.append(mk('div','jr-answer',d[1]));
   function assess(quality){
-   if(pilot && introductionPreview){jrGoStep(3);return}
+   if(pilot && conversationPreview){jrGoStep(3);return}
    recordDialogue(t,d,quality);
-   if(pilot && n===list.length-1)window.dispatchEvent(new Event('franka:introduction-complete'));
+   if(pilot && n===list.length-1)window.dispatchEvent(new CustomEvent('franka:season-conversation-complete',{detail:{season:conversationSeason}}));
    jrGoStep(3);
   }
   const options=mk('div','jr-options');
@@ -1297,16 +1313,21 @@ function dialogue(){
  root.append(mk('div','jr-celebrate','🌟'),mk('div','jr-question','¡Muy bien!'));
  if(pilot){
   const last=n===list.length-1;
-  root.append(mk('p','jr-helper',last?(introductionPreview?'Podgląd zakończony. Postępy nie zostały zapisane.':'Rozmowa zakończona. Obie samooceny są zapisane.'):'Teraz druga osoba zapyta Cię o wiek.'));
-  root.append(button(last?'Wróć do ścieżki':'Drugie pytanie →',()=>{
+  root.append(mk('p','jr-helper',last?(conversationPreview?'Podgląd zakończony. Postępy nie zostały zapisane.':'Rozmowa zakończona. Obie samooceny są zapisane.'):conversationSeason===1?'Teraz druga osoba zapyta Cię o wiek.':'Przejdź do drugiej części rozmowy.'));
+  if(last && scenario.reply){
+   root.append(mk('p','jr-answer',scenario.reply),mk('p','jr-translation',scenario.replyPl));
+   root.append(button('🔊 Posłuchaj kolegi',()=>jrSpeak(scenario.reply),'jr-repeat'));
+   jrAudio(scenario.reply);
+  }
+  root.append(button(last?'Wróć do ścieżki':conversationSeason===1?'Drugie pytanie →':'Dalej w rozmowie →',()=>{
    if(last){
-    pilotTurn=null;
+    conversationTurn=null;
     jrCancelAutoplay();
     $('uxLearningStage').hidden=true;
     window.frankaNav15_2.go('path');
     return;
    }
-   pilotTurn=n+1;
+   conversationTurn=n+1;
    jrGoStep(0);
   },'jr-main'));
   $('a1Stage').replaceChildren(root);
@@ -1326,7 +1347,7 @@ const reveal=mk('div','a1-pl',d[1]);reveal.hidden=true;const translation=mk('p',
 root.append(button('👀 Sprawdź przykładową odpowiedź',()=>{reveal.hidden=!reveal.hidden;translation.hidden=reveal.hidden},'secondary'),reveal,translation,button('🔊 Posłuchaj wzoru',()=>say(d[1]),'a1-speaker'));
 const label=mk('p','a1-instruction','Czy spróbowałeś odpowiedzieć na głos?'),rating=mk('div','a1-rating');rating.append(button('✅ Tak, spróbowałem!',()=>{if(answered)return;answered=true;stat(t).spoken++;saveSpeaking(t,d);frankaPraiseInSpanish(d[1]);save();renderStats();label.textContent='⭐ Brawo za próbę!';rating.replaceChildren()},'secondary'),button('➡️ Jeszcze poćwiczę',()=>{label.textContent='Możesz posłuchać pytania i spróbować ponownie.'},'secondary'));root.append(label,rating,button('➡️ Następne pytanie',()=>{active++;render()},'a1-next'));$('a1Stage').replaceChildren(root)}
 function render(){renderStats();if(view==='sentences')sentence();if(view==='dialogues')dialogue();if(view==='listening')listening();if(view==='speaking')speaking()}
-const select=$('a1Topic');topics.forEach((t,i)=>select.add(new Option(t.label,i)));select.value='0';select.onchange=()=>{pilotTurn=null;jrCancelAutoplay();current=Number(select.value);active=0;juniorStep=0;juniorHint=false;juniorTopicSignature='';render();$('a1SourceLabel').textContent=pickTopic().source};
+const select=$('a1Topic');topics.forEach((t,i)=>select.add(new Option(t.label,i)));select.value='0';select.onchange=()=>{conversationTurn=null;jrCancelAutoplay();current=Number(select.value);active=0;juniorStep=0;juniorHint=false;juniorTopicSignature='';render();$('a1SourceLabel').textContent=pickTopic().source};
 document.querySelectorAll('[data-a1-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.a1View)));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)jrCancelAutoplay()});
 window.addEventListener('franka:junior-leave',jrCancelAutoplay);
@@ -1731,7 +1752,8 @@ if(u===2){
  for(let i=body.length-1;i>=0;i--)out.splice(slots[i],0,body[i]);
 }
 out.push(entry('sentence',sentenceBank[u]||[],'Buduję proste zdania','Rozumiem i powtarzam pełne wypowiedzi','🗣️'));
-if(u===1)out.push({kind:'dialogue',id:'dialogue:a1-introduction',title:'Rozmowa A1 · Poznajmy się',note:'Przedstawiam się i podaję wiek',emoji:'👋',raw:[]});
+const conversation=window.frankaSeasonConversations[u];
+if(conversation)out.push({kind:'dialogue',id:conversation.id,title:'Rozmowa A1 · '+conversation.title,note:conversation.goal,emoji:conversation.icon,raw:[]});
 out.push({kind:'checkpoint',id:'checkpoint',raw:[],title:'Checkpoint szkolny',note:'Sprawdzam materiał z rozdziału',emoji:'📋'});
 // The finale tests school material plus short A1 examples, no claims of formal A1 certification.
 const finaleWords=words.slice(0,12);
@@ -1744,7 +1766,7 @@ function done(u,s){return !!status(u,s)?.done}
 function unlocked(u,i){
  const list=stages(u),stage=list[i];if(!stage)return false;
  // Keep the checkpoint available to returning learners who already completed sentences.
- if(u===1 && stage.id==='checkpoint' && done(u,list.find(x=>x.kind==='sentence')))return true;
+ if(stage.id==='checkpoint' && done(u,list.find(x=>x.kind==='sentence')))return true;
  if(u!==2)return i===0||done(u,stage)||done(u,list[i-1])||list.slice(i+1).some(x=>done(u,x));
  const newStage=x=>x?.id?.startsWith('school:s31-invierno-body-');
  const original=list.filter(x=>!newStage(x));
@@ -1791,7 +1813,7 @@ function display(){if(!session)return;const x=session,body=$('s10LessonBody');bo
 function begin(u,i,preview=false){const items=stages(u),s=items[i];if(!s||(!preview&&!unlocked(u,i)))return;
  if(s.kind==='dialogue'){
   window.frankaNav15_2.go('dialogues');
-  window.dispatchEvent(new CustomEvent('franka:open-introduction',{detail:{preview:preview && s31TestHost}}));
+  window.dispatchEvent(new CustomEvent('franka:open-season-conversation',{detail:{season:u,preview:preview && s31TestHost}}));
   return;
  }
  if(s.kind==='speaking'){
@@ -1803,9 +1825,10 @@ function begin(u,i,preview=false){const items=stages(u),s=items[i];if(!s||(!prev
  if(!s.raw.length){complete(u,s,{empty:true});return}
  session={u,stage:s,list:shuffle(s.raw),pos:0,correct:0,answered:false,preview:!!(preview&&s31TestHost&&u===2)};$('s10Lesson').hidden=false;display();window.frankaNav15_2?.go('lesson') || $('s10Lesson').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-window.addEventListener('franka:introduction-complete',()=>{
- const stage=stages(1).find(x=>x.kind==='dialogue');
- if(!done(1,stage))complete(1,stage,{practiced:2});
+window.addEventListener('franka:season-conversation-complete',event=>{
+ const u=event.detail.season;
+ const stage=stages(u).find(x=>x.kind==='dialogue');
+ if(!done(u,stage))complete(u,stage,{practiced:window.frankaSeasonConversations[u].turns.length});
 });
 function finish(){if(!session)return;const x=session,ok=x.correct>=Math.ceil(x.list.length*(x.stage.kind==='finale'?.85:.75)),body=$('s10LessonBody');body.replaceChildren();
  body.append(h('p','s10-question',ok?'🏆 Etap zaliczony!':'🌱 Poćwiczmy jeszcze trochę'));
@@ -1817,9 +1840,9 @@ function draw(){const u=Number($('uxUnit')?.value||1),root=$('s10Steps');if(!roo
  $('s10PathProgress').textContent=`${completed}/${all.length} etapów`+(done(u,all[all.length-1])?' · 🏆 Mistrz sezonu':'');
  root.replaceChildren();
  const visible=all.map((s,i)=>i).filter(i=>showAll||i<=3||i>=Math.max(0,next-1)&&i<=next+2);
- if(u===1 && s31TestHost){
+ if(window.frankaSeasonConversations[u] && s31TestHost){
   const dialogueIndex=all.findIndex(stage=>stage.kind==='dialogue');
-  root.append(button('🧪 TEST · Podejrzyj rozmowę „Poznajmy się”',()=>begin(u,dialogueIndex,true),'secondary'));
+  root.append(button('🧪 TEST · Podejrzyj rozmowę „'+window.frankaSeasonConversations[u].title+'”',()=>begin(u,dialogueIndex,true),'secondary'));
  }
  if(u===2&&s31TestHost){
   const tools=h('div','s31-test-tools');
@@ -1831,7 +1854,7 @@ function draw(){const u=Number($('uxUnit')?.value||1),root=$('s10Steps');if(!roo
   root.append(tools);
  }
  for(const i of visible){const s=all[i],passed=done(u,s),open=unlocked(u,i),item=button('',()=>begin(u,i),'s10-step'+(passed?' done':open?' active':''));item.disabled=!open;item.dataset.journeyStageId=s.id;item.dataset.journeySeason=String(u);if(i===next)item.classList.add('hf22-next-stage');
- item.append(h('span','s10-step-ico',s.emoji));const content=h('span','s10-step-main');content.append(h('strong','',s.title));content.append(h('small','',s.note+(s.kind==='dialogue'?' · 2 pytania':s.kind!=='checkpoint'?` · ${s.raw.length} zadań`:'')));item.append(content);item.append(h('span','s10-step-mark',passed?'✓ Gotowe':open?'▶ Start':'🔒'));root.append(item)}
+ item.append(h('span','s10-step-ico',s.emoji));const content=h('span','s10-step-main');content.append(h('strong','',s.title));content.append(h('small','',s.note+(s.kind==='dialogue'?' · 2 wypowiedzi':s.kind!=='checkpoint'?` · ${s.raw.length} zadań`:'')));item.append(content);item.append(h('span','s10-step-mark',passed?'✓ Gotowe':open?'▶ Start':'🔒'));root.append(item)}
  if(all.length>visible.length)root.append(button(`📖 ${showAll?'Pokaż mniej':'Pokaż wszystkie etapy'} (${all.length})`,()=>{showAll=!showAll;draw()},'secondary'));
  else if(showAll&&all.length>5)root.append(button('📖 Pokaż mniej',()=>{showAll=false;draw()},'secondary'));
 }
