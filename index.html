@@ -1231,6 +1231,10 @@ function jrScrollToCurrentStep(){
   try{card.focus({preventScroll:true})}catch(e){}
  }));
 }
+window.addEventListener('franka:open-introduction',()=>{
+ pilotTurn=0;
+ jrGoStep(0);
+});
 function jrGoStep(step){jrCancelAutoplay();juniorStep=step;render();jrScrollToCurrentStep()}
 function dialogue(){
  const t=pickTopic(), pilot=pilotTurn!==null;
@@ -1261,12 +1265,6 @@ function dialogue(){
   }
   root.append(button('🎤 Odpowiedziałem!',()=>jrGoStep(1),'jr-main'));
   if(!juniorHint)root.append(button('💡 Potrzebuję podpowiedzi',()=>{jrCancelAutoplay();juniorHint=true;render()},'jr-quiet'));
-  if(!pilot && t.id==='otono' && n===0 && !juniorHint){
-   root.append(button('👋 Rozmowa A1 · Poznajmy się',()=>{
-    pilotTurn=0;
-    jrGoStep(0);
-   },'secondary'));
-  }
   $('a1Stage').replaceChildren(root);
   if(!juniorHint)jrAudio(d[0]);return;
  }
@@ -1282,9 +1280,14 @@ function dialogue(){
  if(juniorStep===2){
   root.append(mk('p','jr-helper','3. Jak Ci poszło?'));
   root.append(mk('div','jr-answer',d[1]));
+  function assess(quality){
+   recordDialogue(t,d,quality);
+   if(pilot && n===list.length-1)window.dispatchEvent(new Event('franka:introduction-complete'));
+   jrGoStep(3);
+  }
   const options=mk('div','jr-options');
-  if(!juniorHint)options.append(button('⭐ Powiedziałem sam!',()=>{recordDialogue(t,d,'yes');jrGoStep(3)},'jr-good'));
-  options.append(button(juniorHint?'🤝 Ćwiczyłem z podpowiedzią':'🤝 Potrzebuję jeszcze pomocy',()=>{recordDialogue(t,d,'help');jrGoStep(3)},'jr-help'));
+  if(!juniorHint)options.append(button('⭐ Powiedziałem sam!',()=>{assess('yes')},'jr-good'));
+  options.append(button(juniorHint?'🤝 Ćwiczyłem z podpowiedzią':'🤝 Potrzebuję jeszcze pomocy',()=>{assess('help')},'jr-help'));
   root.append(options,mk('p','jr-caption','To Twoja ocena. Aplikacja nie ocenia wymowy.'));
   $('a1Stage').replaceChildren(root);return;
  }
@@ -1292,8 +1295,15 @@ function dialogue(){
  if(pilot){
   const last=n===list.length-1;
   root.append(mk('p','jr-helper',last?'Rozmowa zakończona. Obie samooceny są zapisane.':'Teraz druga osoba zapyta Cię o wiek.'));
-  root.append(button(last?'Wróć do dialogów':'Drugie pytanie →',()=>{
-   pilotTurn=last?null:n+1;
+  root.append(button(last?'Wróć do ścieżki':'Drugie pytanie →',()=>{
+   if(last){
+    pilotTurn=null;
+    jrCancelAutoplay();
+    $('uxLearningStage').hidden=true;
+    window.frankaNav15_2.go('path');
+    return;
+   }
+   pilotTurn=n+1;
    jrGoStep(0);
   },'jr-main'));
   $('a1Stage').replaceChildren(root);
@@ -1718,6 +1728,7 @@ if(u===2){
  for(let i=body.length-1;i>=0;i--)out.splice(slots[i],0,body[i]);
 }
 out.push(entry('sentence',sentenceBank[u]||[],'Buduję proste zdania','Rozumiem i powtarzam pełne wypowiedzi','🗣️'));
+if(u===1)out.push({kind:'dialogue',id:'dialogue:a1-introduction',title:'Rozmowa A1 · Poznajmy się',note:'Przedstawiam się i podaję wiek',emoji:'👋',raw:[]});
 out.push({kind:'checkpoint',id:'checkpoint',raw:[],title:'Checkpoint szkolny',note:'Sprawdzam materiał z rozdziału',emoji:'📋'});
 // The finale tests school material plus short A1 examples, no claims of formal A1 certification.
 const finaleWords=words.slice(0,12);
@@ -1729,6 +1740,8 @@ function status(u,s){return data[u]?.[s.id]||null}
 function done(u,s){return !!status(u,s)?.done}
 function unlocked(u,i){
  const list=stages(u),stage=list[i];if(!stage)return false;
+ // Keep the checkpoint available to returning learners who already completed sentences.
+ if(u===1 && stage.id==='checkpoint' && done(u,list.find(x=>x.kind==='sentence')))return true;
  if(u!==2)return i===0||done(u,stage)||done(u,list[i-1])||list.slice(i+1).some(x=>done(u,x));
  const newStage=x=>x?.id?.startsWith('school:s31-invierno-body-');
  const original=list.filter(x=>!newStage(x));
@@ -1773,6 +1786,11 @@ function display(){if(!session)return;const x=session,body=$('s10LessonBody');bo
  },'secondary'))}
 }
 function begin(u,i,preview=false){const items=stages(u),s=items[i];if(!s||(!preview&&!unlocked(u,i)))return;
+ if(s.kind==='dialogue'){
+  window.frankaNav15_2.go('dialogues');
+  window.dispatchEvent(new Event('franka:open-introduction'));
+  return;
+ }
  if(s.kind==='speaking'){
   if(!window.hfSpeaking202?.openJourney)return;
   window.hfSpeaking202.openJourney(u,s.raw,()=>{complete(u,s,{practiced:s.raw.length,mode:'speaking'});window.frankaNav15_2?.go('path',{focus:false});window.hf22FocusNext?.(u,s.id)});
@@ -1782,6 +1800,10 @@ function begin(u,i,preview=false){const items=stages(u),s=items[i];if(!s||(!prev
  if(!s.raw.length){complete(u,s,{empty:true});return}
  session={u,stage:s,list:shuffle(s.raw),pos:0,correct:0,answered:false,preview:!!(preview&&s31TestHost&&u===2)};$('s10Lesson').hidden=false;display();window.frankaNav15_2?.go('lesson') || $('s10Lesson').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
+window.addEventListener('franka:introduction-complete',()=>{
+ const stage=stages(1).find(x=>x.kind==='dialogue');
+ if(!done(1,stage))complete(1,stage,{practiced:2});
+});
 function finish(){if(!session)return;const x=session,ok=x.correct>=Math.ceil(x.list.length*(x.stage.kind==='finale'?.85:.75)),body=$('s10LessonBody');body.replaceChildren();
  body.append(h('p','s10-question',ok?'🏆 Etap zaliczony!':'🌱 Poćwiczmy jeszcze trochę'));
  body.append(h('p','',`Poprawne odpowiedzi: ${x.correct}/${x.list.length}. ${x.preview?'Podgląd TEST — postępy nie zostały zapisane.':ok?'Odblokowany jest kolejny etap.':'Możesz powtórzyć ten zestaw.'}`));
@@ -1802,7 +1824,7 @@ function draw(){const u=Number($('uxUnit')?.value||1),root=$('s10Steps');if(!roo
   root.append(tools);
  }
  for(const i of visible){const s=all[i],passed=done(u,s),open=unlocked(u,i),item=button('',()=>begin(u,i),'s10-step'+(passed?' done':open?' active':''));item.disabled=!open;item.dataset.journeyStageId=s.id;item.dataset.journeySeason=String(u);if(i===next)item.classList.add('hf22-next-stage');
- item.append(h('span','s10-step-ico',s.emoji));const content=h('span','s10-step-main');content.append(h('strong','',s.title));content.append(h('small','',s.note+(s.kind!=='checkpoint'?` · ${s.raw.length} zadań`:'')));item.append(content);item.append(h('span','s10-step-mark',passed?'✓ Gotowe':open?'▶ Start':'🔒'));root.append(item)}
+ item.append(h('span','s10-step-ico',s.emoji));const content=h('span','s10-step-main');content.append(h('strong','',s.title));content.append(h('small','',s.note+(s.kind==='dialogue'?' · 2 pytania':s.kind!=='checkpoint'?` · ${s.raw.length} zadań`:'')));item.append(content);item.append(h('span','s10-step-mark',passed?'✓ Gotowe':open?'▶ Start':'🔒'));root.append(item)}
  if(all.length>visible.length)root.append(button(`📖 ${showAll?'Pokaż mniej':'Pokaż wszystkie etapy'} (${all.length})`,()=>{showAll=!showAll;draw()},'secondary'));
  else if(showAll&&all.length>5)root.append(button('📖 Pokaż mniej',()=>{showAll=false;draw()},'secondary'));
 }

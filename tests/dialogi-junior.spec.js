@@ -74,16 +74,27 @@ test('DJ05 — independent speech records confidence once and shows no grading c
  await test.step('A1 introduction keeps both self-assessments after reload',async()=>{
   await page.reload();
   await openJunior(page,{tts:false});
-  await page.getByRole('button',{name:/Rozmowa A1 · Poznajmy się/}).click();
+  await expect(page.locator('#a1Stage').getByRole('button',{name:/Poznajmy się/})).toHaveCount(0);
+  await page.evaluate(()=>{
+   const stages=frankaPath10.stages(1);
+   const sentence=stages.findIndex(x=>x.kind==='sentence');
+   if(stages[sentence+1].kind!=='dialogue')throw Error('Conversation must follow sentences');
+   frankaStore.setItem('hiszpanskiFrankaPath10V2',JSON.stringify({1:Object.fromEntries(stages.slice(0,sentence+1).map(s=>[s.id,{done:true}]))}));
+  });
+  await page.reload();
+  await page.evaluate(()=>frankaNav15_2.go('path'));
+  await expect(page.locator('[data-journey-stage-id="checkpoint"]')).toBeEnabled();
+  await page.locator('[data-journey-stage-id="dialogue:a1-introduction"]').click();
   await expect(page.locator('#a1Stage .jr-question')).toHaveText('¿Cómo te llamas?');
   await feedback(page,'Powiedziałem sam');
   await page.getByRole('button',{name:/Drugie pytanie/}).click();
   await expect(page.locator('#a1Stage .jr-question')).toHaveText('¿Cuántos años tienes?');
   await page.getByRole('button',{name:/Potrzebuję podpowiedzi/}).click();
   await feedback(page,'Ćwiczyłem z podpowiedzią');
-  await page.getByRole('button',{name:'Wróć do dialogów',exact:true}).click();
-  await expect(page.locator('#a1Stage .jr-question')).toHaveText('¿Qué ves?');
+  await page.getByRole('button',{name:'Wróć do ścieżki',exact:true}).click();
+  await expect(page.locator('#s10Steps')).toBeVisible();
   await page.reload();
+  expect((await stored(page,'hiszpanskiFrankaPath10V2'))[1]['dialogue:a1-introduction'].done).toBe(true);
   const dialogs=(await stored(page,A1)).otono.dialogs;
   expect(dialogs['¿Cómo te llamas?|Me llamo Franek.']).toMatchObject({practised:1,confident:1,needsHelp:0});
   expect(dialogs['¿Cuántos años tienes?|Tengo siete años.']).toMatchObject({practised:1,confident:0,needsHelp:1});
