@@ -1206,6 +1206,7 @@ function sentence(){const t=pickTopic(),item=t.sentences[active%t.sentences.leng
 // The pilot uses the same two dialogue records already practised in Otoño.
 const introduction = topics.find(topic => topic.id === 'hola').dialogs.slice(0, 2);
 let pilotTurn = null;
+let introductionPreview = false;
 let juniorStep=0,juniorAutoplay=null,juniorTopicSignature='',juniorHint=false,juniorSpeechTicket=0;
 function jrCancelAutoplay(){juniorSpeechTicket++;if(juniorAutoplay!==null){clearTimeout(juniorAutoplay);juniorAutoplay=null}}
 function jrSpeak(text){return window.hf29Audio?.speakWord(text)===true}
@@ -1231,7 +1232,8 @@ function jrScrollToCurrentStep(){
   try{card.focus({preventScroll:true})}catch(e){}
  }));
 }
-window.addEventListener('franka:open-introduction',()=>{
+window.addEventListener('franka:open-introduction',event=>{
+ introductionPreview = event.detail?.preview === true;
  pilotTurn=0;
  jrGoStep(0);
 });
@@ -1281,6 +1283,7 @@ function dialogue(){
   root.append(mk('p','jr-helper','3. Jak Ci poszło?'));
   root.append(mk('div','jr-answer',d[1]));
   function assess(quality){
+   if(pilot && introductionPreview){jrGoStep(3);return}
    recordDialogue(t,d,quality);
    if(pilot && n===list.length-1)window.dispatchEvent(new Event('franka:introduction-complete'));
    jrGoStep(3);
@@ -1294,7 +1297,7 @@ function dialogue(){
  root.append(mk('div','jr-celebrate','🌟'),mk('div','jr-question','¡Muy bien!'));
  if(pilot){
   const last=n===list.length-1;
-  root.append(mk('p','jr-helper',last?'Rozmowa zakończona. Obie samooceny są zapisane.':'Teraz druga osoba zapyta Cię o wiek.'));
+  root.append(mk('p','jr-helper',last?(introductionPreview?'Podgląd zakończony. Postępy nie zostały zapisane.':'Rozmowa zakończona. Obie samooceny są zapisane.'):'Teraz druga osoba zapyta Cię o wiek.'));
   root.append(button(last?'Wróć do ścieżki':'Drugie pytanie →',()=>{
    if(last){
     pilotTurn=null;
@@ -1788,7 +1791,7 @@ function display(){if(!session)return;const x=session,body=$('s10LessonBody');bo
 function begin(u,i,preview=false){const items=stages(u),s=items[i];if(!s||(!preview&&!unlocked(u,i)))return;
  if(s.kind==='dialogue'){
   window.frankaNav15_2.go('dialogues');
-  window.dispatchEvent(new Event('franka:open-introduction'));
+  window.dispatchEvent(new CustomEvent('franka:open-introduction',{detail:{preview:preview && s31TestHost}}));
   return;
  }
  if(s.kind==='speaking'){
@@ -1814,6 +1817,10 @@ function draw(){const u=Number($('uxUnit')?.value||1),root=$('s10Steps');if(!roo
  $('s10PathProgress').textContent=`${completed}/${all.length} etapów`+(done(u,all[all.length-1])?' · 🏆 Mistrz sezonu':'');
  root.replaceChildren();
  const visible=all.map((s,i)=>i).filter(i=>showAll||i<=3||i>=Math.max(0,next-1)&&i<=next+2);
+ if(u===1 && s31TestHost){
+  const dialogueIndex=all.findIndex(stage=>stage.kind==='dialogue');
+  root.append(button('🧪 TEST · Podejrzyj rozmowę „Poznajmy się”',()=>begin(u,dialogueIndex,true),'secondary'));
+ }
  if(u===2&&s31TestHost){
   const tools=h('div','s31-test-tools');
   tools.append(h('p','','🧪 TEST: podgląd nowych treści bez zaliczania lekcji i bez zmiany postępów.'));

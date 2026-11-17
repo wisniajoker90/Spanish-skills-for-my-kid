@@ -75,6 +75,18 @@ test('DJ05 — independent speech records confidence once and shows no grading c
   await page.reload();
   await openJunior(page,{tts:false});
   await expect(page.locator('#a1Stage').getByRole('button',{name:/Poznajmy się/})).toHaveCount(0);
+  await page.evaluate(()=>frankaNav15_2.go('path'));
+  const priorPath=await stored(page,'hiszpanskiFrankaPath10V2');
+  const priorA1=await stored(page,A1);
+  await page.getByRole('button',{name:/TEST · Podejrzyj rozmowę/}).click();
+  await feedback(page,'Powiedziałem sam');
+  await page.getByRole('button',{name:/Drugie pytanie/}).click();
+  await page.getByRole('button',{name:/Potrzebuję podpowiedzi/}).click();
+  await feedback(page,'Ćwiczyłem z podpowiedzią');
+  await expect(page.locator('#a1Stage')).toContainText('Postępy nie zostały zapisane');
+  await page.getByRole('button',{name:'Wróć do ścieżki',exact:true}).click();
+  expect(await stored(page,'hiszpanskiFrankaPath10V2')).toEqual(priorPath);
+  expect(await stored(page,A1)).toEqual(priorA1);
   await page.evaluate(()=>{
    const stages=frankaPath10.stages(1);
    const sentence=stages.findIndex(x=>x.kind==='sentence');
