@@ -71,6 +71,23 @@ test('DJ05 — independent speech records confidence once and shows no grading c
  expect(records.reduce((n,v)=>n+v.confident,0)).toBe(1);
  expect(records.reduce((n,v)=>n+v.practised,0)).toBe(1);
  await expect(page.locator('#a1Stage .jr-dialog')).toContainText('¡Muy bien!');
+ await test.step('A1 introduction keeps both self-assessments after reload',async()=>{
+  await page.reload();
+  await openJunior(page,{tts:false});
+  await page.getByRole('button',{name:/Rozmowa A1 · Poznajmy się/}).click();
+  await expect(page.locator('#a1Stage .jr-question')).toHaveText('¿Cómo te llamas?');
+  await feedback(page,'Powiedziałem sam');
+  await page.getByRole('button',{name:/Drugie pytanie/}).click();
+  await expect(page.locator('#a1Stage .jr-question')).toHaveText('¿Cuántos años tienes?');
+  await page.getByRole('button',{name:/Potrzebuję podpowiedzi/}).click();
+  await feedback(page,'Ćwiczyłem z podpowiedzią');
+  await page.getByRole('button',{name:'Wróć do dialogów',exact:true}).click();
+  await expect(page.locator('#a1Stage .jr-question')).toHaveText('¿Qué ves?');
+  await page.reload();
+  const dialogs=(await stored(page,A1)).otono.dialogs;
+  expect(dialogs['¿Cómo te llamas?|Me llamo Franek.']).toMatchObject({practised:1,confident:1,needsHelp:0});
+  expect(dialogs['¿Cuántos años tienes?|Tengo siete años.']).toMatchObject({practised:1,confident:0,needsHelp:1});
+ });
 });
 test('DJ06 — next dialogue resets hint, keeps one main action and auto-plays new question',async({page})=>{
  await openJunior(page);

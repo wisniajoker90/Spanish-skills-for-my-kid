@@ -1198,11 +1198,14 @@ const button=(txt,click,cls='secondary')=>{const b=mk('button',cls,txt);b.type='
 function say(str){speak(str)}
 function renderStats(){const topic=topics[current],s=stat(topic);$('a1Stats').textContent=`${topic.school?'📚 Ćwiczenia ze słownictwa szkolnego':'🚀 Dodatkowy kurs A1'} · Rozumienie zdań: ${s.listeningCorrect}/${s.listeningAttempts} poprawnych · Wypowiedzi przećwiczone na głos: ${s.spoken}. To licznik ćwiczeń, nie certyfikat A1.`}
 function pickTopic(){return topics[current]}
-function setView(v){jrCancelAutoplay();view=v;active=0;answered=false;juniorStep=0;juniorHint=false;juniorTopicSignature='';document.querySelectorAll('[data-a1-view]').forEach(b=>b.classList.toggle('active',b.dataset.a1View===v));render()}
+function setView(v){pilotTurn=null;jrCancelAutoplay();view=v;active=0;answered=false;juniorStep=0;juniorHint=false;juniorTopicSignature='';document.querySelectorAll('[data-a1-view]').forEach(b=>b.classList.toggle('active',b.dataset.a1View===v));render()}
 function common(root,n,len){const s=mk('p','a1-step',`Ćwiczenie ${n+1} z ${len}`);root.append(s)}
 function sentence(){const t=pickTopic(),item=t.sentences[active%t.sentences.length];const root=mk('div','a1-card');common(root,active%t.sentences.length,t.sentences.length);root.append(mk('div','a1-illustration',item[0]),mk('div','a1-es',item[1]));const pl=mk('div','a1-pl',item[2]);pl.hidden=true;const controls=mk('div','a1-toolbar');controls.append(button('🔊 Posłuchaj',()=>say(item[1]),'a1-speaker'),button('🇵🇱 Pokaż tłumaczenie',()=>{pl.hidden=!pl.hidden},'secondary'),button('➡️ Następne zdanie',()=>{active++;render()},'a1-next'));root.append(pl,controls);$('a1Stage').replaceChildren(root)}
 /* Sprint 30.2 · Dialogi Junior: one question, a clear hint, and a single main next action.
    Same existing dialogue content and stored A1 progress schema; no microphone requirement. */
+// The pilot uses the same two dialogue records already practised in Otoño.
+const introduction = topics.find(topic => topic.id === 'hola').dialogs.slice(0, 2);
+let pilotTurn = null;
 let juniorStep=0,juniorAutoplay=null,juniorTopicSignature='',juniorHint=false,juniorSpeechTicket=0;
 function jrCancelAutoplay(){juniorSpeechTicket++;if(juniorAutoplay!==null){clearTimeout(juniorAutoplay);juniorAutoplay=null}}
 function jrSpeak(text){return window.hf29Audio?.speakWord(text)===true}
@@ -1230,15 +1233,17 @@ function jrScrollToCurrentStep(){
 }
 function jrGoStep(step){jrCancelAutoplay();juniorStep=step;render();jrScrollToCurrentStep()}
 function dialogue(){
- const t=pickTopic(),n=active%t.dialogs.length,d=t.dialogs[n],signature=t.id+'|'+n;
+ const t=pickTopic(), pilot=pilotTurn!==null;
+ const list=pilot?introduction:t.dialogs;
+ const n=pilot?pilotTurn:active%list.length,d=list[n],signature=t.id+'|'+(pilot?'intro:':'')+n;
  if(juniorTopicSignature!==signature){jrCancelAutoplay();juniorStep=0;juniorHint=false;juniorTopicSignature=signature}
  if(juniorAutoplay!==null){clearTimeout(juniorAutoplay);juniorAutoplay=null}
  const root=mk('div','a1-card jr-dialog');
- root.setAttribute('aria-label','Dialog Junior — '+(n+1)+' z '+t.dialogs.length);
+ root.setAttribute('aria-label','Dialog Junior — '+(n+1)+' z '+list.length);
  root.dataset.jrStep=String(juniorStep);
  const top=mk('div','jr-top');
- top.append(mk('span','jr-eyebrow','💬 Rozmawiam po hiszpańsku'),mk('span','jr-progress',(n+1)+' / '+t.dialogs.length));root.append(top);
- const meter=mk('div','jr-meter'),fill=mk('span');fill.style.width=100*(n+1)/t.dialogs.length+'%';meter.append(fill);root.append(meter);
+ top.append(mk('span','jr-eyebrow',pilot?'👋 Poznajmy się':'💬 Rozmawiam po hiszpańsku'),mk('span','jr-progress',(n+1)+' / '+list.length));root.append(top);
+ const meter=mk('div','jr-meter'),fill=mk('span');fill.style.width=100*(n+1)/list.length+'%';meter.append(fill);root.append(meter);
  const picture=mk('div','jr-picture',d[4]||'💬');picture.setAttribute('aria-hidden','true');root.append(picture);
  if(juniorStep===0){
   root.append(mk('p','jr-helper','1. Posłuchaj pytania i odpowiedz na głos'));
@@ -1256,6 +1261,12 @@ function dialogue(){
   }
   root.append(button('🎤 Odpowiedziałem!',()=>jrGoStep(1),'jr-main'));
   if(!juniorHint)root.append(button('💡 Potrzebuję podpowiedzi',()=>{jrCancelAutoplay();juniorHint=true;render()},'jr-quiet'));
+  if(!pilot && t.id==='otono' && n===0 && !juniorHint){
+   root.append(button('👋 Rozmowa A1 · Poznajmy się',()=>{
+    pilotTurn=0;
+    jrGoStep(0);
+   },'secondary'));
+  }
   $('a1Stage').replaceChildren(root);
   if(!juniorHint)jrAudio(d[0]);return;
  }
@@ -1278,6 +1289,16 @@ function dialogue(){
   $('a1Stage').replaceChildren(root);return;
  }
  root.append(mk('div','jr-celebrate','🌟'),mk('div','jr-question','¡Muy bien!'));
+ if(pilot){
+  const last=n===list.length-1;
+  root.append(mk('p','jr-helper',last?'Rozmowa zakończona. Obie samooceny są zapisane.':'Teraz druga osoba zapyta Cię o wiek.'));
+  root.append(button(last?'Wróć do dialogów':'Drugie pytanie →',()=>{
+   pilotTurn=last?null:n+1;
+   jrGoStep(0);
+  },'jr-main'));
+  $('a1Stage').replaceChildren(root);
+  return;
+ }
  root.append(mk('p','jr-helper','Brawo za rozmowę! Każda próba to postęp.'));
  root.append(button(n===t.dialogs.length-1?'🔁 Jeszcze jedna runda':'Następna rozmowa →',()=>{
   jrCancelAutoplay();active++;juniorStep=0;juniorHint=false;juniorTopicSignature='';render();jrScrollToCurrentStep()
@@ -1292,7 +1313,7 @@ const reveal=mk('div','a1-pl',d[1]);reveal.hidden=true;const translation=mk('p',
 root.append(button('👀 Sprawdź przykładową odpowiedź',()=>{reveal.hidden=!reveal.hidden;translation.hidden=reveal.hidden},'secondary'),reveal,translation,button('🔊 Posłuchaj wzoru',()=>say(d[1]),'a1-speaker'));
 const label=mk('p','a1-instruction','Czy spróbowałeś odpowiedzieć na głos?'),rating=mk('div','a1-rating');rating.append(button('✅ Tak, spróbowałem!',()=>{if(answered)return;answered=true;stat(t).spoken++;saveSpeaking(t,d);frankaPraiseInSpanish(d[1]);save();renderStats();label.textContent='⭐ Brawo za próbę!';rating.replaceChildren()},'secondary'),button('➡️ Jeszcze poćwiczę',()=>{label.textContent='Możesz posłuchać pytania i spróbować ponownie.'},'secondary'));root.append(label,rating,button('➡️ Następne pytanie',()=>{active++;render()},'a1-next'));$('a1Stage').replaceChildren(root)}
 function render(){renderStats();if(view==='sentences')sentence();if(view==='dialogues')dialogue();if(view==='listening')listening();if(view==='speaking')speaking()}
-const select=$('a1Topic');topics.forEach((t,i)=>select.add(new Option(t.label,i)));select.value='0';select.onchange=()=>{jrCancelAutoplay();current=Number(select.value);active=0;juniorStep=0;juniorHint=false;juniorTopicSignature='';render();$('a1SourceLabel').textContent=pickTopic().source};
+const select=$('a1Topic');topics.forEach((t,i)=>select.add(new Option(t.label,i)));select.value='0';select.onchange=()=>{pilotTurn=null;jrCancelAutoplay();current=Number(select.value);active=0;juniorStep=0;juniorHint=false;juniorTopicSignature='';render();$('a1SourceLabel').textContent=pickTopic().source};
 document.querySelectorAll('[data-a1-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.a1View)));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)jrCancelAutoplay()});
 window.addEventListener('franka:junior-leave',jrCancelAutoplay);
