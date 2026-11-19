@@ -45,3 +45,7 @@ Podawać po jednym scenariuszu: PASS / FAIL / COMMENT.
 - S39-M06: Dawne zaliczenia, checkpointy i puchary zachowane; użytkownik nie musi niczego pisać.
 
 Publikacja dopiero po decyzji Michała „Wdrażaj”. Sprint 36 nadal wstrzymany.
+
+## Korekta po odbiorze S39-M01
+
+Usunięto wybór osoby oceniającej i trzecią opcję oceny. Dostępne są „Odpowiedziałem sam” / „Potrzebowałem pomocy”. Nowe próby zapisują samoocenę; starsza historia pozostaje bez zmian. Po pokazaniu podpowiedzi pozostaje opcja pomocy. „Sprawdź kolejność” ma wygląd głównej akcji, pełną szerokość, zaokrąglenia i oddzielony przycisk odsłuchu. S39-M01 wymaga ponownego odbioru.
