@@ -39,3 +39,9 @@ Tokeny urządzeń losowe 256-bit; w bazie przechowujemy wyłącznie SHA-256. Kod
 Następny etap: klient w panelu rodzica na TEST, świadome utworzenie rodziny z fikcyjnym profilem, parowanie, bezpieczny zapis tokenu per urządzenie/profil, dziennik lokalnych operacji offline i scalanie według typu danych (bez sumowania już policzonych odpowiedzi). Wymagane także odzyskiwanie po utracie tokenu rodzica / utracie odpowiedzi setup, ponawianie po utracie odpowiedzi join, kopia bezpieczeństwa i historia wersji przed rzeczywistymi danymi. Obecny backend odrzuca powtórny setup zamiast automatycznie wydawać nowy token. Nie podłączać jeszcze postępów Franka.
 
 Do późniejszego przeglądu UX: dopasować przyciski Sprintu 39 do istniejącej aplikacji (świadomie zaakceptowane przez użytkownika na obecne wdrożenie).
+
+## Pilot przeglądarkowy
+
+Na stronie głównej TEST dostępny przycisk „TEST · Family Sync — panel rodzica”. Izolowany od frankaStore i profili nauki, używa wyłącznie klucza localStorage family-sync-pilot37. Fikcyjny profil przechowuje unikalne zdarzenia punktowe. Scalanie to suma zbiorów zdarzeń po ID, z kontrolą rewizji i ograniczoną liczbą ponowień konfliktu. Utrata odpowiedzi po udanym zapisie nie dubluje punktu. Symulacja offline zachowuje kolejkę po odświeżeniu. To dowód działania protokołu, nie gotowe scalanie dotychczasowych struktur lekcji i odznak. Wartości FAMILY_SETUP_KEY nie zapisuje się lokalnie. Token urządzenia pozostaje lokalny do przyszłej obsługi odzyskiwania.
+
+Scenariusze pilota: utworzenie rodziny testowej, punkt na pierwszym urządzeniu, parowanie drugiej niezależnej przeglądarki i pobranie punktu; równoległe punkty offline; odzyskanie połączenia; odebranie dostępu. Panel ukryty i nieaktywny na produkcyjnym hoście. Wszystkie testy pilota używają fikcyjnych kluczy; nigdy prawdziwego sekretu właściciela.
