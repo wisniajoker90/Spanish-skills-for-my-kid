@@ -21,3 +21,12 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test tests/family-sync.spec.js --forbid-only --retries=0 --reporter=list
+
+      - name: Verify unchanged 96-case regression suite
+        run: node scripts/check-regression-suite.cjs
+      - name: Run existing regression tests
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_FILE: test-results/regression.json
+        run: npm run test:regression -- --forbid-only --reporter=list,json
+      - name: Require 96 clean passes
+        run: node scripts/verify-results.cjs test-results/regression.json
