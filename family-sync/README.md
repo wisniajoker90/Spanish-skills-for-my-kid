@@ -1,6 +1,6 @@
 # Sprint 37 — Family Sync, etap backend TEST
 
-Status: kod przygotowany do ręcznego wdrożenia Workera. Nie jest jeszcze podłączony do aplikacji. Sprint 39 jest opublikowany na produkcji; tego kodu nie scalać ani nie włączać na produkcji bez odbioru.
+Status: pilot na fikcyjnych danych. M01–M05 potwierdzone PASS przez Michała (23.11.2026), na komputerze 6 punktów, drugie urządzenie odłączone. Wersja 2 wymaga ręcznej aktualizacji Workera przed testem odzyskiwania rodzica. Sprint 39 jest opublikowany na produkcji; tego kodu nie scalać ani nie włączać na produkcji bez odbioru.
 
 ## Zasoby potwierdzone przez Michała
 
@@ -12,7 +12,7 @@ Status: kod przygotowany do ręcznego wdrożenia Workera. Nie jest jeszcze podł
 
 ## Wdrożenie tego etapu
 
-W Cloudflare otworzyć Worker > Edit code, zastąpić dotychczasowy kod health zawartością worker.mjs, Deploy. Zachować binding DB i sekret. GET /health powinien zwracać version family-sync-test-1, database ok, tablesReady true, setupConfigured true, backendReady true, syncEnabled false. Ostatnie pole celowo oznacza, że klient aplikacji nie jest jeszcze podłączony.
+W Cloudflare otworzyć Worker > Edit code, zastąpić cały dotychczasowy kod zawartością worker.mjs, Deploy. Zachować binding DB i sekret. GET /health powinien zwracać version family-sync-test-2, database ok, tablesReady true, setupConfigured true, backendReady true, syncEnabled false. Ostatnie pole celowo oznacza, że prawdziwe wyniki nauki nie są jeszcze podłączone.
 
 ## Kontrakt API
 
@@ -20,6 +20,7 @@ Wyłącznie host testowy i origin https://hiszpanski-franka-test.pages.dev. Zapy
 
 - POST /v1/setup: nagłówek X-Family-Setup-Key, JSON deviceName, profileName, snapshot. Jedna rodzina na instancję TEST, ponowienie nie nadpisuje danych. Zwraca token rodzica, deviceId, familyId, profileId i revision. Nie wolno logować nagłówków/odpowiedzi z tokenami.
 - POST /v1/join: JSON code, deviceName. Nadaje tylko rolę learner. Parowanie i zużycie kodu w jednej transakcji D1.
+- POST /v1/recover-parent: nagłówek X-Family-Setup-Key, JSON deviceName, deviceId (UUID), token (256-bit hex wygenerowany i zapisany lokalnie przed wysłaniem). Zastępuje wcześniejszy dostęp rodzica; atomowo unieważnia stare tokeny rodzica i kody parowania, zachowuje profile i urządzenia ucznia. Ponowienie z tym samym aktywnym ID/tokenem zwraca sukces bez kolejnej rotacji. Stara próba zastąpiona nowszą otrzymuje 409.
 - Pozostałe endpointy wymagają Authorization: Bearer <token>.
 - GET /v1/me: bieżące urządzenie.
 - POST /v1/pairing: rodzic generuje losowy kod 128-bit na 10 minut, unieważnia poprzedni własny kod.
@@ -34,9 +35,9 @@ Tokeny urządzeń losowe 256-bit; w bazie przechowujemy wyłącznie SHA-256. Kod
 
 ## Weryfikacja i ograniczenia
 
-`node --test family-sync/worker.test.mjs`: 12/12 PASS. Testy używają prawdziwego SQLite przez adapter zgodny z użytym podzbiorem D1; transakcje, odmowa starej rewizji, izolacja rodzin, parowanie, wygaśnięcie, odebranie dostępu, limity i auth. To nie są testy na zdalnym Cloudflare ani dowód pełnej synchronizacji urządzeń.
+`node --test family-sync/worker.test.mjs`: 18/18 PASS. Testy używają prawdziwego SQLite przez adapter zgodny z użytym podzbiorem D1; transakcje, odmowa starej rewizji, izolacja rodzin, parowanie, wygaśnięcie, odebranie dostępu, limity i auth. To nie są testy na zdalnym Cloudflare ani dowód pełnej synchronizacji urządzeń.
 
-Następny etap: klient w panelu rodzica na TEST, świadome utworzenie rodziny z fikcyjnym profilem, parowanie, bezpieczny zapis tokenu per urządzenie/profil, dziennik lokalnych operacji offline i scalanie według typu danych (bez sumowania już policzonych odpowiedzi). Wymagane także odzyskiwanie po utracie tokenu rodzica / utracie odpowiedzi setup, ponawianie po utracie odpowiedzi join, kopia bezpieczeństwa i historia wersji przed rzeczywistymi danymi. Obecny backend odrzuca powtórny setup zamiast automatycznie wydawać nowy token. Nie podłączać jeszcze postępów Franka.
+Następny etap: klient w panelu rodzica na TEST, świadome utworzenie rodziny z fikcyjnym profilem, parowanie, bezpieczny zapis tokenu per urządzenie/profil, dziennik lokalnych operacji offline i scalanie według typu danych (bez sumowania już policzonych odpowiedzi). Odzyskiwanie rodzica po utracie lokalnego zapisu/odpowiedzi setup jest dostępne przez klucz konfiguracji. Nadal wymagane ponawianie po utracie odpowiedzi join, kopia bezpieczeństwa i historia wersji przed rzeczywistymi danymi. Obecny backend odrzuca powtórny setup zamiast automatycznie wydawać nowy token. Nie podłączać jeszcze postępów Franka.
 
 Do późniejszego przeglądu UX: dopasować przyciski Sprintu 39 do istniejącej aplikacji (świadomie zaakceptowane przez użytkownika na obecne wdrożenie).
 
@@ -45,3 +46,13 @@ Do późniejszego przeglądu UX: dopasować przyciski Sprintu 39 do istniejącej
 Na stronie głównej TEST dostępny przycisk „TEST · Family Sync — panel rodzica”. Izolowany od frankaStore i profili nauki, używa wyłącznie klucza localStorage family-sync-pilot37. Fikcyjny profil przechowuje unikalne zdarzenia punktowe. Scalanie to suma zbiorów zdarzeń po ID, z kontrolą rewizji i ograniczoną liczbą ponowień konfliktu. Utrata odpowiedzi po udanym zapisie nie dubluje punktu. Symulacja offline zachowuje kolejkę po odświeżeniu. To dowód działania protokołu, nie gotowe scalanie dotychczasowych struktur lekcji i odznak. Wartości FAMILY_SETUP_KEY nie zapisuje się lokalnie. Token urządzenia pozostaje lokalny do przyszłej obsługi odzyskiwania.
 
 Scenariusze pilota: utworzenie rodziny testowej, punkt na pierwszym urządzeniu, parowanie drugiej niezależnej przeglądarki i pobranie punktu; równoległe punkty offline; odzyskanie połączenia; odebranie dostępu. Panel ukryty i nieaktywny na produkcyjnym hoście. Wszystkie testy pilota używają fikcyjnych kluczy; nigdy prawdziwego sekretu właściciela.
+
+## Odzyskiwanie i testy M06–M07
+
+Na odłączonym urządzeniu formularz dołączenia kodem pozostaje dostępny. Wpisanie nazwy i nowego kodu wydanego przez rodzica zastępuje lokalny token, zachowuje kolejkę lokalnych fikcyjnych punktów i scala ją z serwerem. Nie czyścić danych przeglądarki.
+
+M06: po M05 komputer ma 6 punktów. Wydać nowy kod, ponownie połączyć drugie urządzenie, oczekiwać 6 punktów i 0 oczekujących. Dodać punkt z drugiego urządzenia, zsynchronizować komputer: po 7 punktów.
+
+M07 (dopiero po wdrożeniu worker.mjs v2): w nowym, zwykłym profilu przeglądarki otworzyć TEST > Family Sync > Odzyskaj dostęp rodzica, wpisać nazwę i lokalnie FAMILY_SETUP_KEY, potwierdzić zastąpienie poprzedniego dostępu. Oczekiwać 7 punktów, rolę rodzica, brak dostępu na starym rodzicu i zachowany dostęp ucznia. Nie usuwać starego profilu ani danych nauki.
+
+18 testów SQLite sprawdza m.in. atomowe odzyskiwanie, auth, zachowanie dokładnego snapshotu, ponowienie utraconej odpowiedzi i odrzucenie nieaktualnej próby. Testy UI używają atrap API; nie zastępują testu v2 na zdalnym D1. To nadal pilot, a nie zgoda na migrację danych produkcyjnych.

@@ -1,7 +1,7 @@
 // Family Sync TEST backend v1. No production origin or automatic data migration.
 const HOST = 'franka-family-sync-test.wisniajoker90.workers.dev';
 const ORIGIN = 'https://hiszpanski-franka-test.pages.dev';
-const VERSION = 'family-sync-test-1';
+const VERSION = 'family-sync-test-2';
 const LIMIT = 1024 * 1024;
 const FAMILY = 'family-test'; // One family per TEST instance; setup cannot overwrite it.
 class HttpError extends Error { constructor(status, code) { super(code); this.status = status; } }
@@ -83,6 +83,29 @@ async function route(request, env) {
       throw error;
     }
     return json({deviceId: id, familyId: FAMILY, profileId, token, revision: 1}, 201);
+  }
+  if (path === '/v1/recover-parent' && method === 'POST') {
+    if (typeof env.FAMILY_SETUP_KEY !== 'string' || env.FAMILY_SETUP_KEY.length < 32) fail(503, 'setup_unavailable');
+    const key = request.headers.get('X-Family-Setup-Key') || '';
+    if (key.length > 512 || !await equalSecret(key, env.FAMILY_SETUP_KEY)) fail(401, 'unauthorized');
+    const input = await body(request), name = label(input.deviceName);
+    // Client persists this random credential BEFORE sending, so a lost response is retryable.
+    if (!/^[a-f0-9]{64}$/.test(input.token || '') || !/^[a-f0-9-]{36}$/.test(input.deviceId || '')) fail(400, 'invalid_recovery');
+    const tokenHash = await hash(input.token), id = input.deviceId;
+    const prior = await statement(db, 'SELECT family_id,role,token_hash,revoked_at FROM devices WHERE id=?', id).first();
+    if (prior) {
+      if (prior.family_id !== FAMILY || prior.role !== 'parent' || prior.token_hash !== tokenHash || prior.revoked_at !== null) fail(409, 'recovery_expired');
+      return json({deviceId: id, token: input.token});
+    }
+    if (!await statement(db, 'SELECT id FROM families WHERE id=?', FAMILY).first()) fail(404, 'family_not_found');
+    const now = Date.now();
+    await db.batch([
+      statement(db, "UPDATE devices SET revoked_at=? WHERE family_id=? AND role='parent' AND revoked_at IS NULL", now, FAMILY),
+      statement(db, 'DELETE FROM pairing_codes WHERE family_id=?', FAMILY),
+      statement(db, "INSERT INTO devices(id,family_id,name,role,token_hash,created_at,last_seen_at) VALUES(?,?,?,'parent',?,?,?)", id, FAMILY, name, tokenHash, now, now)
+    ]);
+    // Profiles and learner devices are untouched. Old parent tokens and pairing codes stop working.
+    return json({deviceId: id, token: input.token}, 201);
   }
   if (path === '/v1/join' && method === 'POST') {
     const input = await body(request), name = label(input.deviceName);
