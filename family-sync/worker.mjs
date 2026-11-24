@@ -1,7 +1,7 @@
 // Family Sync TEST backend v1. No production origin or automatic data migration.
 const HOST = 'franka-family-sync-test.wisniajoker90.workers.dev';
 const ORIGIN = 'https://hiszpanski-franka-test.pages.dev';
-const VERSION = 'family-sync-test-2';
+const VERSION = 'family-sync-test-3';
 const LIMIT = 1024 * 1024;
 const FAMILY = 'family-test'; // One family per TEST instance; setup cannot overwrite it.
 class HttpError extends Error { constructor(status, code) { super(code); this.status = status; } }
@@ -62,7 +62,7 @@ async function route(request, env) {
     const check = await db.prepare('SELECT 1 AS connected').first();
     const tables = await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name IN ('families','devices','profiles','pairing_codes')").all();
     const ready = check?.connected === 1 && tables.results.length === 4 && typeof env.FAMILY_SETUP_KEY === 'string' && env.FAMILY_SETUP_KEY.length >= 32;
-    return json({service: 'franka-family-sync-test', version: VERSION, database: check?.connected === 1 ? 'ok' : 'error', tablesReady: tables.results.length === 4, setupConfigured: typeof env.FAMILY_SETUP_KEY === 'string' && env.FAMILY_SETUP_KEY.length >= 32, backendReady: ready, syncEnabled: false}, ready ? 200 : 503);
+    return json({service: 'franka-family-sync-test', version: VERSION, database: check?.connected === 1 ? 'ok' : 'error', tablesReady: tables.results.length === 4, setupConfigured: typeof env.FAMILY_SETUP_KEY === 'string' && env.FAMILY_SETUP_KEY.length >= 32, backendReady: ready, syncEnabled: false, retrySafePairing: true}, ready ? 200 : 503);
   }
   if (path === '/v1/setup' && method === 'POST') {
     if (typeof env.FAMILY_SETUP_KEY !== 'string' || env.FAMILY_SETUP_KEY.length < 32) fail(503, 'setup_unavailable');
@@ -110,15 +110,33 @@ async function route(request, env) {
   if (path === '/v1/join' && method === 'POST') {
     const input = await body(request), name = label(input.deviceName);
     if (typeof input.code !== 'string' || !/^[a-f0-9]{32}$/.test(input.code)) fail(400, 'invalid_pairing_code');
-    const codeHash = await hash(input.code), now = Date.now(), id = crypto.randomUUID(), token = random();
-    // Insert and consume run in a single transaction; only a valid, unused code from an active parent can create a device.
-    const results = await db.batch([
+    const retrySafe = input.deviceId !== undefined || input.token !== undefined;
+    if (retrySafe && (!/^[a-f0-9-]{36}$/.test(input.deviceId || '') || !/^[a-f0-9]{64}$/.test(input.token || ''))) fail(400, 'invalid_join_attempt');
+    const codeHash = await hash(input.code), now = Date.now(), id = retrySafe ? input.deviceId : crypto.randomUUID(), token = retrySafe ? input.token : random();
+    const tokenHash = await hash(token);
+    async function previousAttempt() {
+      const row = await statement(db, 'SELECT family_id,role,token_hash,revoked_at FROM devices WHERE id=?', id).first();
+      if (!row) return false;
+      // Possession of the persisted random credential permits retry after the code was consumed/expired.
+      // It never revives a revoked device or converts a parent to a learner.
+      if (row.family_id !== FAMILY || row.role !== 'learner' || row.token_hash !== tokenHash || row.revoked_at !== null) fail(401, 'unauthorized');
+      return true;
+    }
+    if (retrySafe && await previousAttempt()) return json({deviceId: id, token});
+    let results;
+    try { results = await db.batch([
       statement(db, `INSERT INTO devices(id,family_id,name,role,token_hash,created_at,last_seen_at)
         SELECT ?,p.family_id,?,'learner',?,?,? FROM pairing_codes p JOIN devices d ON d.id=p.created_by_device_id
-        WHERE p.code_hash=? AND p.used_at IS NULL AND p.expires_at>? AND d.revoked_at IS NULL AND d.role='parent'`, id, name, await hash(token), now, now, codeHash, now),
+        WHERE p.code_hash=? AND p.used_at IS NULL AND p.expires_at>? AND d.revoked_at IS NULL AND d.role='parent'`, id, name, tokenHash, now, now, codeHash, now),
       statement(db, 'UPDATE pairing_codes SET used_at=? WHERE code_hash=? AND used_at IS NULL AND EXISTS(SELECT 1 FROM devices WHERE id=?)', now, codeHash, id)
-    ]);
-    if (results[0].meta.changes !== 1) fail(410, 'pairing_code_invalid_or_expired');
+    ]); } catch (error) {
+      if (retrySafe && await previousAttempt()) return json({deviceId: id, token});
+      throw error;
+    }
+    if (results[0].meta.changes !== 1) {
+      if (retrySafe && await previousAttempt()) return json({deviceId: id, token});
+      fail(410, 'pairing_code_invalid_or_expired');
+    }
     return json({deviceId: id, token}, 201);
   }
   const device = await authenticated(request, db);

@@ -2,9 +2,10 @@ const {test,expect}=require('@playwright/test');
 const API='https://franka-family-sync-test.wisniajoker90.workers.dev';
 const secret='fixture-test-secret-0123456789-abcdefgh';
 async function fixture(context,model={revision:1,events:[],writes:0,conflict:false,putLost:false,fail:false}){await context.route(API+'/**',async route=>{const req=route.request(),path=new URL(req.url()).pathname,m=req.method();const headers={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'*','Access-Control-Allow-Methods':'*'};if(m==='OPTIONS')return route.fulfill({status:204,headers});if(model.fail)return route.abort();if(model.revokedToken&&req.headers().authorization==='Bearer '+model.revokedToken&&!['/v1/join','/v1/recover-parent'].includes(path))return route.fulfill({status:401,headers,contentType:'application/json',body:JSON.stringify({error:'unauthorized'})});let data={},status=200;
-if(path==='/v1/setup'){expect(req.headers()['x-family-setup-key']).toBe(secret);data={token:'a'.repeat(64),deviceId:'parent',profileId:'profile',revision:1};status=201;}
+if(path==='/health')data={version:model.oldWorker?'family-sync-test-2':'family-sync-test-3',retrySafePairing:!model.oldWorker};
+else if(path==='/v1/setup'){expect(req.headers()['x-family-setup-key']).toBe(secret);data={token:'a'.repeat(64),deviceId:'parent',profileId:'profile',revision:1};status=201;}
 else if(path==='/v1/recover-parent'){expect(req.headers()['x-family-setup-key']).toBe(secret);const body=req.postDataJSON();model.recoveries=(model.recoveries||[]).concat([body]);if(model.recoveryLost){model.recoveryLost=false;return route.abort()}data={token:body.token,deviceId:body.deviceId};status=201;}
-else if(path==='/v1/join'){data={token:(model.revokedToken?'d':'b').repeat(64),deviceId:'child'};status=201;}
+else if(path==='/v1/join'){const body=req.postDataJSON();model.joins=(model.joins||[]).concat([body]);if(model.joinLost){model.joinLost=false;return route.abort()}data={token:body.token,deviceId:body.deviceId};status=201;}
 else if(path==='/v1/me'){const recovered=model.recoveries?.at(-1);data={device:recovered&&req.headers().authorization==='Bearer '+recovered.token?{id:recovered.deviceId,role:'parent',name:recovered.deviceName}:{id:'child',role:'learner',name:'Tablet TEST'}};}
 else if(path==='/v1/profiles')data={profiles:[{id:'profile'}]};
 else if(path==='/v1/profiles/profile'&&m==='GET')data={revision:model.revision,snapshot:{schema:1,data:{pilot:true,events:model.events}}};
@@ -35,4 +36,23 @@ const model=await fixture(context);model.events=[{id:'saved',deviceId:'parent',a
 });
 test('lost recovery response survives reload and retries the identical credential',async({page,context})=>{
 const model=await fixture(context);model.recoveryLost=true;model.events=[{id:'saved',deviceId:'parent',at:1}];await open(page);await page.locator('#fs37Recovery summary').click();await recoveryForm(page);await expect(page.locator('#fs37Status')).toContainText('Nie udało');await page.reload();await page.locator('#fs37Launch').click();await page.locator('#fs37Recovery summary').click();await recoveryForm(page);await expect(page.locator('#fs37Stats')).toContainText('1');expect(model.recoveries).toHaveLength(2);expect(model.recoveries[0]).toEqual(model.recoveries[1]);expect(model.writes).toBe(0);
+});
+
+test('QR decodes to test link and is rendered locally without exposing setup key',async({page,context})=>{
+await fixture(context);await setup(page);await page.locator('#fs37Pair').click();await expect(page.locator('#fs37Pairing')).toBeVisible();
+const pixels=await page.locator('#fs37Qr').evaluate(async img=>{await img.decode();const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);return {width:c.width,height:c.height,data:Array.from(ctx.getImageData(0,0,c.width,c.height).data),src:img.src};});
+expect(pixels.src).toMatch(/^data:image/);const decoded=require('jsqr')(new Uint8ClampedArray(pixels.data),pixels.width,pixels.height);expect(decoded.data).toBe('https://hiszpanski-franka-test.pages.dev/#family-join='+'c'.repeat(32));expect(decoded.data).not.toContain(secret);
+await page.locator('#fs37Close').click();await expect(page.locator('#fs37Pairing')).toBeHidden();expect(await page.locator('#fs37Qr').getAttribute('src')).toBeNull();
+});
+test('scanned link fills code, clears URL and waits for explicit confirmation',async({page,context})=>{
+const model=await fixture(context);await page.goto('/#family-join='+'c'.repeat(32));await expect(page.locator('#fs37')).toBeVisible();await expect(page.locator('#fs37PairInput')).toHaveValue('c'.repeat(32));expect(page.url()).not.toContain('family-join');expect(model.joins).toBeUndefined();await page.locator('#fs37Name').fill('QR phone');await page.locator('#fs37JoinButton').click();await expect(page.locator('#fs37Linked')).toBeVisible();expect(model.joins).toHaveLength(1);
+});
+test('lost pairing response persists attempt across reload and retry uses identical credentials',async({page,context})=>{
+const model=await fixture(context);model.joinLost=true;model.events=[{id:'server',deviceId:'parent',at:1}];await page.goto('/#family-join='+'c'.repeat(32));await page.locator('#fs37Name').fill('QR phone');await page.locator('#fs37JoinButton').click();await expect(page.locator('#fs37Status')).toContainText('Nie udało');await page.reload();await page.locator('#fs37Launch').click();await page.locator('#fs37JoinRetry').click();await expect(page.locator('#fs37Stats')).toContainText('1');expect(model.joins).toHaveLength(2);expect(model.joins[0]).toEqual(model.joins[1]);expect(JSON.parse(await page.evaluate(()=>localStorage.getItem('family-sync-pilot37'))).joinAttempt).toBeNull();
+});
+test('old server blocks new pairing with actionable message before consuming code',async({page,context})=>{
+const model=await fixture(context);model.oldWorker=true;await page.goto('/#family-join='+'c'.repeat(32));await page.locator('#fs37Name').fill('QR phone');await page.locator('#fs37JoinButton').click();await expect(page.locator('#fs37Status')).toContainText('Zaktualizuj Worker');expect(model.joins).toBeUndefined();
+});
+test('invalid scanned link cannot join or leave pairing token in URL',async({page,context})=>{
+const model=await fixture(context);await page.goto('/#family-join=not-a-valid-code');expect(page.url()).not.toContain('family-join');await expect(page.locator('#fs37')).toBeHidden();expect(model.joins).toBeUndefined();
 });

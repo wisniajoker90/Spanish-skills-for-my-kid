@@ -12,7 +12,7 @@ Status: pilot na fikcyjnych danych. M01–M05 potwierdzone PASS przez Michała (
 
 ## Wdrożenie tego etapu
 
-W Cloudflare otworzyć Worker > Edit code, zastąpić cały dotychczasowy kod zawartością worker.mjs, Deploy. Zachować binding DB i sekret. GET /health powinien zwracać version family-sync-test-2, database ok, tablesReady true, setupConfigured true, backendReady true, syncEnabled false. Ostatnie pole celowo oznacza, że prawdziwe wyniki nauki nie są jeszcze podłączone.
+W Cloudflare otworzyć Worker > Edit code, zastąpić cały dotychczasowy kod zawartością worker.mjs, Deploy. Zachować binding DB i sekret. GET /health powinien zwracać version family-sync-test-3, database ok, tablesReady true, setupConfigured true, backendReady true, syncEnabled false. Ostatnie pole celowo oznacza, że prawdziwe wyniki nauki nie są jeszcze podłączone.
 
 ## Kontrakt API
 
@@ -35,7 +35,7 @@ Tokeny urządzeń losowe 256-bit; w bazie przechowujemy wyłącznie SHA-256. Kod
 
 ## Weryfikacja i ograniczenia
 
-`node --test family-sync/worker.test.mjs`: 18/18 PASS. Testy używają prawdziwego SQLite przez adapter zgodny z użytym podzbiorem D1; transakcje, odmowa starej rewizji, izolacja rodzin, parowanie, wygaśnięcie, odebranie dostępu, limity i auth. To nie są testy na zdalnym Cloudflare ani dowód pełnej synchronizacji urządzeń.
+`node --test family-sync/worker.test.mjs`: 22/22 PASS. Testy używają prawdziwego SQLite przez adapter zgodny z użytym podzbiorem D1; transakcje, odmowa starej rewizji, izolacja rodzin, parowanie, wygaśnięcie, odebranie dostępu, limity i auth. To nie są testy na zdalnym Cloudflare ani dowód pełnej synchronizacji urządzeń.
 
 Następny etap: klient w panelu rodzica na TEST, świadome utworzenie rodziny z fikcyjnym profilem, parowanie, bezpieczny zapis tokenu per urządzenie/profil, dziennik lokalnych operacji offline i scalanie według typu danych (bez sumowania już policzonych odpowiedzi). Odzyskiwanie rodzica po utracie lokalnego zapisu/odpowiedzi setup jest dostępne przez klucz konfiguracji. Nadal wymagane ponawianie po utracie odpowiedzi join, kopia bezpieczeństwa i historia wersji przed rzeczywistymi danymi. Obecny backend odrzuca powtórny setup zamiast automatycznie wydawać nowy token. Nie podłączać jeszcze postępów Franka.
 
@@ -56,3 +56,17 @@ M06: po M05 komputer ma 6 punktów. Wydać nowy kod, ponownie połączyć drugie
 M07 (dopiero po wdrożeniu worker.mjs v2): w nowym, zwykłym profilu przeglądarki otworzyć TEST > Family Sync > Odzyskaj dostęp rodzica, wpisać nazwę i lokalnie FAMILY_SETUP_KEY, potwierdzić zastąpienie poprzedniego dostępu. Oczekiwać 7 punktów, rolę rodzica, brak dostępu na starym rodzicu i zachowany dostęp ucznia. Nie usuwać starego profilu ani danych nauki.
 
 18 testów SQLite sprawdza m.in. atomowe odzyskiwanie, auth, zachowanie dokładnego snapshotu, ponowienie utraconej odpowiedzi i odrzucenie nieaktualnej próby. Testy UI używają atrap API; nie zastępują testu v2 na zdalnym D1. To nadal pilot, a nie zgoda na migrację danych produkcyjnych.
+
+## QR i ponawianie parowania (Worker v3)
+
+M01–M07: PASS potwierdzone przez Michała. Po odzyskaniu dostępu nowa przeglądarka rodzica i urządzenie ucznia mają po 7 punktów. Stary rodzic prawidłowo otrzymuje 401; początkowy FAIL wynikał z odczytania wcześniejszego komunikatu.
+
+Przycisk „Dodaj urządzenie — pokaż QR” generuje lokalnie obraz zawierający adres TEST z kodem we fragmencie #family-join=. Brak zewnętrznego generatora QR. Po wejściu fragment jest usuwany z adresu, formularz otwiera się z kodem. Sam skan nie wykonuje parowania; wymagana nazwa i potwierdzenie użytkownika. Kod zachowuje ważność 10 minut, jednorazowość i możliwość ręcznego wpisania. Obraz znika po zamknięciu panelu lub upływie terminu. Brak FAMILY_SETUP_KEY lub tokenu rodzica w QR.
+
+Klient zapisuje losowy token i identyfikator próby PRZED POST /v1/join. Worker v3 akceptuje opcjonalne deviceId i token; retry z identycznymi aktywnymi poświadczeniami zwraca to samo urządzenie, również po zużyciu/wygaśnięciu kodu. Revoked/obcy token nie może reaktywować urządzenia. Stary klient pozostaje kompatybilny. Nowy klient sprawdza retrySafePairing w /health i prosi o aktualizację Workera, jeśli serwer jej nie obsługuje. Bez zmian schematu D1 lub sekretu.
+
+Wznawianie po błędzie lub odświeżeniu: „Ponów przerwane łączenie”. Zachowuje lokalną kolejkę punktów. Testy weryfikują odkodowanie wygenerowanego obrazu niezależnym dekoderem jsQR oraz utratę odpowiedzi i ponowienie tej samej próby.
+
+Biblioteka QR: qrcode-generator 2.0.4 (Kazuhiko Arase, MIT), wbudowana do pilota/index.html, źródło i licencja w vendor/. jsQR 1.4.0 jest zależnością wyłącznie testową. Żadne CDN ani usługi generowania QR nie otrzymują kodu.
+
+M08 po aktualizacji Workera v3: rodzic generuje QR; zeskanować aparatem trzeciego urządzenia, wpisać nazwę, połączyć. Oczekiwane 7 punktów. Dodać jeden na nowym urządzeniu i zsynchronizować pozostałe: po 8. M09: ten sam QR nie może dodać nowego niezależnego urządzenia po zużyciu (istniejąca autoryzowana próba może być wznowiona).
