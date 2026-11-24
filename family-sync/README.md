@@ -85,6 +85,6 @@ Scalanie: dodatnie delty liczników, suma zaliczeń i odznak, historie po identy
 
 Archiwum poprzedniej wersji i aktualizacja profilu są jedną transakcją D1. Jeśli archiwum nie zapisze się, profil nie jest nadpisany. Rodzic może pobrać wcześniejsze wersje jako standardowy JSON do importu nowego profilu. Lokalny zapis używa dziennika cofania przed zmianami i odzyskuje przerwaną transakcję przy starcie; zachowuje też ostatnią kopię lokalną. W razie braku miejsca operacja zatrzymuje się.
 
-Testy: worker.test.mjs (26), learning.test.cjs (16), dotychczasowy pilot UI (14), learning-sync.spec.js (7) i niezmienione 96 testów regresji. Testy sieci UI używają fikcyjnego backendu; odbiór na prawdziwym Cloudflare po wdrożeniu Workera v4 pozostaje konieczny.
+Testy: worker.test.mjs (26), learning.test.cjs (18), dotychczasowy pilot UI (14), learning-sync.spec.js (8) i niezmienione 96 testów regresji. Testy sieci UI używają fikcyjnego backendu; odbiór na prawdziwym Cloudflare po wdrożeniu Workera v4 pozostaje konieczny.
 
 Kolejność odbioru: v4 health → M10 udostępnienie aktywnego „Franek (import)” → M11 pobranie na sparowanym Androidzie → M12 ukończenie ćwiczenia i synchronizacja obu urządzeń → M13 dwie różne aktywności offline i scalenie → M14 pobranie poprzedniej wersji. Dopiero potem decyzja o produkcji; świeży eksport z Safari przed jej uruchomieniem.

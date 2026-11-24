@@ -322,6 +322,8 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 </div></div></main></div>
 
 
+
+
 <!-- Family Sync learning storage BEGIN -->
 <script>/* Crash-recoverable local application. Journal is removed only after all values verify. */
 (function(root){'use strict';const JOURNAL='hf37:learning-transaction';
@@ -1558,7 +1560,7 @@ function showQuestion(){
 }
 function finishTest(){
  const n=test.questions.length,pct=Math.round(100*test.correct/n);const kind=test.type;const u=test.u;
- const record={time:new Date().toISOString(),right:test.correct,total:n,percent:pct,incorrect:unique(test.incorrect),spoken:test.spoken||0};
+ const record={id:crypto.randomUUID(),time:new Date().toISOString(),right:test.correct,total:n,percent:pct,incorrect:unique(test.incorrect),spoken:test.spoken||0};
  const section=kind==='school'?state.school:state.a1;const old=section[u]||{history:[]};old.history=[record,...(old.history||[])].slice(0,15);old.incorrect=record.incorrect;section[u]=old;save();window.dispatchEvent(new CustomEvent('franka:s8checkpoint',{detail:{u,type:kind,percent:pct}}));
  answer.replaceChildren();answer.append(newNode('div','s6-result',`🏆 Wynik: ${test.correct}/${n} (${pct}%)`),newNode('p','',kind==='school'?(pct>=85?'Świetnie opanowany materiał!':'Zobacz błędne odpowiedzi i poćwicz je ponownie.'):'To wynik ćwiczeń — nie jest formalną oceną A1.'));
  if(record.incorrect.length)answer.append(newNode('p','small','Do powtórki: '+record.incorrect.join(', ')));
@@ -1713,7 +1715,7 @@ function draw(){
  weak.append(n('p','small',difficult.length?'Do powtórki: '+difficult.map(c=>c[2]).join(', '):'Na razie brak trudnych słówek — można poznawać kolejne!'));
  const date=$('s13ExamDate'),status=$('s13ExamStatus');date.value=examData[u]||'';status.textContent=exam?`✅ Przygotowanie aktywne do ${exam.date}. ${exam.days} dni do sprawdzianu.`:examData[u]?'Termin minął — ustaw nowy albo wyłącz przygotowanie.':'Tryb wyłączony. Codzienna nauka obejmuje szkołę i dodatkowe A1.';
 }
-function show(){if(!session)return;const item=session.queue[session.i];$('s7SessionFeedback').textContent='';$('s7NextWrap').hidden=true;const body=$('s7SessionBody');body.replaceChildren();if(!item){const correct=session.ok;const total=session.queue.length;body.append(n('h3','','🏆 Brawo, Franek!'),n('p','',`Ukończone zadania: ${total}. Poprawne odpowiedzi: ${correct}.`));$('s7SessionProgress').textContent='Sesja zakończona';const next=b('🧠 Zagraj w Memory',()=>{const go=window.frankaNav15_2?.go;const success=go?.('memory');if(success){$('s7Session').hidden=true}else{$('s7SessionFeedback').textContent='Nie udało się otworzyć Memory. Spróbuj ponownie lub wybierz Nauka → Gry.'}});body.append(next);data.dailyHistory.unshift({day:new Date().toISOString().slice(0,10),correct,total});data.dailyHistory=data.dailyHistory.slice(0,30);store();window.dispatchEvent(new CustomEvent("franka:s14daily",{detail:{correct,total}}));draw();session=null;return}
+function show(){if(!session)return;const item=session.queue[session.i];$('s7SessionFeedback').textContent='';$('s7NextWrap').hidden=true;const body=$('s7SessionBody');body.replaceChildren();if(!item){const correct=session.ok;const total=session.queue.length;body.append(n('h3','','🏆 Brawo, Franek!'),n('p','',`Ukończone zadania: ${total}. Poprawne odpowiedzi: ${correct}.`));$('s7SessionProgress').textContent='Sesja zakończona';const next=b('🧠 Zagraj w Memory',()=>{const go=window.frankaNav15_2?.go;const success=go?.('memory');if(success){$('s7Session').hidden=true}else{$('s7SessionFeedback').textContent='Nie udało się otworzyć Memory. Spróbuj ponownie lub wybierz Nauka → Gry.'}});body.append(next);data.dailyHistory.unshift({id:crypto.randomUUID(),at:new Date().toISOString(),day:new Date().toISOString().slice(0,10),correct,total});data.dailyHistory=data.dailyHistory.slice(0,30);store();window.dispatchEvent(new CustomEvent("franka:s14daily",{detail:{correct,total}}));draw();session=null;return}
 session.answered=false;$('s7SessionProgress').textContent=`Zadanie ${session.i+1} z ${session.queue.length} · ${item.kind==='word'?'Słówko':'Zdanie'}`;
 const pic=n('div','s7-illustration',item.icon||'💬');const question=n('p','s7-question',item.kind==='sentence'?'🎧 Posłuchaj całego zdania':item.es);body.append(pic,question,b('🔊 Posłuchaj',()=>speak(item.es),'epic-listen'));
 const possible=item.kind==='word'?(units[item.u]?.cards||[]).map(x=>x[2]):newSentences().map(x=>x.pl);
@@ -5419,6 +5421,8 @@ window.addEventListener('online',()=>{if(state.token)action(sync)});render();
 
 
 
+
+
 <!-- Family Sync learning UI BEGIN -->
 <script>/* Family Sync learning merge: three-way deltas, no writes or network. */
 (function(root){'use strict';
@@ -5432,9 +5436,9 @@ function validate(records){if(!obj(records)||Object.keys(records).length>KEYS.le
 function shared(records){validate(records);const out={};for(const[k,v]of Object.entries(records)){if(LOCAL.has(k))continue;const d=JSON.parse(v);if(k==='hiszpanskiFrankaProgressV1'){delete d.unit;delete d.index;}if(k==='hiszpanskiFrankaCar26V1'||k==='hiszpanskiFrankaA1Practice39V1')delete d.pending;if(k==='hiszpanskiFrankaSmart23V1')delete d.partial;out[k]=canonical(d);}return out;}
 function materialize(records,local={}){validate(records);validate(local);const out={...local};for(const[k,v]of Object.entries(records)){const d=JSON.parse(v),prev=JSON.parse(local[k]||'{}');if(k==='hiszpanskiFrankaProgressV1'){d.unit=prev.unit??1;d.index=prev.index??0;}if(k==='hiszpanskiFrankaCar26V1'||k==='hiszpanskiFrankaA1Practice39V1')d.pending=prev.pending??null;if(k==='hiszpanskiFrankaSmart23V1'&&prev.partial!==undefined)d.partial=prev.partial;out[k]=JSON.stringify(d);}return out;}
 function conflict(path){throw Error('Nie można bezpiecznie scalić pola '+path.join(' / ')+'. Obie kopie zostały zachowane.');}
-const counters=new Set(['points','quizCorrect','quizTotal','right','wrong','count','total','repeated','practised','confident','needsHelp','spoken','listeningAttempts','listeningCorrect','vocabularyAttempts','vocabularyCorrect','speakingAttempts','dialogueAttempts']);
-function additive(path){const k=path[0],f=path.at(-1);if(k==='hiszpanskiFrankaPath10V2'||k==='hiszpanskiFrankaSprint6ProgressV1')return false;if(k==='hiszpanskiFrankaSpeaking20V1'&&path[1]==='bySeason')return true;return counters.has(f);}
-function arrayMerge(b,l,r,path){b=Array.isArray(b)?b:[];const identity=x=>obj(x)&&typeof x.id==='string'?'id:'+x.id:canonical(x);const buckets=new Map();for(const list of [b,r,l]){const counts=new Map();for(const x of list){const id=identity(x),prior=buckets.get(id);if(prior&&id.startsWith('id:')&&!same(prior.value,x))conflict([...path,id]);counts.set(id,(counts.get(id)||0)+1);buckets.set(id,{value:clone(x),count:Math.max(prior?.count||0,counts.get(id))});}}return [...buckets.values()].flatMap(x=>Array.from({length:x.count},()=>clone(x.value))).sort((a,z)=>{const ta=obj(a)?String(a.at??a.day??a.startedAt??''):String(a),tz=obj(z)?String(z.at??z.day??z.startedAt??''):String(z);return ta.localeCompare(tz)||identity(a).localeCompare(identity(z));});}
+const counters=new Set(['points','quizCorrect','quizTotal','right','wrong','count','total','repeated','practised','confident','needsHelp','spoken','listeningAttempts','listeningCorrect','vocabularyAttempts','vocabularyCorrect','speakingAttempts','dialogueAttempts','attempts','dialogues']);
+function additive(path){const k=path[0],f=path.at(-1);if(k==='hiszpanskiFrankaPath10V2')return false;if(k==='hiszpanskiFrankaSprint6ProgressV1')return path[1]==='foundation'&&['attempts','correct'].includes(f);if(k==='hiszpanskiFrankaSpeaking20V1'&&path[1]==='bySeason')return true;return counters.has(f);}
+function arrayMerge(b,l,r,path){b=Array.isArray(b)?b:[];const identity=x=>obj(x)&&typeof x.id==='string'?'id:'+x.id:canonical(x);const buckets=new Map();for(const list of [b,r,l]){const counts=new Map();for(const x of list){const id=identity(x),prior=buckets.get(id);if(prior&&id.startsWith('id:')&&!same(prior.value,x))conflict([...path,id]);counts.set(id,(counts.get(id)||0)+1);buckets.set(id,{value:clone(x),count:Math.max(prior?.count||0,counts.get(id))});}}return [...buckets.values()].flatMap(x=>Array.from({length:x.count},()=>clone(x.value))).sort((a,z)=>{const ta=obj(a)?String(a.at??a.time??a.day??a.startedAt??''):String(a),tz=obj(z)?String(z.at??z.time??z.day??z.startedAt??''):String(z);const order=ta.localeCompare(tz)||identity(a).localeCompare(identity(z));return ['history','dailyHistory'].includes(path.at(-1))?-order:order;});}
 function mergeNode(b,l,r,path){
  // Counter deltas must be added even when both devices independently reach the same value.
  if(additive(path)&&typeof l==='number'&&typeof r==='number') {const before=b??0;if(!Number.isSafeInteger(before)||!Number.isSafeInteger(l)||!Number.isSafeInteger(r)||l<before||r<before)conflict(path);const n=r+(l-before);if(!Number.isSafeInteger(n))conflict(path);return n;}
@@ -5445,9 +5449,10 @@ function mergeNode(b,l,r,path){
   // Mastery scheduling cannot infer a global answer order from two offline aggregates.
   // Preserve counts; take the more conservative streak/level/due when both changed.
   if(path[0]==='hiszpanskiFrankaProgressV1'&&path[1]==='mastery'&&path.length===3){if(same(r,b))return clone(l);const out={...clone(r),right:mergeNode(b?.right,l.right,r.right,[...path,'right']),wrong:mergeNode(b?.wrong,l.wrong,r.wrong,[...path,'wrong'])};for(const f of ['streak','level','due'])out[f]=Math.min(l[f]??0,r[f]??0);out.last=Math.max(l.last??0,r.last??0);out.source='family-sync';return out;}
+  if(path[0]==='hiszpanskiFrankaSmart7V1'&&path[1]==='sentences'&&path.length===3){if(same(r,b))return clone(l);const out={...clone((l.last??0)>(r.last??0)?l:r),right:mergeNode(b?.right,l.right,r.right,[...path,'right']),wrong:mergeNode(b?.wrong,l.wrong,r.wrong,[...path,'wrong']),streak:Math.min(l.streak??0,r.streak??0),due:Math.min(l.due??0,r.due??0)};return out;}
   if(path[0]==='hiszpanskiFrankaJourney8V1'&&path[1]==='entries'&&path.length===3){if(same(r,b))return clone(l);const out={...clone(r),right:mergeNode(b?.right,l.right,r.right,[...path,'right']),wrong:mergeNode(b?.wrong,l.wrong,r.wrong,[...path,'wrong']),streak:Math.min(l.streak??0,r.streak??0),next:Math.min(l.next??0,r.next??0),days:arrayMerge(b?.days,l.days||[],r.days||[],[...path,'days'])};return out;}
   if(path[0]==='hiszpanskiFrankaPath10V2'&&path.length===3){const chosen=String(l.date||'')>String(r.date||'')?l:r;return {...clone(chosen),done:!!(l.done||r.done)};}
-  const out={};for(const k of new Set([...Object.keys(b||{}),...Object.keys(l),...Object.keys(r)])){const v=mergeNode(b?.[k],l[k],r[k],[...path,k]);if(v!==undefined)out[k]=v;}return out;
+  const out={};for(const k of new Set([...Object.keys(b||{}),...Object.keys(l),...Object.keys(r)])){const v=path[0]==='hiszpanskiFrankaSpeaking20V1'&&path.length===1&&k==='lastPhrase'?clone(String(l.lastAt||'')>String(r.lastAt||'')?l[k]:r[k]):mergeNode(b?.[k],l[k],r[k],[...path,k]);if(v!==undefined)out[k]=v;}if(path[0]==='hiszpanskiFrankaSprint6ProgressV1'&&['school','a1'].includes(path[1])&&path.length===3&&out.history?.length)out.incorrect=clone(out.history[0].incorrect||[]);return out;
  }
  if(same(l,b))return clone(r);if(same(r,b)||same(l,r))return clone(l);
  if(path.includes('badges')&&path.at(-1)==='date')return [l,r].sort()[0];
@@ -5457,7 +5462,7 @@ function mergeNode(b,l,r,path){
  if(typeof l==='boolean'&&typeof r==='boolean'&&['done','initialized','finished'].includes(path.at(-1)))return l||r;
  conflict(path);
 }
-function merge(base,local,remote){validate(base);validate(local);validate(remote);const out={};for(const k of new Set([...Object.keys(base),...Object.keys(local),...Object.keys(remote)])){const parse=d=>d[k]===undefined?undefined:JSON.parse(d[k]);const v=mergeNode(parse(base),parse(local),parse(remote),[k]);if(v!==undefined)out[k]=canonical(v);}return out;}
+function merge(base,local,remote){validate(base);validate(local);validate(remote);function monotonic(b,l,path){if(additive(path)&&typeof b==='number'&&typeof l==='number'&&l<b)conflict(path);if(obj(b)&&obj(l))for(const k of Object.keys(b))monotonic(b[k],l[k],[...path,k]);}for(const k of Object.keys(base)){if(local[k])monotonic(JSON.parse(base[k]),JSON.parse(local[k]),[k]);if(remote[k])monotonic(JSON.parse(base[k]),JSON.parse(remote[k]),[k]);}const out={};for(const k of new Set([...Object.keys(base),...Object.keys(local),...Object.keys(remote)])){const parse=d=>d[k]===undefined?undefined:JSON.parse(d[k]);const v=mergeNode(parse(base),parse(local),parse(remote),[k]);if(v!==undefined)out[k]=canonical(v);}return out;}
 const api={shared,materialize,merge,validate,same,canonical};if(typeof module==='object'&&module.exports)module.exports=api;else root.hf37LearningCore=api;
 })(typeof window==='object'?window:globalThis);
 </script>
