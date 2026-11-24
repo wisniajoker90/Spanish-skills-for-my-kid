@@ -70,3 +70,21 @@ Wznawianie po błędzie lub odświeżeniu: „Ponów przerwane łączenie”. Za
 Biblioteka QR: qrcode-generator 2.0.4 (Kazuhiko Arase, MIT), wbudowana do pilota/index.html, źródło i licencja w vendor/. jsQR 1.4.0 jest zależnością wyłącznie testową. Żadne CDN ani usługi generowania QR nie otrzymują kodu.
 
 M08 po aktualizacji Workera v3: rodzic generuje QR; zeskanować aparatem trzeciego urządzenia, wpisać nazwę, połączyć. Oczekiwane 7 punktów. Dodać jeden na nowym urządzeniu i zsynchronizować pozostałe: po 8. M09: ten sam QR nie może dodać nowego niezależnego urządzenia po zużyciu (istniejąca autoryzowana próba może być wznowiona).
+
+## Rzeczywisty profil na TEST — Worker v4
+
+24.11.2026: M01–M09 PASS potwierdzone przez właściciela. QR działa, pilot ma 8 fikcyjnych punktów. Właściciel zachował eksport Safari i odtworzył go lokalnie na TEST. Prywatna kopia nie jest częścią repozytorium ani publicznego wdrożenia.
+
+Nowy panel „Postęp nauki — TEST” wymaga osobnego potwierdzenia i świadomego wyboru profilu. Rodzic publikuje punkt startowy tylko raz. Pobranie na drugim urządzeniu tworzy NOWY profil, zachowując wcześniejsze. Pilot pozostaje oddzielny. Backend v4 tworzy tabelę `profile_versions` automatycznie przy pierwszej operacji; nie wymaga ręcznych zmian D1 ani sekretu. Aktualizacja Workera nadal ręczna. Health: learningProfiles/versionHistory true, syncEnabled false (produkcja nadal niepodłączona).
+
+Synchronizacja tego etapu jest RĘCZNA, po ukończeniu ćwiczenia, przy jednej otwartej karcie aplikacji. Nie jest to jeszcze automatyczna synchronizacja produkcyjna. Przeglądarka musi obsługiwać Web Locks. Niedokończone ćwiczenia, misja dzienna i pozycja na ekranie są lokalne; ukończenia, słówka, liczniki, odznaki i historia są współdzielone.
+
+Każda wysyłka zapisuje lokalnie stały identyfikator i kopie przed/po. Serwerowy profil zachowuje identyfikatory zastosowanych operacji. Po utracie odpowiedzi ponowienie nie dodaje ponownie tych samych punktów. Konflikt rewizji pobiera nową wersję i przelicza deltę. Dodatkowe lokalne zmiany podczas sieci otrzymują kolejną operację. Konta rodziny i endpointy autoryzacji są te same co w pilocie.
+
+Scalanie: dodatnie delty liczników, suma zaliczeń i odznak, historie po identyfikatorach (legacy duplikaty zachowane), zachowanie historii mimo lokalnego skracania list. Równoległe odpowiedzi nie pozwalają odtworzyć pełnej chronologii: przy scalaniu mastery przyjmujemy ostrożniejszy streak/level/termin powtórki. Nierozpoznane konflikty zatrzymują zapis i zachowują obie kopie; brak wymuszonego nadpisania. Przyszłe wpisy nagród i sesji powtórek otrzymują UUID. Przy dojściu do istniejącego limitu 1 MiB backend odrzuci zapis; kompaktowanie historii/identyfikatorów to późniejszy etap.
+
+Archiwum poprzedniej wersji i aktualizacja profilu są jedną transakcją D1. Jeśli archiwum nie zapisze się, profil nie jest nadpisany. Rodzic może pobrać wcześniejsze wersje jako standardowy JSON do importu nowego profilu. Lokalny zapis używa dziennika cofania przed zmianami i odzyskuje przerwaną transakcję przy starcie; zachowuje też ostatnią kopię lokalną. W razie braku miejsca operacja zatrzymuje się.
+
+Testy: worker.test.mjs (26), learning.test.cjs (16), dotychczasowy pilot UI (14), learning-sync.spec.js (7) i niezmienione 96 testów regresji. Testy sieci UI używają fikcyjnego backendu; odbiór na prawdziwym Cloudflare po wdrożeniu Workera v4 pozostaje konieczny.
+
+Kolejność odbioru: v4 health → M10 udostępnienie aktywnego „Franek (import)” → M11 pobranie na sparowanym Androidzie → M12 ukończenie ćwiczenia i synchronizacja obu urządzeń → M13 dwie różne aktywności offline i scalenie → M14 pobranie poprzedniej wersji. Dopiero potem decyzja o produkcji; świeży eksport z Safari przed jej uruchomieniem.

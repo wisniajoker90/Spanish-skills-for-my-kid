@@ -320,9 +320,22 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 <div class="tabs" hidden="" id="tabs"><button class="active" data-unit="0">Unidad Inicial</button><button data-unit="1">Otoño</button><button data-unit="2">Invierno</button><button data-unit="3">Primavera</button><button data-unit="4">Verano</button><button data-unit="5">💬 Daily chat</button></div>
 <section class="panel epic-games" hidden="" id="epicGames"><button class="secondary" id="uxCloseGames" type="button">← Wróć do wyboru ćwiczenia</button><h2>🎮 Gry edukacyjne</h2><p class="small">Wybierz rozdział, grę i poziom trudności.</p><div class="game-setup"><label>Rozdział <select id="epicUnit"></select></label><label>Poziom <select id="epicLevel"><option value="easy">⭐ Łatwy</option><option value="medium">⭐⭐ Średni</option><option value="hard">⭐⭐⭐ Trudny</option></select></label></div><div class="game-menu" id="epicMenu"><button data-epic="memory">🧠 Memory z ilustracjami</button><button data-epic="sentence-memory">🗣️ Memory ze zdaniami</button><button data-epic="audio">🎧 Zgadnij ze słuchu</button><button data-epic="match">🎯 Dopasuj pary</button><button data-epic="letters">🔤 Rozsypanka liter</button><button data-epic="timed">⏱️ Wyzwanie 60 sekund</button></div><div class="junior-setup"><label><input checked="" id="juniorMode" type="checkbox"/> 🌟 Rozsypanka Junior: obrazek, odsłuch i pomoc</label><p class="small">Dotyczy rozsypanki. Odznacz, aby grać w klasyczną wersję.</p></div><div class="epic-stage" hidden="" id="epicStage"><div class="stage-top"><h3 id="epicTitle"></h3><button class="secondary" id="epicExit">← Wybierz grę</button></div><p class="small" id="epicScore"></p><div id="epicContent"></div><p aria-live="polite" class="feedback" id="epicFeedback"></p></div></section><section class="parent-notes panel" id="parentNotes"><details><summary>ℹ️ Dla rodzica · urządzenia i informacje techniczne</summary><div class="crossplatform"><h3>Jedna aplikacja na wszystkie urządzenia</h3><p style="margin:0 0 12px">Aplikacja działa w przeglądarce na komputerze i urządzeniach mobilnych. Aplikacja obsługuje instalację PWA i pamięć offline po pierwszym wczytaniu online. Wymaga publikacji wszystkich plików paczki.</p><div class="platforms"><span>🖥️ Windows / Mac</span><span>🤖 Android</span><span>📱 iPhone / iPad</span></div><p class="small" style="margin:12px 0 0">Publikacja w App Store i Google Play to osobny etap; prototyp nie jest jeszcze opublikowaną aplikacją.</p></div><p class="small">Postępy są zapisane lokalnie w tej przeglądarce. Dostępność głosu hiszpańskiego zależy od urządzenia i połączenia.</p></details></section><footer>Wymowa zależy od głosu hiszpańskiego dostępnego na urządzeniu. Przycisk audio korzysta z wbudowanego syntezatora mowy, więc głos i działanie offline mogą różnić się między urządzeniami. W tej wersji nie ma jeszcze oryginalnych nagrań z podręcznika.</footer>
 </div></div></main></div>
+
+
+<!-- Family Sync learning storage BEGIN -->
+<script>/* Crash-recoverable local application. Journal is removed only after all values verify. */
+(function(root){'use strict';const JOURNAL='hf37:learning-transaction';
+function recover(storage){const raw=storage.getItem(JOURNAL);if(!raw)return false;const saved=JSON.parse(raw);if(!Array.isArray(saved.before))throw Error('Nie można odtworzyć kopii synchronizacji.');for(const[k,v]of saved.before)if(v===null)storage.removeItem(k);for(const[k,v]of saved.before)if(v!==null)storage.setItem(k,v);for(const[k,v]of saved.before)if(storage.getItem(k)!==v)throw Error('Nie udało się odtworzyć zapisu.');storage.removeItem(JOURNAL);return true;}
+function commit(storage,updates){recover(storage);const before=Object.keys(updates).map(k=>[k,storage.getItem(k)]);storage.setItem(JOURNAL,JSON.stringify({before}));try{for(const[k,v]of Object.entries(updates)){if(v===null)storage.removeItem(k);else storage.setItem(k,v);if(storage.getItem(k)!==v)throw Error('Nie udało się zweryfikować zapisu.');}storage.removeItem(JOURNAL);}catch(e){try{recover(storage)}catch{throw Error('Zapis przerwany. Kopia odzyskiwania jest zachowana. Nie usuwaj danych przeglądarki.');}throw e;}}
+const api={commit,recover};if(typeof module==='object'&&module.exports)module.exports=api;else root.hf37LearningStorage=api;
+})(typeof window==='object'?window:globalThis);
+
+if(location.hostname==='hiszpanski-franka-test.pages.dev'||(['localhost','127.0.0.1'].includes(location.hostname)&&navigator.webdriver)){try{hf37LearningStorage.recover(localStorage)}catch(e){window.hf37RecoveryFailed=true;document.body.inert=true;alert('Nie udało się odzyskać zapisu synchronizacji. Nie usuwaj danych przeglądarki.');}}</script>
+<!-- Family Sync learning storage END -->
 <script>
 /* Sprint 18.0: additive migration, immutable legacy data, isolated profile storage. */
 (function(){'use strict';
+if(window.hf37RecoveryFailed)throw Error('Learning sync recovery required');
 const native=window.localStorage, META='hf18:meta', PREFIX='hf18:p:', SNAP='hf18:legacy-snapshot';
 const valid=k=>/^(hiszpanskiFranka[A-Za-z0-9_-]{0,100}|franka(?:Ux|Learning|Progress)[A-Za-z0-9_-]{0,100})$/i.test(k);
 const read=(k,d)=>{try{return JSON.parse(native.getItem(k))??d}catch{return d}};
@@ -1923,7 +1936,7 @@ let state=read(KEY);if(!state||typeof state!=='object'||Array.isArray(state))sta
 if(!Array.isArray(state.events))state.events=[];if(!state.badges||typeof state.badges!=='object')state.badges={};
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 function save(){try{frankaStore.setItem(KEY,JSON.stringify(state))}catch(e){}}
-function evt(kind){const day=today();state.events.push({day,kind});state.events=state.events.slice(-700);save();render()}
+function evt(kind){const day=today();state.events.push({id:crypto.randomUUID(),day,kind});state.events=state.events.slice(-700);save();render()}
 const names={1:'Otoño',2:'Invierno',3:'Primavera',4:'Verano'};
 const icons={1:'🍂',2:'❄️',3:'🌸',4:'☀️'};
 function allStages(){const progress=read(PATH),out=[];for(const u of [1,2,3,4]){const v=progress[u]||{};for(const [k,r] of Object.entries(v)){if(r&&r.done)out.push({u,k,kind:k.split(':')[0],date:r.date})}}return out}
@@ -2770,7 +2783,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  }
  function finish(){const area=$('hf23Body');area.replaceChildren();const pct=answered?Math.round(correct/answered*100):0;area.append(el('h3',`🏆 Brawo, ${profile()}!`),el('p',`Poprawne odpowiedzi: ${correct}/${answered} (${pct}%).`),el('p',pct>=85?'Świetnie! Kolejna powtórka może być trochę trudniejsza.':pct<55?'Ćwiczymy spokojnie — następnym razem więcej znanych słówek.':'Dobra praca! Warto wrócić do trudniejszych słówek.'));
   $('hf23Counter').textContent='Sesja ukończona';$('hf23Progress').style.width='100%';$('hf23Next').hidden=true;
-  if(!state.partial?.finished){const previous=awards(state);const today=day();state.sessions||=[];state.sessions.push({day:today,answered,correct,level,finished:true,at:new Date().toISOString()});state.sessions=state.sessions.slice(-90);state.partial={finished:true};if(!write(state))$('hf23Feedback').textContent='⚠️ Nie udało się zapisać sesji. Sprawdź miejsce na urządzeniu.';else { $('hf23Feedback').textContent='🌟 Postęp zapisany w Twoim profilu.';const earned=awards(state).filter((a,i)=>a.ok&&!previous[i].ok).map(a=>a.name);if(earned.length)window.dispatchEvent(new CustomEvent('franka:hf24-awards-earned',{detail:{names:earned}})); }}
+  if(!state.partial?.finished){const previous=awards(state);const today=day();state.sessions||=[];state.sessions.push({id:crypto.randomUUID(),day:today,answered,correct,level,finished:true,at:new Date().toISOString()});state.sessions=state.sessions.slice(-90);state.partial={finished:true};if(!write(state))$('hf23Feedback').textContent='⚠️ Nie udało się zapisać sesji. Sprawdź miejsce na urządzeniu.';else { $('hf23Feedback').textContent='🌟 Postęp zapisany w Twoim profilu.';const earned=awards(state).filter((a,i)=>a.ok&&!previous[i].ok).map(a=>a.name);if(earned.length)window.dispatchEvent(new CustomEvent('franka:hf24-awards-earned',{detail:{names:earned}})); }}
   const again=el('button','Zakończ i wróć','hf23-primary');again.type='button';again.onclick=close;area.append(again);renderAwards();window.frankaLevel14?.render?.();
  }
  function open(){if(!pool().length){alert('Brak materiału do powtórek.');return}opener=document.activeElement;state=read();let resume=false;
@@ -5361,7 +5374,7 @@ function render(){const linked=!!state.token;$('JoinRetry').hidden=!state.joinAt
 async function request(path,method='GET',data,headers={}){const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),15000);try{const r=await fetch(API+path,{method,headers:{...(state.token?{Authorization:'Bearer '+state.token}:{}),...(data!==undefined?{'Content-Type':'application/json'}:{}),...headers},body:data===undefined?undefined:JSON.stringify(data),signal:ctrl.signal,cache:'no-store',credentials:'omit'});const result=await r.json();if(!r.ok){const e=new Error(result.error||'request_failed');e.status=r.status;throw e;}return result;}finally{clearTimeout(timer)}}
 function friendly(e){if(e.status===401)return 'Brak dostępu: sprawdź klucz konfiguracji albo czy urządzenie nie zostało odłączone.';if(e.status===409&&e.message==='family_already_exists')return 'Rodzina testowa już istnieje. Wróć na pierwsze urządzenie i wygeneruj kod parowania. Nie usuwaj danych przeglądarki.';if(e.message==='family_not_found')return 'Nie ma jeszcze rodziny testowej. Najpierw utwórz ją na pierwszym urządzeniu.';if(e.message==='recovery_expired')return 'Ta próba odzyskiwania została zastąpiona nowszą. Zamknij panel i spróbuj ponownie.';if(e.status===410)return 'Kod wygasł lub został użyty. Wygeneruj nowy na pierwszym urządzeniu.';if(e.name==='QuotaExceededError')return 'Brak miejsca na zapis lokalny. Nie zamykaj strony ani nie usuwaj danych.';return 'Nie udało się zakończyć operacji. Lokalne punkty nadal czekają. Sprawdź połączenie i spróbuj ponownie.';}
 async function action(fn){if(busy)return;busy=true;render();try{await fn()}catch(e){message(friendly(e))}finally{busy=false;render()}}
-async function ensureProfile(){if(state.profileId)return;const me=await request('/v1/me'),list=await request('/v1/profiles');if(list.profiles.length!==1)throw Error('Nieoczekiwane profile');save({...state,deviceId:me.device.id,role:me.device.role,name:me.device.name,profileId:list.profiles[0].id});}
+async function ensureProfile(){if(state.profileId)return;const me=await request('/v1/me'),list=await request('/v1/profiles');const candidates=list.profiles.filter(p=>p.id!=='00000000-0000-4000-8000-000000000037');if(candidates.length!==1)throw Error('Nieoczekiwane profile');save({...state,deviceId:me.device.id,role:me.device.role,name:me.device.name,profileId:candidates[0].id});}
 async function sync(){if(!state.token)return;if(simulate||!navigator.onLine){message('Tryb offline — punkty zapisane na tym urządzeniu.');return;}await ensureProfile();for(let attempt=0;attempt<4;attempt++){const remote=await request('/v1/profiles/'+state.profileId);if(remote.snapshot?.schema!==1||remote.snapshot?.data?.pilot!==true||!Array.isArray(remote.snapshot.data.events))throw Error('To nie jest fikcyjny profil pilota');const combined=merge(remote.snapshot.data.events,state.events,state.pending);if(JSON.stringify(combined)===JSON.stringify(merge(remote.snapshot.data.events))){save({...state,events:combined,pending:[],revision:remote.revision,lastSync:Date.now()});message('Zsynchronizowano fikcyjne punkty.');return;}
 try{const result=await request('/v1/profiles/'+state.profileId,'PUT',{baseRevision:remote.revision,snapshot:{schema:1,data:{pilot:true,events:combined}}});save({...state,events:combined,pending:[],revision:result.revision,lastSync:Date.now()});message('Zsynchronizowano fikcyjne punkty.');return;}catch(e){if(e.status!==409)throw e;}}
 throw Error('Powtarzający się konflikt');}
@@ -5404,4 +5417,108 @@ window.addEventListener('online',()=>{if(state.token)action(sync)});render();
 })();
 </script>
 
+
+
+<!-- Family Sync learning UI BEGIN -->
+<script>/* Family Sync learning merge: three-way deltas, no writes or network. */
+(function(root){'use strict';
+const KEYS=['A1Practice39V1','A1ProgressV1','Car26V1','DailyMission20V1','Exam13V1','Insights25V1','Journey8V1','LastActivityV1','Level14V1','Path10V2','ProgressV1','Skills22V1','Smart23V1','Smart7V1','Speaking20V1','Sprint6ProgressV1'].map(k=>'hiszpanskiFranka'+k);
+const LOCAL=new Set(['hiszpanskiFrankaDailyMission20V1','hiszpanskiFrankaLastActivityV1']);
+const obj=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
+const clone=x=>x===undefined?undefined:JSON.parse(JSON.stringify(x));
+function canonical(x){if(Array.isArray(x))return '['+x.map(canonical).join(',')+']';if(obj(x))return '{'+Object.keys(x).sort().map(k=>JSON.stringify(k)+':'+canonical(x[k])).join(',')+'}';return JSON.stringify(x);}
+const same=(a,b)=>canonical(a)===canonical(b);
+function validate(records){if(!obj(records)||Object.keys(records).length>KEYS.length)throw Error('Nieprawidłowy profil nauki.');for(const[k,v]of Object.entries(records)){if(!KEYS.includes(k)||typeof v!=='string'||v.length>700000)throw Error('Nieobsługiwane dane profilu: '+k);let d;try{d=JSON.parse(v)}catch{throw Error('Uszkodzony zapis: '+k)}if(!obj(d))throw Error('Nieprawidłowy zapis: '+k);const check=(x,depth=0)=>{if(depth>30)throw Error('Zbyt złożone dane.');if(obj(x)||Array.isArray(x))for(const[n,y]of Object.entries(x)){if(['__proto__','prototype','constructor'].includes(n))throw Error('Niedozwolone pole.');check(y,depth+1)}};check(d);if(k.endsWith('ProgressV1')&&k.includes('FrankaProgress'))for(const f of ['points','quizCorrect','quizTotal'])if(d[f]!==undefined&&(!Number.isSafeInteger(d[f])||d[f]<0))throw Error('Nieprawidłowy licznik.');}return records;}
+function shared(records){validate(records);const out={};for(const[k,v]of Object.entries(records)){if(LOCAL.has(k))continue;const d=JSON.parse(v);if(k==='hiszpanskiFrankaProgressV1'){delete d.unit;delete d.index;}if(k==='hiszpanskiFrankaCar26V1'||k==='hiszpanskiFrankaA1Practice39V1')delete d.pending;if(k==='hiszpanskiFrankaSmart23V1')delete d.partial;out[k]=canonical(d);}return out;}
+function materialize(records,local={}){validate(records);validate(local);const out={...local};for(const[k,v]of Object.entries(records)){const d=JSON.parse(v),prev=JSON.parse(local[k]||'{}');if(k==='hiszpanskiFrankaProgressV1'){d.unit=prev.unit??1;d.index=prev.index??0;}if(k==='hiszpanskiFrankaCar26V1'||k==='hiszpanskiFrankaA1Practice39V1')d.pending=prev.pending??null;if(k==='hiszpanskiFrankaSmart23V1'&&prev.partial!==undefined)d.partial=prev.partial;out[k]=JSON.stringify(d);}return out;}
+function conflict(path){throw Error('Nie można bezpiecznie scalić pola '+path.join(' / ')+'. Obie kopie zostały zachowane.');}
+const counters=new Set(['points','quizCorrect','quizTotal','right','wrong','count','total','repeated','practised','confident','needsHelp','spoken','listeningAttempts','listeningCorrect','vocabularyAttempts','vocabularyCorrect','speakingAttempts','dialogueAttempts']);
+function additive(path){const k=path[0],f=path.at(-1);if(k==='hiszpanskiFrankaPath10V2'||k==='hiszpanskiFrankaSprint6ProgressV1')return false;if(k==='hiszpanskiFrankaSpeaking20V1'&&path[1]==='bySeason')return true;return counters.has(f);}
+function arrayMerge(b,l,r,path){b=Array.isArray(b)?b:[];const identity=x=>obj(x)&&typeof x.id==='string'?'id:'+x.id:canonical(x);const buckets=new Map();for(const list of [b,r,l]){const counts=new Map();for(const x of list){const id=identity(x),prior=buckets.get(id);if(prior&&id.startsWith('id:')&&!same(prior.value,x))conflict([...path,id]);counts.set(id,(counts.get(id)||0)+1);buckets.set(id,{value:clone(x),count:Math.max(prior?.count||0,counts.get(id))});}}return [...buckets.values()].flatMap(x=>Array.from({length:x.count},()=>clone(x.value))).sort((a,z)=>{const ta=obj(a)?String(a.at??a.day??a.startedAt??''):String(a),tz=obj(z)?String(z.at??z.day??z.startedAt??''):String(z);return ta.localeCompare(tz)||identity(a).localeCompare(identity(z));});}
+function mergeNode(b,l,r,path){
+ // Counter deltas must be added even when both devices independently reach the same value.
+ if(additive(path)&&typeof l==='number'&&typeof r==='number') {const before=b??0;if(!Number.isSafeInteger(before)||!Number.isSafeInteger(l)||!Number.isSafeInteger(r)||l<before||r<before)conflict(path);const n=r+(l-before);if(!Number.isSafeInteger(n))conflict(path);return n;}
+ if(l===undefined)return clone(r);if(r===undefined)return clone(l);
+ if(Array.isArray(l)&&Array.isArray(r))return same(l,b)?clone(r):arrayMerge(b,l,r,path);
+ if(obj(l)&&obj(r)){
+  if(same(l,b))return clone(r);
+  // Mastery scheduling cannot infer a global answer order from two offline aggregates.
+  // Preserve counts; take the more conservative streak/level/due when both changed.
+  if(path[0]==='hiszpanskiFrankaProgressV1'&&path[1]==='mastery'&&path.length===3){if(same(r,b))return clone(l);const out={...clone(r),right:mergeNode(b?.right,l.right,r.right,[...path,'right']),wrong:mergeNode(b?.wrong,l.wrong,r.wrong,[...path,'wrong'])};for(const f of ['streak','level','due'])out[f]=Math.min(l[f]??0,r[f]??0);out.last=Math.max(l.last??0,r.last??0);out.source='family-sync';return out;}
+  if(path[0]==='hiszpanskiFrankaJourney8V1'&&path[1]==='entries'&&path.length===3){if(same(r,b))return clone(l);const out={...clone(r),right:mergeNode(b?.right,l.right,r.right,[...path,'right']),wrong:mergeNode(b?.wrong,l.wrong,r.wrong,[...path,'wrong']),streak:Math.min(l.streak??0,r.streak??0),next:Math.min(l.next??0,r.next??0),days:arrayMerge(b?.days,l.days||[],r.days||[],[...path,'days'])};return out;}
+  if(path[0]==='hiszpanskiFrankaPath10V2'&&path.length===3){const chosen=String(l.date||'')>String(r.date||'')?l:r;return {...clone(chosen),done:!!(l.done||r.done)};}
+  const out={};for(const k of new Set([...Object.keys(b||{}),...Object.keys(l),...Object.keys(r)])){const v=mergeNode(b?.[k],l[k],r[k],[...path,k]);if(v!==undefined)out[k]=v;}return out;
+ }
+ if(same(l,b))return clone(r);if(same(r,b)||same(l,r))return clone(l);
+ if(path.includes('badges')&&path.at(-1)==='date')return [l,r].sort()[0];
+ if(['lastAt','last','at','date'].includes(path.at(-1)))return l>r?l:r;
+ if(path[0]==='hiszpanskiFrankaProgressV1'&&path[1]==='words')return l==='review'||r==='review'?'review':r;
+ if(path.includes('checkpoints')&&typeof l==='number'&&typeof r==='number')return Math.max(l,r);
+ if(typeof l==='boolean'&&typeof r==='boolean'&&['done','initialized','finished'].includes(path.at(-1)))return l||r;
+ conflict(path);
+}
+function merge(base,local,remote){validate(base);validate(local);validate(remote);const out={};for(const k of new Set([...Object.keys(base),...Object.keys(local),...Object.keys(remote)])){const parse=d=>d[k]===undefined?undefined:JSON.parse(d[k]);const v=mergeNode(parse(base),parse(local),parse(remote),[k]);if(v!==undefined)out[k]=canonical(v);}return out;}
+const api={shared,materialize,merge,validate,same,canonical};if(typeof module==='object'&&module.exports)module.exports=api;else root.hf37LearningCore=api;
+})(typeof window==='object'?window:globalThis);
+</script>
+<script>/* TEST-only manual real-profile synchronization. No automatic production migration. */
+(()=>{'use strict';
+const allowed=location.hostname==='hiszpanski-franka-test.pages.dev'||(['localhost','127.0.0.1'].includes(location.hostname)&&navigator.webdriver);
+if(!allowed)return;
+const C=window.hf37LearningCore,S=window.hf37LearningStorage,API='https://franka-family-sync-test.wisniajoker90.workers.dev',REMOTE='00000000-0000-4000-8000-000000000037';
+const node=(tag,text)=>{const n=document.createElement(tag);if(text)n.textContent=text;return n;};
+const box=node('section');box.id='fs37Learning';box.style.cssText='margin-top:24px;border-top:2px solid #c9d7e6;padding-top:16px';
+box.innerHTML='<h3>Postęp nauki — TEST</h3><p id="fs37LearningIdentity"></p><p>Synchronizuj po zakończeniu ćwiczenia, w jednej karcie aplikacji. Niedokończone ćwiczenia pozostają na swoim urządzeniu.</p><label><input id="fs37LearningConfirm" type="checkbox"> Potwierdzam pracę na kopii TEST wybranego profilu.</label><div style="display:grid;gap:10px;margin-top:12px"><button id="fs37LearningPublish" type="button">Udostępnij wybrany profil — punkt startowy</button><button id="fs37LearningDownload" type="button">Pobierz wspólny profil jako nowy</button><button id="fs37LearningSync" type="button">Synchronizuj postęp nauki</button><button id="fs37LearningHistory" type="button">Kopie poprzednich wersji</button></div><p id="fs37LearningStatus" role="status"></p><div id="fs37LearningVersions"></div>';
+const host=document.querySelector('#fs37Linked');if(!host)return;host.append(box);
+const $=id=>document.getElementById('fs37Learning'+id),meta=()=>window.hfProfiles19.getMeta(),active=()=>meta().active,key=id=>'hf37:learning:'+id;
+let busy=false;
+function status(t){$('Status').textContent=t;}
+function refresh(){const m=meta(),p=m.profiles.find(x=>x.id===m.active),s=JSON.parse(localStorage.getItem(key(m.active))||'null');$('Identity').textContent='Wybrany profil: '+p.name+(s?' · połączony · wersja '+(s.revision||'startowa'):' · jeszcze niepołączony');}
+function credentials(){const p=JSON.parse(localStorage.getItem('family-sync-pilot37')||'null');if(!p?.token)throw Error('Najpierw połącz urządzenie przez Family Sync.');return p;}
+async function request(path,method='GET',data){const token=credentials().token,controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);try{const r=await fetch(API+path,{method,headers:{Authorization:'Bearer '+token,...(data?{'Content-Type':'application/json'}:{})},body:data?JSON.stringify(data):undefined,signal:controller.signal,cache:'no-store',credentials:'omit'});const v=await r.json();if(!r.ok){const e=Error(r.status===401?'Brak dostępu. Ponownie połącz urządzenie.':r.status===403?'Ta operacja wymaga dostępu rodzica.':v.error);e.status=r.status;throw e;}return v;}finally{clearTimeout(timer)}}
+function readState(id){return JSON.parse(localStorage.getItem(key(id))||'null');}
+function saveState(id,s){localStorage.setItem(key(id),JSON.stringify(s));}
+function readRemote(r){if(r.snapshot?.schema!==1||r.snapshot.data?.kind!=='learning-v1'||!Array.isArray(r.snapshot.data.applied))throw Error('Serwer nie zawiera obsługiwanego profilu nauki.');C.validate(r.snapshot.data.records);return r;}
+function ensureActive(id){if(active()!==id)throw Error('Profil zmienił się. Otwórz ponownie panel.');}
+function exportBackup(records,name){return {format:'hiszpanski-franka-backup',schema:2,appVersion:'family-sync-test-4',exportedAt:new Date().toISOString(),profiles:[{id:'franek-sync',name}],active:'franek-sync',data:{'franek-sync':records}};}
+function apply(id,records,state){ensureActive(id);const before=window.frankaStore.dump(),updates={};for(const[k,v]of Object.entries(C.materialize(records,before)))updates['hf18:p:'+id+':'+k]=v;updates['hf37:last-backup:'+id]=JSON.stringify(exportBackup(before,meta().profiles.find(p=>p.id===id).name));updates[key(id)]=JSON.stringify(state);S.commit(localStorage,updates);location.reload();}
+async function sync(id){ensureActive(id);let state=readState(id);if(!state)throw Error('Najpierw udostępnij profil lub pobierz go na to urządzenie.');
+for(let round=0;round<5;round++){
+ ensureActive(id);const current=C.shared(window.frankaStore.dump());
+ if(!state.pending){state={...state,pending:{id:crypto.randomUUID(),before:state.base,after:current}};saveState(id,state);}
+ const pending=state.pending;let remote=readRemote(await request('/v1/profiles/'+REMOTE));
+ if(!remote.snapshot.data.applied.includes(pending.id)&&!C.same(pending.before,pending.after)){
+  const merged=C.merge(pending.before,pending.after,remote.snapshot.data.records),snap={schema:1,data:{...remote.snapshot.data,records:merged,applied:[...remote.snapshot.data.applied,pending.id]}};
+  try{const r=await request('/v1/profiles/'+REMOTE,'PUT',{baseRevision:remote.revision,snapshot:snap});remote={...remote,revision:r.revision,snapshot:snap};}catch(e){if(e.status===409)continue;throw e;}
+ }
+ ensureActive(id);const now=C.shared(window.frankaStore.dump());
+ if(!C.same(now,pending.after)){state={...state,pending:{id:crypto.randomUUID(),before:pending.after,after:now}};saveState(id,state);continue;}
+ apply(id,remote.snapshot.data.records,{remoteId:REMOTE,base:remote.snapshot.data.records,revision:remote.revision,pending:null,lastSync:Date.now()});return;
+}
+throw Error('Pojawiły się kolejne zmiany. Zostały zachowane; ponów synchronizację.');}
+async function action(fn,confirmRequired=true){if(busy)return;if(confirmRequired&&!$('Confirm').checked){status('Potwierdź pracę na kopii TEST.');return;}if(!navigator.onLine){status('Brak internetu. Nauka jest zapisana lokalnie. Synchronizuj po odzyskaniu połączenia.');return;}if(!navigator.locks){status('Ta przeglądarka nie obsługuje bezpiecznej blokady synchronizacji. Zaktualizuj przeglądarkę.');return;}busy=true;for(const b of box.querySelectorAll('button'))b.disabled=true;status('Sprawdzam i zapisuję kopię…');try{await navigator.locks.request('hf37-learning',{ifAvailable:true},async lock=>{if(!lock)throw Error('Synchronizacja trwa w innej karcie.');const health=await request('/health');if(!health.learningProfiles||!health.versionHistory)throw Error('Zaktualizuj Worker TEST do family-sync-test-4.');await fn();});}catch(e){status(e.name==='AbortError'||e instanceof TypeError?'Nie udało się połączyć. Dane lokalne i próba synchronizacji są zachowane. Spróbuj ponownie.':e.message);}finally{busy=false;for(const b of box.querySelectorAll('button'))b.disabled=false;refresh();}}
+$('Publish').onclick=()=>action(async()=>{
+ const id=active();if(readState(id)){await sync(id);return;}
+ const me=await request('/v1/me');if(me.device.role!=='parent')throw Error('Punkt startowy wybiera rodzic.');
+ const initKey='hf37:init:'+id;let attempt=JSON.parse(localStorage.getItem(initKey)||'null');
+ if(!attempt){try{await request('/v1/profiles/'+REMOTE);throw Error('Wspólny profil już istnieje. Użyj „Pobierz wspólny profil jako nowy”.');}catch(e){if(e.status!==404)throw e;}
+ ensureActive(id);attempt={originId:crypto.randomUUID(),records:C.shared(window.frankaStore.dump()),name:meta().profiles.find(p=>p.id===id).name};localStorage.setItem(initKey,JSON.stringify(attempt));}
+ await request('/v1/learning','POST',{name:attempt.name,snapshot:{schema:1,data:{kind:'learning-v1',originId:attempt.originId,records:attempt.records,applied:[]}}});
+ const remote=readRemote(await request('/v1/profiles/'+REMOTE));if(remote.snapshot.data.originId!==attempt.originId)throw Error('Profil został wcześniej utworzony na innym urządzeniu. Pobierz go jako nowy profil.');
+ ensureActive(id);saveState(id,{remoteId:REMOTE,base:attempt.records,revision:1,pending:null});localStorage.removeItem(initKey);await sync(id);
+});
+$('Download').onclick=()=>action(async()=>{
+ const sourceId=active(),remote=readRemote(await request('/v1/profiles/'+REMOTE));ensureActive(sourceId);const m=meta();
+ const existing=m.profiles.find(p=>readState(p.id)?.remoteId===REMOTE);if(existing)throw Error('Ten profil jest już na urządzeniu: '+existing.name+'. Wybierz go i synchronizuj.');
+ if(m.profiles.length>=12)throw Error('Osiągnięto limit profili. Nie usuwamy istniejących danych.');
+ const id='sync-'+crypto.randomUUID(),records=C.materialize(remote.snapshot.data.records),updates={};for(const[k,v]of Object.entries(records))updates['hf18:p:'+id+':'+k]=v;
+ updates[key(id)]=JSON.stringify({remoteId:REMOTE,base:remote.snapshot.data.records,revision:remote.revision,pending:null,lastSync:Date.now()});
+ updates['hf18:meta']=JSON.stringify({...m,active:id,profiles:[...m.profiles,{id,name:remote.name+' · Sync TEST',createdAt:new Date().toISOString()}]});S.commit(localStorage,updates);location.reload();
+});
+$('Sync').onclick=()=>action(()=>sync(active()));
+$('History').onclick=()=>action(async()=>{const list=$('Versions');list.replaceChildren();const result=await request('/v1/profiles/'+REMOTE+'/history');if(!result.versions.length){status('Nie ma jeszcze wcześniejszych wersji. Kopia powstanie przy pierwszej zmianie wspólnego postępu.');return;}for(const v of result.versions){const button=node('button','Pobierz kopię wersji '+v.revision);button.onclick=()=>action(async()=>{const r=readRemote(await request('/v1/profiles/'+REMOTE+'/history/'+v.revision)),blob=new Blob([JSON.stringify(exportBackup(C.materialize(r.snapshot.data.records),'Franek — kopia wersji '+v.revision),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=node('a');a.href=url;a.download='hiszpanski-franka-sync-kopia-'+v.revision+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);status('Pobrano kopię. Jej import doda nowy profil.');},false);list.append(button);}status('Poprzednie wersje można pobrać bez zmiany bieżących danych.');},false);
+document.getElementById('fs37Launch')?.addEventListener('click',refresh);refresh();
+})();
+</script>
+<!-- Family Sync learning UI END -->
 </body></html>

@@ -1,7 +1,7 @@
 // Family Sync TEST backend v1. No production origin or automatic data migration.
 const HOST = 'franka-family-sync-test.wisniajoker90.workers.dev';
 const ORIGIN = 'https://hiszpanski-franka-test.pages.dev';
-const VERSION = 'family-sync-test-3';
+const VERSION = 'family-sync-test-4';
 const LIMIT = 1024 * 1024;
 const FAMILY = 'family-test'; // One family per TEST instance; setup cannot overwrite it.
 class HttpError extends Error { constructor(status, code) { super(code); this.status = status; } }
@@ -62,7 +62,7 @@ async function route(request, env) {
     const check = await db.prepare('SELECT 1 AS connected').first();
     const tables = await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name IN ('families','devices','profiles','pairing_codes')").all();
     const ready = check?.connected === 1 && tables.results.length === 4 && typeof env.FAMILY_SETUP_KEY === 'string' && env.FAMILY_SETUP_KEY.length >= 32;
-    return json({service: 'franka-family-sync-test', version: VERSION, database: check?.connected === 1 ? 'ok' : 'error', tablesReady: tables.results.length === 4, setupConfigured: typeof env.FAMILY_SETUP_KEY === 'string' && env.FAMILY_SETUP_KEY.length >= 32, backendReady: ready, syncEnabled: false, retrySafePairing: true}, ready ? 200 : 503);
+    return json({service: 'franka-family-sync-test', version: VERSION, database: check?.connected === 1 ? 'ok' : 'error', tablesReady: tables.results.length === 4, setupConfigured: typeof env.FAMILY_SETUP_KEY === 'string' && env.FAMILY_SETUP_KEY.length >= 32, backendReady: ready, syncEnabled: false, retrySafePairing: true, learningProfiles: true, versionHistory: true}, ready ? 200 : 503);
   }
   if (path === '/v1/setup' && method === 'POST') {
     if (typeof env.FAMILY_SETUP_KEY !== 'string' || env.FAMILY_SETUP_KEY.length < 32) fail(503, 'setup_unavailable');
@@ -140,6 +140,39 @@ async function route(request, env) {
     return json({deviceId: id, token}, 201);
   }
   const device = await authenticated(request, db);
+  const learningId = '00000000-0000-4000-8000-000000000037';
+  async function ensureHistory() {
+    await db.prepare(`CREATE TABLE IF NOT EXISTS profile_versions (
+      profile_id TEXT NOT NULL REFERENCES profiles(id), revision INTEGER NOT NULL,
+      snapshot_json TEXT NOT NULL, saved_at INTEGER NOT NULL, saved_by_device_id TEXT,
+      PRIMARY KEY(profile_id,revision))`).run();
+  }
+  if (path === '/v1/learning' && method === 'POST') {
+    parent(device);
+    const input = await body(request), name = label(input.name), data = snapshot(input.snapshot);
+    if(input.snapshot.data.kind !== 'learning-v1' || !input.snapshot.data.records || Array.isArray(input.snapshot.data.records)) fail(400,'invalid_learning_profile');
+    await ensureHistory();
+    const now = Date.now();
+    await statement(db, `INSERT OR IGNORE INTO profiles(id,family_id,name,revision,snapshot_json,updated_at,updated_by_device_id)
+      SELECT ?,?,?,1,?,?,? WHERE EXISTS(SELECT 1 FROM devices WHERE id=? AND revoked_at IS NULL AND role='parent')`, learningId, device.family_id, name, data, now, device.id, device.id).run();
+    const row = await statement(db,'SELECT id,revision FROM profiles WHERE id=? AND family_id=?',learningId,device.family_id).first();
+    if(!row) fail(401,'unauthorized');
+    return json({profileId:row.id,revision:row.revision});
+  }
+  const versions = path.match(/^\/v1\/profiles\/([a-f0-9-]{36})\/history(?:\/(\d+))?$/);
+  if(versions && method === 'GET') {
+    parent(device);
+    const own = await statement(db,'SELECT id FROM profiles WHERE id=? AND family_id=?',versions[1],device.family_id).first();
+    if(!own) fail(404,'profile_not_found');
+    await ensureHistory();
+    if(versions[2]) {
+      const row = await statement(db,'SELECT revision,snapshot_json,saved_at FROM profile_versions WHERE profile_id=? AND revision=?',versions[1],Number(versions[2])).first();
+      if(!row) fail(404,'version_not_found');
+      return json({revision:row.revision,savedAt:row.saved_at,snapshot:JSON.parse(row.snapshot_json)});
+    }
+    const rows = await statement(db,'SELECT revision,saved_at FROM profile_versions WHERE profile_id=? ORDER BY revision DESC LIMIT 50',versions[1]).all();
+    return json({versions:rows.results});
+  }
   if (path === '/v1/me' && method === 'GET') return json({device});
   if (path === '/v1/pairing' && method === 'POST') {
     parent(device); const now = Date.now(), code = random(16), expiresAt = now + 10 * 60 * 1000;
@@ -175,8 +208,16 @@ async function route(request, env) {
     const input = await body(request);
     if (!Number.isSafeInteger(input.baseRevision) || input.baseRevision < 1) fail(400, 'invalid_revision');
     const data = snapshot(input.snapshot), now = Date.now();
-    const result = await statement(db, `UPDATE profiles SET snapshot_json=?,revision=revision+1,updated_at=?,updated_by_device_id=?
-      WHERE id=? AND family_id=? AND revision=? AND EXISTS(SELECT 1 FROM devices WHERE id=? AND revoked_at IS NULL)`, data, now, device.id, profile[1], device.family_id, input.baseRevision, device.id).run();
+    await ensureHistory();
+    // Saving the previous version and replacing it are one transaction. A failed backup prevents the write.
+    const results = await db.batch([
+      statement(db, `INSERT OR IGNORE INTO profile_versions(profile_id,revision,snapshot_json,saved_at,saved_by_device_id)
+        SELECT id,revision,snapshot_json,?,? FROM profiles WHERE id=? AND family_id=? AND revision=?
+        AND EXISTS(SELECT 1 FROM devices WHERE id=? AND revoked_at IS NULL)`, now, device.id, profile[1], device.family_id, input.baseRevision, device.id),
+      statement(db, `UPDATE profiles SET snapshot_json=?,revision=revision+1,updated_at=?,updated_by_device_id=?
+      WHERE id=? AND family_id=? AND revision=? AND EXISTS(SELECT 1 FROM devices WHERE id=? AND revoked_at IS NULL)`, data, now, device.id, profile[1], device.family_id, input.baseRevision, device.id)
+    ]);
+    const result = results[1];
     if (result.meta.changes !== 1) {
       const current = await statement(db, 'SELECT revision FROM profiles WHERE id=? AND family_id=?', profile[1], device.family_id).first();
       if (!current) fail(404, 'profile_not_found');
