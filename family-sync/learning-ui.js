@@ -17,7 +17,7 @@ function visible(el){return !!el&&!el.hidden&&el.getClientRects().length>0;}
 function safeToRefresh(){
  if(document.hidden||Date.now()-lastInteraction<2000||!visible(document.getElementById('s15Today')))return false;
  if(window.hfCar26?.isRunning?.()||window.hf27bAudio?.owner||window.speechSynthesis?.speaking||window.speechSynthesis?.pending)return false;
- if(document.querySelector('#s15DailyDetails[open],#s15CoachDetails[open],#s13ExamDetails[open]'))return false;
+ if([...document.querySelectorAll('#s15DailyDetails[open],#s15CoachDetails[open],#s13ExamDetails[open]')].some(visible))return false;
  if([...document.querySelectorAll('[role="dialog"],#hf202Shade,#s39Shade,#hf192Shade')].some(visible))return false;
  return true;
 }
