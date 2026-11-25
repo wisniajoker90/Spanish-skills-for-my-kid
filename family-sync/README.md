@@ -1,6 +1,6 @@
 # Sprint 37 — Family Sync, etap backend TEST
 
-Status: pilot na fikcyjnych danych. M01–M05 potwierdzone PASS przez Michała (23.11.2026), na komputerze 6 punktów, drugie urządzenie odłączone. Wersja 2 wymaga ręcznej aktualizacji Workera przed testem odzyskiwania rodzica. Sprint 39 jest opublikowany na produkcji; tego kodu nie scalać ani nie włączać na produkcji bez odbioru.
+Status bieżący: M01–M14 potwierdzone PASS. Worker v4 działa na TEST. Rzeczywisty profil, scalanie offline i odzyskanie kopii sprawdzone przez właściciela. Przygotowana automatyczna synchronizacja TEST, włączana osobno dla profilu na każdym urządzeniu; bez zmian produkcji. Starsze sekcje poniżej dokumentują kolejne etapy.
 
 ## Zasoby potwierdzone przez Michała
 
@@ -88,3 +88,14 @@ Archiwum poprzedniej wersji i aktualizacja profilu są jedną transakcją D1. Je
 Testy: worker.test.mjs (26), learning.test.cjs (18), dotychczasowy pilot UI (14), learning-sync.spec.js (8) i niezmienione 96 testów regresji. Testy sieci UI używają fikcyjnego backendu; odbiór na prawdziwym Cloudflare po wdrożeniu Workera v4 pozostaje konieczny.
 
 Kolejność odbioru: v4 health → M10 udostępnienie aktywnego „Franek (import)” → M11 pobranie na sparowanym Androidzie → M12 ukończenie ćwiczenia i synchronizacja obu urządzeń → M13 dwie różne aktywności offline i scalenie → M14 pobranie poprzedniej wersji. Dopiero potem decyzja o produkcji; świeży eksport z Safari przed jej uruchomieniem.
+
+
+## Automatyczna synchronizacja TEST (25.11.2026)
+
+Worker v4 pozostaje bez zmian. Nowy przełącznik „Automatyczna synchronizacja na tym urządzeniu” zapisuje preferencję per lokalny profil, domyślnie wyłączoną na potrzeby kontrolowanego odbioru TEST. Profile niepołączone nigdy nie są automatycznie publikowane. Dotychczasowy przycisk ręcznej synchronizacji pozostaje.
+
+Po włączeniu: sprawdzenie przy starcie/powrocie do aplikacji i po odzyskaniu sieci, wysyłka po lokalnym zapisie (około 2 s), pobieranie zmian co około 15 s przy widocznej stronie. Własna wysyłka bez zmian zdalnych aktualizuje potwierdzenie BEZ przeładowania. Zdalne zmiany czekają na ekran Dziś, brak otwartych okien/ćwiczeń, brak audio i minimum 2 s bez interakcji. Dopiero wtedy stosujemy transakcję lokalną i jedno automatyczne przeładowanie, aby istniejące moduły odczytały nowy stan. Niedokończone ćwiczenia nadal lokalne. Nie jest to rehydratacja wszystkich modułów bez przeładowania.
+
+Statusy: zapis lokalny/oczekiwanie, zsynchronizowano, czeka na internet, zmiany czekają na powrót do Dziś, wymaga uwagi rodzica. Błędy sieci ponawiane z opóźnieniem do 120 s; odebrany dostęp i nierozpoznane konflikty zatrzymują automat, nie usuwając lokalnych danych. Używamy istniejącej blokady Web Locks i operacji idempotentnych. Nadal jedna karta aplikacji na urządzeniu. Zamknięta lub zawieszona aplikacja nie gwarantuje pracy w tle; wznowienie uruchamia sprawdzenie.
+
+Dodane testy przeglądarkowe: własny zapis bez reload, odroczenie pobranego postępu w lekcji, blokada odświeżenia podczas audio, powrót sieci, wznowienie po otwarciu strony oraz odebranie dostępu. Testy synchronizacji UI: 28; backend/merge/storage: 44; regresja aplikacji: 96.
