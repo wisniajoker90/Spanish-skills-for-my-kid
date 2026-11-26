@@ -2,10 +2,14 @@
   "name": "franka-family-sync",
   "main": "candidate/worker.mjs",
   "compatibility_date": "2026-11-20",
-  "vars": {"SYNC_ENABLED": "false"},
-  "d1_databases": [{
-    "binding": "DB",
-    "database_name": "franka-family-sync",
-    "database_id": "REPLACE_WITH_NEW_PRODUCTION_DATABASE_ID"
-  }]
+  "vars": {
+    "SYNC_ENABLED": "false"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "franka-family-sync",
+      "database_id": "b4a550b1-05d0-4c47-a7cb-47cd22b0e763"
+    }
+  ]
 }
