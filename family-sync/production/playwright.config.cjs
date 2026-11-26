@@ -1,0 +1,2 @@
+const {defineConfig,devices}=require('@playwright/test');
+module.exports=defineConfig({testDir:__dirname,testMatch:'production.spec.js',workers:1,retries:0,use:{baseURL:'http://127.0.0.1:4174',trace:'retain-on-failure'},projects:[{name:'chromium',use:{...devices['Desktop Chrome']}},{name:'webkit',use:{...devices['iPhone 13']}}],webServer:{command:'node family-sync/production/serve.cjs',url:'http://127.0.0.1:4174',reuseExistingServer:false}});

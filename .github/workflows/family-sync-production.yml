@@ -1,0 +1,39 @@
+name: Family Sync production candidate
+on:
+  push:
+    branches: ['sprint37/production-preparation']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: node family-sync/production/build.mjs
+      - run: node --test family-sync/production/candidate.test.mjs family-sync/production/candidate/worker.test.mjs family-sync/worker.test.mjs family-sync/learning.test.cjs
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npx playwright test --config family-sync/production/playwright.config.cjs --reporter=list
+      - run: npx playwright test tests/family-sync.spec.js tests/learning-sync.spec.js --forbid-only --retries=0 --reporter=list
+      - run: node scripts/check-regression-suite.cjs
+      - run: npm run test:regression -- --forbid-only --reporter=list,json
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_FILE: test-results/regression.json
+      - run: node scripts/verify-results.cjs test-results/regression.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: family-sync-production-candidate
+          path: |
+            family-sync/production/candidate/index.html
+            family-sync/production/candidate/worker.mjs
+            family-sync/production/candidate/schema.sql
+            family-sync/production/candidate/sw.js
+            family-sync/production/candidate/manifest.webmanifest
+            family-sync/production/candidate/icons
