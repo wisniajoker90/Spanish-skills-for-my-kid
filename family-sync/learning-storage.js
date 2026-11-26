@@ -1,0 +1,6 @@
+/* Crash-recoverable local application. Journal is removed only after all values verify. */
+(function(root){'use strict';const JOURNAL='hf37:learning-transaction';
+function recover(storage){const raw=storage.getItem(JOURNAL);if(!raw)return false;const saved=JSON.parse(raw);if(!Array.isArray(saved.before))throw Error('Nie można odtworzyć kopii synchronizacji.');for(const[k,v]of saved.before)if(v===null)storage.removeItem(k);for(const[k,v]of saved.before)if(v!==null)storage.setItem(k,v);for(const[k,v]of saved.before)if(storage.getItem(k)!==v)throw Error('Nie udało się odtworzyć zapisu.');storage.removeItem(JOURNAL);return true;}
+function commit(storage,updates){recover(storage);const before=Object.keys(updates).map(k=>[k,storage.getItem(k)]);storage.setItem(JOURNAL,JSON.stringify({before}));try{for(const[k,v]of Object.entries(updates)){if(v===null)storage.removeItem(k);else storage.setItem(k,v);if(storage.getItem(k)!==v)throw Error('Nie udało się zweryfikować zapisu.');}storage.removeItem(JOURNAL);}catch(e){try{recover(storage)}catch{throw Error('Zapis przerwany. Kopia odzyskiwania jest zachowana. Nie usuwaj danych przeglądarki.');}throw e;}}
+const api={commit,recover};if(typeof module==='object'&&module.exports)module.exports=api;else root.hf37LearningStorage=api;
+})(typeof window==='object'?window:globalThis);

@@ -1,0 +1,32 @@
+name: Family Sync TEST validation
+on:
+  push:
+    branches: ['sprint37/family-sync']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pilot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: node --test family-sync/worker.test.mjs family-sync/learning.test.cjs
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/family-sync.spec.js tests/learning-sync.spec.js --forbid-only --retries=0 --reporter=list
+
+      - name: Verify unchanged 96-case regression suite
+        run: node scripts/check-regression-suite.cjs
+      - name: Run existing regression tests
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_FILE: test-results/regression.json
+        run: npm run test:regression -- --forbid-only --reporter=list,json
+      - name: Require 96 clean passes
+        run: node scripts/verify-results.cjs test-results/regression.json
