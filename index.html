@@ -3005,36 +3005,32 @@ init();
 <!-- Family Sync TEST pilot: deliberately isolated from all learning/profile stores. -->
 <style>
 #fs37Launch{margin:16px 0;width:100%;min-height:48px;border:1px dashed #547a85;border-radius:14px;background:#edf7f4;color:#184b40;font:650 16px system-ui;padding:14px}#fs37[hidden],#fs37 [hidden]{display:none!important}#fs37{position:fixed;inset:0;z-index:15000;background:#163547ba;overflow:auto;padding:16px;box-sizing:border-box}#fs37 article{box-sizing:border-box;width:min(100%,580px);margin:0 auto;background:white;color:#183747;border-radius:20px;padding:22px;font:16px/1.5 system-ui}#fs37 button,#fs37 input{box-sizing:border-box;font:inherit;border:1px solid #b3cad2;border-radius:12px;min-height:48px;padding:12px;width:100%;margin:6px 0}#fs37 button{background:#edf4f8;color:#183747;font-weight:650;cursor:pointer}#fs37 button.primary{background:#166b57;color:white}#fs37 button:disabled{opacity:.5;cursor:wait}#fs37 input{background:white;color:#183747}#fs37 label{display:block;margin-top:12px}#fs37 .note{color:#526773;font-size:14px}#fs37Status{white-space:pre-wrap;padding:12px 0}#fs37Stats{font-size:23px;font-weight:750;color:#166b57}#fs37Code{overflow-wrap:anywhere;padding:12px;background:#edf7f4;user-select:all}#fs37Qr{display:block;width:min(100%,300px);height:auto;margin:12px auto;image-rendering:pixelated}#fs37 h2{margin-top:0}#fs37 footer{margin-top:18px;border-top:1px solid #ccdce1;padding-top:12px}
+#fs37 input[type="checkbox"]{width:22px;min-height:22px;height:22px;padding:0;margin:0 8px 0 0;vertical-align:middle}#fs37 label:has(input[type="checkbox"]){padding:12px 0}
 </style>
 <section id="fs37" hidden role="dialog" aria-modal="true" aria-labelledby="fs37Title">
-<article><h2 id="fs37Title">Family Sync — test rodzica</h2>
-<p class="note">Tylko fikcyjny profil. Ten ekran nie odczytuje ani nie zmienia postępów Franka. Łącz urządzenia na tej samej stronie TEST.</p>
+<article><h2 id="fs37Title">TEST · Family Sync — urządzenia rodziny</h2>
+<p class="note">Na pierwszym iPhonie wybierz aktualny postęp Franka. Na kolejnych urządzeniach zeskanuj QR i pobierz wspólny profil. Nauka działa również offline.</p>
 <button id="fs37Close">Zamknij</button>
 <div id="fs37Unlinked">
-<label>Nazwa tego urządzenia<input id="fs37Name" maxlength="80" autocomplete="off" placeholder="np. iPhone TEST"></label>
-<details id="fs37Setup"><summary>1. Pierwsze urządzenie — utwórz rodzinę testową</summary>
-<label>Klucz konfiguracji TEST<input id="fs37Secret" type="password" autocomplete="off" spellcheck="false"></label>
+<label>Nazwa tego urządzenia<input id="fs37Name" maxlength="80" autocomplete="off" placeholder="np. iPhone rodzica"></label>
+<details id="fs37Setup"><summary>Pierwszy iPhone — rozpocznij synchronizację</summary>
+<label>Klucz konfiguracji rodziny<input id="fs37Secret" type="password" autocomplete="off" spellcheck="false"></label>
 <p class="note">Wklej FAMILY_SETUP_KEY z menedżera haseł. Klucz zostanie wysłany tylko do Twojego Workera i usunięty z pola po próbie. Nie zapisujemy go w przeglądarce.</p>
-<button class="primary" id="fs37Create">Utwórz fikcyjny profil testowy</button></details>
-<details id="fs37Join"><summary>2. Kolejne urządzenie — dołącz kodem</summary><p class="note">Także po odłączeniu: poproś rodzica o nowy kod. Ponowne połączenie zachowa lokalne punkty i połączy je ze wspólnymi.</p>
+<button class="primary" id="fs37Create">Rozpocznij konfigurację rodziny</button></details>
+<details id="fs37Join"><summary>Kolejne urządzenie — dołącz przez QR lub kod</summary><p class="note">Także po odłączeniu: poproś rodzica o nowy kod. Połączenie pobierze wspólny profil. Istniejące profile lokalne pozostaną zachowane.</p>
 <label>Kod z pierwszego urządzenia<input id="fs37PairInput" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="32"></label>
-<button class="primary" id="fs37JoinButton">Połącz urządzenie testowe</button><button id="fs37JoinRetry" hidden>Ponów przerwane łączenie</button></details>
+<button class="primary" id="fs37JoinButton">Połącz i pobierz postęp</button><button id="fs37JoinRetry" hidden>Ponów przerwane łączenie</button></details>
 </div>
-<div id="fs37Linked" hidden><p id="fs37Identity"></p><p id="fs37Stats"></p><p id="fs37Pending" class="note"></p>
-<button class="primary" id="fs37Add">Dodaj fikcyjny punkt</button>
-<button id="fs37Sync">Synchronizuj teraz</button>
-<label><input id="fs37Offline" type="checkbox" style="width:auto;min-height:0"> Symuluj brak internetu na tym urządzeniu</label>
-<p class="note">Punkt dodany bez połączenia czeka lokalnie. Po wyłączeniu symulacji wyślemy go, zachowując punkty z pozostałych urządzeń.</p>
-<div id="fs37Parent" hidden><button id="fs37Pair">Dodaj urządzenie — pokaż QR</button><div id="fs37Pairing" hidden><p>Zeskanuj kod aparatem telefonu lub tabletu. Następnie wpisz nazwę urządzenia i potwierdź połączenie.</p><img id="fs37Qr" alt="Kod QR do połączenia urządzenia"/><p id="fs37Code"></p><p class="note">Kod jest jednorazowy i ważny przez 10 minut. Możesz też wpisać go ręcznie na drugim urządzeniu.</p></div><button id="fs37Devices">Pokaż urządzenia</button><div id="fs37DeviceList"></div></div>
+<div id="fs37Linked" hidden><p id="fs37Identity"></p><div id="fs37Parent" hidden><button id="fs37Pair">Dodaj urządzenie — pokaż QR</button><div id="fs37Pairing" hidden><p>Zeskanuj kod aparatem telefonu lub tabletu. Następnie wpisz nazwę urządzenia i potwierdź połączenie.</p><img id="fs37Qr" alt="Kod QR do połączenia urządzenia"/><p id="fs37Code"></p><p class="note">Kod jest jednorazowy i ważny przez 10 minut. Możesz też wpisać go ręcznie na drugim urządzeniu.</p></div><button id="fs37Devices">Pokaż urządzenia</button><div id="fs37DeviceList"></div></div>
 </div>
 <details id="fs37Recovery"><summary>Odzyskaj dostęp rodzica</summary>
 <p class="note">Użyj po utracie dostępu rodzica. Zachowamy wspólne punkty i połączone urządzenia ucznia. Poprzedni dostęp rodzica oraz stare kody parowania przestaną działać.</p>
-<label>Nazwa urządzenia rodzica<input id="fs37RecoveryName" maxlength="80" autocomplete="off" placeholder="np. Komputer TEST"></label>
-<label>Klucz odzyskiwania TEST<input id="fs37RecoverySecret" type="password" autocomplete="off" spellcheck="false"></label>
+<label>Nazwa urządzenia rodzica<input id="fs37RecoveryName" maxlength="80" autocomplete="off" placeholder="np. Komputer rodzica"></label>
+<label>Klucz odzyskiwania rodziny<input id="fs37RecoverySecret" type="password" autocomplete="off" spellcheck="false"></label>
 <p class="note">To zapisany wcześniej FAMILY_SETUP_KEY. Wklej go tylko tutaj. Nie zapisujemy klucza w aplikacji.</p>
 <label><input id="fs37RecoveryConfirm" type="checkbox" style="width:auto;min-height:0"> Zastąp poprzedni dostęp rodzica, zachowując punkty.</label>
 <button class="primary" id="fs37Recover">Odzyskaj dostęp rodzica</button></details>
-<p id="fs37Status" role="status" aria-live="polite"></p><footer class="note">Pilot techniczny Sprintu 37. Synchronizacja właściwych lekcji, odznak i wyników Franka będzie osobnym krokiem.</footer></article></section>
+<p id="fs37Status" role="status" aria-live="polite"></p><footer class="note">Po połączeniu postęp synchronizuje się automatycznie przy otwartej aplikacji. Trwające ćwiczenie pozostaje nieprzerwane.</footer></article></section>
 <script id="fs37Script">
 (()=>{'use strict';
 const active=location.hostname==='hiszpanski-franka-test.pages.dev'||(['localhost','127.0.0.1'].includes(location.hostname)&&navigator.webdriver);
@@ -5371,23 +5367,19 @@ let state={token:null,deviceId:null,profileId:null,role:null,name:'',events:[],p
 const message=text=>{$('Status').textContent=text};
 try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved){if(!Array.isArray(saved.events)||!Array.isArray(saved.pending))throw Error();state={...state,...saved};}}catch{message('Nie można odczytać zapisu testu. Nie usuwamy danych.');}
 function save(next){localStorage.setItem(KEY,JSON.stringify(next));state=next;render();}
-function merge(...lists){const byId=new Map();for(const list of lists)for(const e of list){if(!e||typeof e.id!=='string'||!Number.isSafeInteger(e.at)||typeof e.deviceId!=='string')throw Error('Nieprawidłowe dane pilota.');byId.set(e.id,e)}return [...byId.values()].sort((a,b)=>a.id.localeCompare(b.id));}
-function render(){const linked=!!state.token;$('JoinRetry').hidden=!state.joinAttempt;$('Unlinked').hidden=linked&&state.role==='parent';$('Setup').hidden=linked;$('Linked').hidden=!linked;$('Parent').hidden=state.role!=='parent';$('Identity').textContent='Urządzenie: '+state.name+(state.role==='parent'?' · rodzic':'');$('Stats').textContent='Fikcyjne punkty: '+merge(state.events,state.pending).length;$('Pending').textContent='Czekają na wysłanie: '+state.pending.length+' · Ostatnia synchronizacja: '+(state.lastSync?new Date(state.lastSync).toLocaleString('pl-PL'):'jeszcze brak');for(const b of root.querySelectorAll('button:not(#fs37Close)'))b.disabled=busy;}
+function render(){const linked=!!state.token;$('JoinRetry').hidden=!state.joinAttempt;$('Unlinked').hidden=linked&&state.role==='parent';$('Setup').hidden=linked;$('Linked').hidden=!linked;$('Parent').hidden=state.role!=='parent';$('Identity').textContent='Urządzenie: '+state.name+(state.role==='parent'?' · rodzic':'');for(const b of root.querySelectorAll('button:not(#fs37Close)'))b.disabled=busy;}
 async function request(path,method='GET',data,headers={}){const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),15000);try{const r=await fetch(API+path,{method,headers:{...(state.token?{Authorization:'Bearer '+state.token}:{}),...(data!==undefined?{'Content-Type':'application/json'}:{}),...headers},body:data===undefined?undefined:JSON.stringify(data),signal:ctrl.signal,cache:'no-store',credentials:'omit'});const result=await r.json();if(!r.ok){const e=new Error(result.error||'request_failed');e.status=r.status;throw e;}return result;}finally{clearTimeout(timer)}}
-function friendly(e){if(e.status===401)return 'Brak dostępu: sprawdź klucz konfiguracji albo czy urządzenie nie zostało odłączone.';if(e.status===409&&e.message==='family_already_exists')return 'Rodzina testowa już istnieje. Wróć na pierwsze urządzenie i wygeneruj kod parowania. Nie usuwaj danych przeglądarki.';if(e.message==='family_not_found')return 'Nie ma jeszcze rodziny testowej. Najpierw utwórz ją na pierwszym urządzeniu.';if(e.message==='recovery_expired')return 'Ta próba odzyskiwania została zastąpiona nowszą. Zamknij panel i spróbuj ponownie.';if(e.status===410)return 'Kod wygasł lub został użyty. Wygeneruj nowy na pierwszym urządzeniu.';if(e.name==='QuotaExceededError')return 'Brak miejsca na zapis lokalny. Nie zamykaj strony ani nie usuwaj danych.';return 'Nie udało się zakończyć operacji. Lokalne punkty nadal czekają. Sprawdź połączenie i spróbuj ponownie.';}
+function friendly(e){if(e.status===401)return 'Brak dostępu: sprawdź klucz konfiguracji albo czy urządzenie nie zostało odłączone.';if(e.status===409&&e.message==='family_already_exists')return 'Rodzina już istnieje. Wróć na pierwsze urządzenie i wygeneruj kod parowania. Nie usuwaj danych przeglądarki.';if(e.message==='family_not_found')return 'Nie ma jeszcze rodziny. Najpierw utwórz ją na pierwszym urządzeniu.';if(e.message==='recovery_expired')return 'Ta próba odzyskiwania została zastąpiona nowszą. Zamknij panel i spróbuj ponownie.';if(e.status===410)return 'Kod wygasł lub został użyty. Wygeneruj nowy na pierwszym urządzeniu.';if(e.name==='QuotaExceededError')return 'Brak miejsca na zapis lokalny. Nie zamykaj strony ani nie usuwaj danych.';return 'Nie udało się zakończyć operacji. Dane lokalne pozostają zapisane. Sprawdź połączenie i spróbuj ponownie.';}
 async function action(fn){if(busy)return;busy=true;render();try{await fn()}catch(e){message(friendly(e))}finally{busy=false;render()}}
-async function ensureProfile(){if(state.profileId)return;const me=await request('/v1/me'),list=await request('/v1/profiles');const candidates=list.profiles.filter(p=>p.id!=='00000000-0000-4000-8000-000000000037');if(candidates.length!==1)throw Error('Nieoczekiwane profile');save({...state,deviceId:me.device.id,role:me.device.role,name:me.device.name,profileId:candidates[0].id});}
-async function sync(){if(!state.token)return;if(simulate||!navigator.onLine){message('Tryb offline — punkty zapisane na tym urządzeniu.');return;}await ensureProfile();for(let attempt=0;attempt<4;attempt++){const remote=await request('/v1/profiles/'+state.profileId);if(remote.snapshot?.schema!==1||remote.snapshot?.data?.pilot!==true||!Array.isArray(remote.snapshot.data.events))throw Error('To nie jest fikcyjny profil pilota');const combined=merge(remote.snapshot.data.events,state.events,state.pending);if(JSON.stringify(combined)===JSON.stringify(merge(remote.snapshot.data.events))){save({...state,events:combined,pending:[],revision:remote.revision,lastSync:Date.now()});message('Zsynchronizowano fikcyjne punkty.');return;}
-try{const result=await request('/v1/profiles/'+state.profileId,'PUT',{baseRevision:remote.revision,snapshot:{schema:1,data:{pilot:true,events:combined}}});save({...state,events:combined,pending:[],revision:result.revision,lastSync:Date.now()});message('Zsynchronizowano fikcyjne punkty.');return;}catch(e){if(e.status!==409)throw e;}}
-throw Error('Powtarzający się konflikt');}
-$('Create').onclick=()=>action(async()=>{const name=$('Name').value.trim();if(!name){message('Wpisz nazwę urządzenia.');return;}const secret=$('Secret').value;$('Secret').value='';if(secret.length<32){message('Wklej pełny klucz FAMILY_SETUP_KEY z menedżera haseł.');return;}localStorage.setItem(KEY,JSON.stringify(state));const result=await request('/v1/setup','POST',{deviceName:name,profileName:'Fikcyjny profil Family Sync',snapshot:{schema:1,data:{pilot:true,events:[]}}},{'X-Family-Setup-Key':secret});save({...state,token:result.token,deviceId:result.deviceId,profileId:result.profileId,role:'parent',name,revision:result.revision,events:[],pending:[],lastSync:Date.now()});message('Rodzina testowa gotowa. Dodaj fikcyjny punkt lub wygeneruj kod dla drugiego urządzenia.');});
+async function sync(){if(!state.token)return;const me=await request('/v1/me');save({...state,role:me.device.role,name:me.device.name});message('Urządzenie połączone. Wybierz poniżej postęp do synchronizacji.');document.dispatchEvent(new Event('family-device-ready'));}
+$('Create').onclick=()=>action(async()=>{const name=$('Name').value.trim();if(!name){message('Wpisz nazwę urządzenia.');return;}const secret=$('Secret').value;$('Secret').value='';if(secret.length<32){message('Wklej pełny klucz FAMILY_SETUP_KEY z menedżera haseł.');return;}localStorage.setItem(KEY,JSON.stringify(state));const result=await request('/v1/setup','POST',{deviceName:name,profileName:'Konfiguracja rodziny',snapshot:{schema:1,data:{kind:'family-config'}}},{'X-Family-Setup-Key':secret});save({...state,token:result.token,deviceId:result.deviceId,profileId:result.profileId,role:'parent',name,revision:result.revision,events:[],pending:[],lastSync:Date.now()});message('Rodzina gotowa. Teraz zapisz kopię i wybierz aktualny profil z Safari jako punkt startowy.');document.dispatchEvent(new Event('family-device-ready'));});
 async function joinDevice(retry=false){
 let attempt=retry?state.joinAttempt:null;
 if(!attempt){const name=$('Name').value.trim(),code=$('PairInput').value.trim();if(!name||!/^[a-f0-9]{32}$/.test(code)){message('Wpisz nazwę urządzenia i pełny 32-znakowy kod parowania.');return;}
-const health=await request('/health');if(health.retrySafePairing!==true){message('Parowanie wymaga aktualizacji serwera TEST. Zaktualizuj Worker do wersji family-sync-test-3; dotychczasowe punkty pozostają zapisane.');return;}
+const health=await request('/health');if(health.retrySafePairing!==true){message('Parowanie wymaga aktualizacji serwera. Skontaktuj się z rodzicem; dotychczasowe punkty pozostają zapisane.');return;}
 attempt={...credential(),deviceName:name,code};save({...state,joinAttempt:attempt});}
 let result;try{result=await request('/v1/join','POST',attempt);}catch(e){if(e.status===410||e.status===401)save({...state,joinAttempt:null});throw e;}
-$('PairInput').value='';save({...state,token:result.token,deviceId:result.deviceId,profileId:null,role:'learner',name:attempt.deviceName,recoveryAttempt:null,joinAttempt:null});await sync();
+$('PairInput').value='';save({...state,token:result.token,deviceId:result.deviceId,profileId:null,role:'learner',name:attempt.deviceName,recoveryAttempt:null,joinAttempt:null});await sync();document.dispatchEvent(new Event('family-device-joined'));
 }
 $('JoinButton').onclick=()=>action(()=>joinDevice());
 $('JoinRetry').onclick=()=>action(()=>joinDevice(true));
@@ -5401,9 +5393,6 @@ let result;try{result=await request('/v1/recover-parent','POST',{deviceName:name
 save({...state,token:result.token,deviceId:result.deviceId,profileId:null,role:'parent',name,recoveryAttempt:null});
 $('RecoveryConfirm').checked=false;await sync();
 });
-$('Add').onclick=()=>action(async()=>{const event={id:crypto.randomUUID(),deviceId:state.deviceId,at:Date.now()};save({...state,pending:merge(state.pending,[event])});await sync();});
-$('Sync').onclick=()=>action(sync);
-$('Offline').onchange=()=>{simulate=$('Offline').checked;if(!simulate)action(sync);else message('Symulacja offline włączona.');};
 function clearPair(){clearTimeout(pairTimer);pairTimer=null;$('Pairing').hidden=true;$('Qr').removeAttribute('src');$('Code').textContent='';}
 $('Pair').onclick=()=>action(async()=>{clearPair();const result=await request('/v1/pairing','POST');
 const qr=qrcode(0,'M');qr.addData('https://hiszpanski-franka-test.pages.dev/#family-join='+result.code);qr.make();$('Qr').src=qr.createDataURL(6,24);
@@ -5413,15 +5402,11 @@ message('Zeskanuj QR aparatem drugiego urządzenia albo wpisz kod ręcznie.');})
 $('Devices').onclick=()=>action(async()=>{const result=await request('/v1/devices'),list=$('DeviceList');list.replaceChildren();for(const d of result.devices){const row=document.createElement('div'),p=document.createElement('p');p.textContent=d.name+(d.revoked_at?' · odłączone':' · '+d.role);row.append(p);if(d.role==='learner'&&!d.revoked_at){const b=document.createElement('button');b.textContent='Odłącz: '+d.name;b.onclick=()=>action(async()=>{await request('/v1/devices/'+d.id+'/revoke','POST');row.remove();message('Urządzenie odłączone. Wspólne punkty pozostają.');});row.append(b);}list.append(row);}});
 function close(){root.hidden=true;$('Secret').value='';$('RecoverySecret').value='';$('RecoveryConfirm').checked=false;$('PairInput').value='';clearPair();document.body.style.overflow=overflow;priorFocus?.focus();}
 $('Close').onclick=close;root.addEventListener('keydown',e=>{if(e.key==='Escape')close();if(e.key==='Tab'){const nodes=[...root.querySelectorAll('button,input,summary')].filter(n=>!n.disabled&&n.getClientRects().length);const first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
-const launch=document.createElement('button');launch.id='fs37Launch';launch.textContent='🧪 TEST · Family Sync — panel rodzica';function openPanel(){priorFocus=document.activeElement;overflow=document.body.style.overflow;root.hidden=false;document.body.style.overflow='hidden';render();$('Close').focus();if(state.joinAttempt){$('Join').open=true;message('Poprzednie łączenie zostało przerwane. Kliknij „Ponów przerwane łączenie”.');}else if(state.token)action(sync)};launch.onclick=openPanel;(document.getElementById('s15Today')||document.body).append(launch);
-if(incomingCode){openPanel();if(state.role==='parent'){message('To urządzenie ma już dostęp rodzica. Zeskanuj QR innym telefonem lub tabletem.');}else{$('Join').open=true;$('PairInput').value=incomingCode;message('Kod z QR jest gotowy. Wpisz nazwę tego urządzenia i kliknij „Połącz urządzenie testowe”.');$('Name').focus();}}
+const launch=document.createElement('button');launch.id='fs37Launch';launch.textContent='TEST · Family Sync — połącz urządzenia';function openPanel(){priorFocus=document.activeElement;overflow=document.body.style.overflow;root.hidden=false;document.body.style.overflow='hidden';render();$('Close').focus();if(state.joinAttempt){$('Join').open=true;message('Poprzednie łączenie zostało przerwane. Kliknij „Ponów przerwane łączenie”.');}else if(state.token)action(sync)};launch.onclick=openPanel;(document.getElementById('s15Today')||document.body).append(launch);
+if(incomingCode){openPanel();if(state.role==='parent'){message('To urządzenie ma już dostęp rodzica. Zeskanuj QR innym telefonem lub tabletem.');}else{$('Join').open=true;$('PairInput').value=incomingCode;message('Kod z QR jest gotowy. Wpisz nazwę tego urządzenia i kliknij „Połącz i pobierz postęp”.');$('Name').focus();}}
 window.addEventListener('online',()=>{if(state.token)action(sync)});render();
 })();
 </script>
-
-
-
-
 
 <!-- Family Sync learning UI BEGIN -->
 <script>/* Family Sync learning merge: three-way deltas, no writes or network. */
@@ -5468,12 +5453,12 @@ const api={shared,materialize,merge,validate,same,canonical};if(typeof module===
 </script>
 <script>/* TEST-only real-profile synchronization with opt-in background updates. No automatic production migration. */
 (()=>{'use strict';
-const allowed=location.hostname==='hiszpanski-franka-test.pages.dev'||(['localhost','127.0.0.1'].includes(location.hostname)&&navigator.webdriver);
+const allowed=(location.hostname==='hiszpanski-franka-test.pages.dev')||(['localhost','127.0.0.1'].includes(location.hostname)&&navigator.webdriver);
 if(!allowed)return;
 const C=window.hf37LearningCore,S=window.hf37LearningStorage,API='https://franka-family-sync-test.wisniajoker90.workers.dev',REMOTE='00000000-0000-4000-8000-000000000037';
 const node=(tag,text)=>{const n=document.createElement(tag);if(text)n.textContent=text;return n;};
 const box=node('section');box.id='fs37Learning';box.style.cssText='margin-top:24px;border-top:2px solid #c9d7e6;padding-top:16px';
-box.innerHTML='<h3>Postęp nauki — TEST</h3><p id="fs37LearningIdentity"></p><p>Postęp może zapisywać się automatycznie. Zmiany z drugiego urządzenia odświeżą widok dopiero na ekranie Dziś, bez przerywania ćwiczenia lub dźwięku. Używaj jednej karty aplikacji.</p><label><input id="fs37LearningConfirm" type="checkbox"> Potwierdzam pracę na kopii TEST wybranego profilu.</label><p><label><input id="fs37LearningAuto" type="checkbox"> Automatyczna synchronizacja na tym urządzeniu</label></p><div style="display:grid;gap:10px;margin-top:12px"><button id="fs37LearningPublish" type="button">Udostępnij wybrany profil — punkt startowy</button><button id="fs37LearningDownload" type="button">Pobierz wspólny profil jako nowy</button><button id="fs37LearningSync" type="button">Synchronizuj postęp nauki</button><button id="fs37LearningHistory" type="button">Kopie poprzednich wersji</button></div><p id="fs37LearningStatus" role="status"></p><div id="fs37LearningVersions"></div>';
+box.innerHTML='<h3>Postęp Franka</h3><p id="fs37LearningIdentity"></p><p>Postęp może zapisywać się automatycznie. Zmiany z drugiego urządzenia odświeżą widok dopiero na ekranie Dziś, bez przerywania ćwiczenia lub dźwięku. Używaj jednej karty aplikacji.</p><label><input id="fs37LearningConfirm" type="checkbox"> Potwierdzam wybór profilu; przed pierwszym udostępnieniem mam zapisaną aktualną kopię JSON.</label><p><label><input id="fs37LearningAuto" type="checkbox"> Automatyczna synchronizacja na tym urządzeniu</label></p><div style="display:grid;gap:10px;margin-top:12px"><button id="fs37LearningBackup" type="button">Pobierz kopię przed połączeniem</button><button id="fs37LearningPublish" type="button">Udostępnij wybrany profil — punkt startowy</button><button id="fs37LearningDownload" type="button">Pobierz wspólny profil jako nowy</button><button id="fs37LearningSync" type="button">Synchronizuj postęp nauki</button><button id="fs37LearningHistory" type="button">Kopie poprzednich wersji</button></div><p id="fs37LearningStatus" role="status"></p><div id="fs37LearningVersions"></div>';
 const host=document.querySelector('#fs37Linked');if(!host)return;host.append(box);
 const $=id=>document.getElementById('fs37Learning'+id),meta=()=>window.hfProfiles19.getMeta(),active=()=>meta().active,key=id=>'hf37:learning:'+id;
 let networkEpoch=0,offlineHint=!navigator.onLine;const requests=new Set();
@@ -5534,7 +5519,7 @@ for(let round=0;round<5;round++){
  waitingForHome=false;apply(id,remote.snapshot.data.records,finalState);return;
 }
 throw Error('Pojawiły się kolejne zmiany. Zostały zachowane; ponów synchronizację.');}
-async function action(fn,confirmRequired=true,automatic=false){if(busy)return;if(confirmRequired&&!$('Confirm').checked){status('Potwierdź pracę na kopii TEST.');return;}if(!navigator.onLine){autoLabel('Czeka na internet · postęp zapisany na urządzeniu');status('Brak internetu. Nauka jest zapisana lokalnie. Synchronizuj po odzyskaniu połączenia.');return;}if(!navigator.locks){autoBlocked=true;autoLabel('Wymaga uwagi rodzica · zaktualizuj przeglądarkę');status('Ta przeglądarka nie obsługuje bezpiecznej blokady synchronizacji. Zaktualizuj przeglądarkę.');return;}busy=true;if(automatic)autoLabel('Sprawdzam połączenie · postęp zapisany lokalnie');for(const b of box.querySelectorAll('button'))b.disabled=true;status('Sprawdzam i zapisuję kopię…');try{await navigator.locks.request('hf37-learning',{ifAvailable:true},async lock=>{if(!lock){if(automatic){nextAuto=Date.now()+3000;return;}throw Error('Synchronizacja trwa w innej karcie.');}const health=await request('/health');if(!health.learningProfiles||!health.versionHistory)throw Error('Zaktualizuj Worker TEST do family-sync-test-4.');await fn();failures=0;autoBlocked=false;});}catch(e){if(automatic){failures++;if([401,403,413].includes(e.status)||(!['AbortError','TypeError'].includes(e.name)&&!e.status&&!e.message.startsWith('Pojawiły się kolejne zmiany')))autoBlocked=true;autoLabel(autoBlocked?'Wymaga uwagi rodzica · szczegóły w Family Sync':'Czeka na połączenie z serwerem · postęp zapisany lokalnie');nextAuto=Date.now()+Math.min(120000,15000*2**Math.min(failures,3));}status(e.name==='AbortError'||e instanceof TypeError?'Nie udało się połączyć. Dane lokalne i próba synchronizacji są zachowane. Spróbuj ponownie.':e.message);}finally{busy=false;for(const b of box.querySelectorAll('button'))b.disabled=false;refresh();}}
+async function action(fn,confirmRequired=true,automatic=false){if(busy)return;if(confirmRequired&&!$('Confirm').checked){status('Potwierdź wybór profilu i zapisanie kopii.');return;}if(!navigator.onLine){autoLabel('Czeka na internet · postęp zapisany na urządzeniu');status('Brak internetu. Nauka jest zapisana lokalnie. Synchronizuj po odzyskaniu połączenia.');return;}if(!navigator.locks){autoBlocked=true;autoLabel('Wymaga uwagi rodzica · zaktualizuj przeglądarkę');status('Ta przeglądarka nie obsługuje bezpiecznej blokady synchronizacji. Zaktualizuj przeglądarkę.');return;}busy=true;if(automatic)autoLabel('Sprawdzam połączenie · postęp zapisany lokalnie');for(const b of box.querySelectorAll('button'))b.disabled=true;status('Sprawdzam i zapisuję kopię…');try{await navigator.locks.request('hf37-learning',{ifAvailable:true},async lock=>{if(!lock){if(automatic){nextAuto=Date.now()+3000;return;}throw Error('Synchronizacja trwa w innej karcie.');}const health=await request('/health');if(!health.learningProfiles||!health.versionHistory)throw Error('Serwer wymaga aktualizacji do family-sync-test-4.');await fn();failures=0;autoBlocked=false;});}catch(e){if(automatic){failures++;if([401,403,413].includes(e.status)||(!['AbortError','TypeError'].includes(e.name)&&!e.status&&!e.message.startsWith('Pojawiły się kolejne zmiany')))autoBlocked=true;autoLabel(autoBlocked?'Wymaga uwagi rodzica · szczegóły w Family Sync':'Czeka na połączenie z serwerem · postęp zapisany lokalnie');nextAuto=Date.now()+Math.min(120000,15000*2**Math.min(failures,3));}status(e.name==='AbortError'||e instanceof TypeError?'Nie udało się połączyć. Dane lokalne i próba synchronizacji są zachowane. Spróbuj ponownie.':e.message);}finally{busy=false;for(const b of box.querySelectorAll('button'))b.disabled=false;refresh();}}
 $('Publish').onclick=()=>action(async()=>{
  const id=active();if(readState(id)){await sync(id);return;}
  const me=await request('/v1/me');if(me.device.role!=='parent')throw Error('Punkt startowy wybiera rodzic.');
@@ -5543,15 +5528,16 @@ $('Publish').onclick=()=>action(async()=>{
  ensureActive(id);attempt={originId:crypto.randomUUID(),records:C.shared(window.frankaStore.dump()),name:meta().profiles.find(p=>p.id===id).name};localStorage.setItem(initKey,JSON.stringify(attempt));}
  await request('/v1/learning','POST',{name:attempt.name,snapshot:{schema:1,data:{kind:'learning-v1',originId:attempt.originId,records:attempt.records,applied:[]}}});
  const remote=readRemote(await request('/v1/profiles/'+REMOTE));if(remote.snapshot.data.originId!==attempt.originId)throw Error('Profil został wcześniej utworzony na innym urządzeniu. Pobierz go jako nowy profil.');
- ensureActive(id);saveState(id,{remoteId:REMOTE,base:attempt.records,revision:1,pending:null});localStorage.removeItem(initKey);await sync(id);
+ ensureActive(id);saveState(id,{remoteId:REMOTE,base:attempt.records,revision:1,pending:null});localStorage.removeItem(initKey);localStorage.setItem(autoKey(id),'1');await sync(id);
 });
 $('Download').onclick=()=>action(async()=>{
  const sourceId=active(),remote=readRemote(await request('/v1/profiles/'+REMOTE));ensureActive(sourceId);const m=meta();
- const existing=m.profiles.find(p=>readState(p.id)?.remoteId===REMOTE);if(existing)throw Error('Ten profil jest już na urządzeniu: '+existing.name+'. Wybierz go i synchronizuj.');
+ const existing=m.profiles.find(p=>readState(p.id)?.remoteId===REMOTE);if(existing){if(existing.id!==active())throw Error('Wybierz już połączony profil: '+existing.name);localStorage.setItem(autoKey(existing.id),'1');await sync(existing.id);return;}
  if(m.profiles.length>=12)throw Error('Osiągnięto limit profili. Nie usuwamy istniejących danych.');
  const id='sync-'+crypto.randomUUID(),records=C.materialize(remote.snapshot.data.records),updates={};for(const[k,v]of Object.entries(records))updates['hf18:p:'+id+':'+k]=v;
  updates[key(id)]=JSON.stringify({remoteId:REMOTE,base:remote.snapshot.data.records,revision:remote.revision,pending:null,lastSync:Date.now()});
- updates['hf18:meta']=JSON.stringify({...m,active:id,profiles:[...m.profiles,{id,name:remote.name+' · Sync TEST',createdAt:new Date().toISOString()}]});S.commit(localStorage,updates);location.reload();
+ updates[autoKey(id)]='1';
+ updates['hf18:meta']=JSON.stringify({...m,active:id,profiles:[...m.profiles,{id,name:remote.name+' · Rodzina',createdAt:new Date().toISOString()}]});S.commit(localStorage,updates);location.reload();
 });
 $('Sync').onclick=()=>action(()=>sync(active()));
 $('History').onclick=()=>action(async()=>{const list=$('Versions');list.replaceChildren();const result=await request('/v1/profiles/'+REMOTE+'/history');if(!result.versions.length){status('Nie ma jeszcze wcześniejszych wersji. Kopia powstanie przy pierwszej zmianie wspólnego postępu.');return;}for(const v of result.versions){const button=node('button','Pobierz kopię wersji '+v.revision);button.onclick=()=>action(async()=>{const r=readRemote(await request('/v1/profiles/'+REMOTE+'/history/'+v.revision)),blob=new Blob([JSON.stringify(exportBackup(C.materialize(r.snapshot.data.records),'Franek — kopia wersji '+v.revision),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=node('a');a.href=url;a.download='hiszpanski-franka-sync-kopia-'+v.revision+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);status('Pobrano kopię. Jej import doda nowy profil.');},false);list.append(button);}status('Poprzednie wersje można pobrać bez zmiany bieżących danych.');},false);
@@ -5576,6 +5562,29 @@ setInterval(()=>{
  nextAuto=Date.now()+15000;
  action(()=>sync(active(),{automatic:true}),false,true);
 },1000);
+// Injected inside the learning module: retain tested merge/storage/transport logic.
+$('Backup').onclick=()=>{
+ const data=exportBackup(window.frankaStore.dump(),meta().profiles.find(p=>p.id===active()).name);
+ const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+ const a=node('a');a.href=url;a.download='hiszpanski-franka-przed-synchronizacja-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+ status('Sprawdź, czy kopia JSON została zapisana. Dopiero potem potwierdź wybór profilu.');
+};
+function onboarding(){
+ refresh();const linked=!!readState(active());
+ let parent=false;try{parent=JSON.parse(localStorage.getItem('family-sync-pilot37')||'null')?.role==='parent';}catch{}
+ $('Publish').hidden=linked||!parent;$('Download').hidden=linked;
+ $('Backup').hidden=linked;$('Confirm').closest('label').hidden=linked;
+ $('Auto').closest('p').hidden=!linked;$('Sync').hidden=!linked;$('History').hidden=!linked||!parent;
+ if(!linked)status(parent?'Na pierwszym iPhonie zapisz kopię i udostępnij aktualny profil. Na nowym urządzeniu pobierz istniejący wspólny profil.':'Pobierz wspólny profil. Zachowamy istniejące profile na tym urządzeniu.');
+}
+document.addEventListener('family-device-ready',onboarding);
+document.addEventListener('family-device-joined',()=>{
+ // The QR join button explicitly says “Połącz i pobierz postęp”.
+ $('Confirm').checked=true;$('Download').onclick();
+});
+document.getElementById('fs37Launch')?.addEventListener('click',onboarding);
+onboarding();
+
 document.getElementById('fs37Launch')?.addEventListener('click',refresh);refresh();autoLabel(autoEnabled()?'Sprawdzam zapis postępu…':'Synchronizacja ręczna');
 })();
 </script>
