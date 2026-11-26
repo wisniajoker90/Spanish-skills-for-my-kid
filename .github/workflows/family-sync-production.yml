@@ -23,7 +23,7 @@ jobs:
       - run: npx playwright test --config family-sync/production/playwright.config.cjs --reporter=list
       - run: npx playwright test tests/family-sync.spec.js tests/learning-sync.spec.js --forbid-only --retries=0 --reporter=list
       - run: node scripts/check-regression-suite.cjs
-      - run: npm run test:regression -- --forbid-only --reporter=list,json
+      - run: npm run test:regression -- --config family-sync/production/regression.config.cjs --forbid-only --reporter=list,json
         env:
           PLAYWRIGHT_JSON_OUTPUT_FILE: test-results/regression.json
       - run: node scripts/verify-results.cjs test-results/regression.json
