@@ -8,11 +8,12 @@ const box=node('section');box.id='fs37Learning';box.style.cssText='margin-top:24
 box.innerHTML='<h3>Postęp nauki — TEST</h3><p id="fs37LearningIdentity"></p><p>Postęp może zapisywać się automatycznie. Zmiany z drugiego urządzenia odświeżą widok dopiero na ekranie Dziś, bez przerywania ćwiczenia lub dźwięku. Używaj jednej karty aplikacji.</p><label><input id="fs37LearningConfirm" type="checkbox"> Potwierdzam pracę na kopii TEST wybranego profilu.</label><p><label><input id="fs37LearningAuto" type="checkbox"> Automatyczna synchronizacja na tym urządzeniu</label></p><div style="display:grid;gap:10px;margin-top:12px"><button id="fs37LearningPublish" type="button">Udostępnij wybrany profil — punkt startowy</button><button id="fs37LearningDownload" type="button">Pobierz wspólny profil jako nowy</button><button id="fs37LearningSync" type="button">Synchronizuj postęp nauki</button><button id="fs37LearningHistory" type="button">Kopie poprzednich wersji</button></div><p id="fs37LearningStatus" role="status"></p><div id="fs37LearningVersions"></div>';
 const host=document.querySelector('#fs37Linked');if(!host)return;host.append(box);
 const $=id=>document.getElementById('fs37Learning'+id),meta=()=>window.hfProfiles19.getMeta(),active=()=>meta().active,key=id=>'hf37:learning:'+id;
+let networkEpoch=0,offlineHint=!navigator.onLine;const requests=new Set();
 let busy=false,waitingForHome=false,autoBlocked=false,failures=0,nextAuto=Date.now()+2000,lastInteraction=Date.now();
 const autoKey=id=>'hf37:auto:'+id;
 const autoEnabled=()=>localStorage.getItem(autoKey(active()))==='1'&&!!readState(active());
 const homeStatus=node('p');homeStatus.id='fs37AutoStatus';homeStatus.setAttribute('role','status');homeStatus.style.cssText='font-size:14px;padding:8px 12px;color:#34546b';(document.getElementById('s15Today')||document.body).append(homeStatus);
-function autoLabel(text){homeStatus.hidden=!readState(active());homeStatus.textContent=text;}
+function autoLabel(text){homeStatus.hidden=!readState(active());if(autoEnabled()&&(!navigator.onLine||(offlineHint&&text.startsWith('Zapis na serwerze'))))text='Czeka na internet · postęp zapisany lokalnie';homeStatus.textContent=text;}
 function visible(el){return !!el&&!el.hidden&&el.getClientRects().length>0;}
 function safeToRefresh(){
  if(document.hidden||Date.now()-lastInteraction<2000||!visible(document.getElementById('s15Today')))return false;
@@ -27,7 +28,18 @@ for(const type of ['pointerdown','keydown'])document.addEventListener(type,()=>{
 function status(t){$('Status').textContent=t;}
 function refresh(){$('Auto').checked=autoEnabled();const m=meta(),p=m.profiles.find(x=>x.id===m.active),s=JSON.parse(localStorage.getItem(key(m.active))||'null');$('Identity').textContent='Wybrany profil: '+p.name+(s?' · połączony · wersja '+(s.revision||'startowa'):' · jeszcze niepołączony');}
 function credentials(){const p=JSON.parse(localStorage.getItem('family-sync-pilot37')||'null');if(!p?.token)throw Error('Najpierw połącz urządzenie przez Family Sync.');return p;}
-async function request(path,method='GET',data){const token=credentials().token,controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);try{const r=await fetch(API+path,{method,headers:{Authorization:'Bearer '+token,...(data?{'Content-Type':'application/json'}:{})},body:data?JSON.stringify(data):undefined,signal:controller.signal,cache:'no-store',credentials:'omit'});const v=await r.json();if(!r.ok){const e=Error(r.status===401?'Brak dostępu. Ponownie połącz urządzenie.':r.status===403?'Ta operacja wymaga dostępu rodzica.':v.error);e.status=r.status;throw e;}return v;}finally{clearTimeout(timer)}}
+async function request(path,method='GET',data){
+ const token=credentials().token,epoch=networkEpoch,controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);requests.add(controller);
+ try{
+  const url=API+path+(method==='GET'?(path.includes('?')?'&':'?')+'connectionCheck='+crypto.randomUUID():'');
+  const r=await fetch(url,{method,headers:{Authorization:'Bearer '+token,...(data?{'Content-Type':'application/json'}:{})},body:data?JSON.stringify(data):undefined,signal:controller.signal,cache:'no-store',credentials:'omit'});
+  const v=await r.json();
+  // A response from before a connection change must never acknowledge current connectivity.
+  if(epoch!==networkEpoch||!navigator.onLine)throw new DOMException('Połączenie zmieniło się podczas zapisu.','AbortError');
+  if(!r.ok){const e=Error(r.status===401?'Brak dostępu. Ponownie połącz urządzenie.':r.status===403?'Ta operacja wymaga dostępu rodzica.':v.error);e.status=r.status;throw e;}
+  offlineHint=false;return v;
+ }finally{clearTimeout(timer);requests.delete(controller)}
+}
 function readState(id){return JSON.parse(localStorage.getItem(key(id))||'null');}
 function saveState(id,s){localStorage.setItem(key(id),JSON.stringify(s));}
 function readRemote(r){if(r.snapshot?.schema!==1||r.snapshot.data?.kind!=='learning-v1'||!Array.isArray(r.snapshot.data.applied))throw Error('Serwer nie zawiera obsługiwanego profilu nauki.');C.validate(r.snapshot.data.records);return r;}
@@ -48,13 +60,13 @@ for(let round=0;round<5;round++){
  const finalState={remoteId:REMOTE,base:remote.snapshot.data.records,revision:remote.revision,pending:null,lastSync:Date.now()};
  if(options.automatic){
   if(!autoEnabled())return;
-  if(C.same(now,remote.snapshot.data.records)){saveState(id,finalState);waitingForHome=false;autoLabel('Zapisano · postęp zsynchronizowany');status('Postęp zapisany automatycznie.');return;}
+  if(C.same(now,remote.snapshot.data.records)){saveState(id,finalState);waitingForHome=false;autoLabel('Zapis na serwerze potwierdzony o '+new Date(finalState.lastSync).toLocaleTimeString('pl-PL'));status('Zapis na serwerze potwierdzony.');return;}
   if(!safeToRefresh()){waitingForHome=true;autoLabel('Twój postęp wysłany · zmiany z drugiego urządzenia pokażemy po powrocie na Dziś');status('Zmiany są pobrane. Widok odświeży się automatycznie na ekranie Dziś.');return;}
  }
  waitingForHome=false;apply(id,remote.snapshot.data.records,finalState);return;
 }
 throw Error('Pojawiły się kolejne zmiany. Zostały zachowane; ponów synchronizację.');}
-async function action(fn,confirmRequired=true,automatic=false){if(busy)return;if(confirmRequired&&!$('Confirm').checked){status('Potwierdź pracę na kopii TEST.');return;}if(!navigator.onLine){autoLabel('Czeka na internet · postęp zapisany na urządzeniu');status('Brak internetu. Nauka jest zapisana lokalnie. Synchronizuj po odzyskaniu połączenia.');return;}if(!navigator.locks){autoBlocked=true;autoLabel('Wymaga uwagi rodzica · zaktualizuj przeglądarkę');status('Ta przeglądarka nie obsługuje bezpiecznej blokady synchronizacji. Zaktualizuj przeglądarkę.');return;}busy=true;for(const b of box.querySelectorAll('button'))b.disabled=true;status('Sprawdzam i zapisuję kopię…');try{await navigator.locks.request('hf37-learning',{ifAvailable:true},async lock=>{if(!lock){if(automatic){nextAuto=Date.now()+3000;return;}throw Error('Synchronizacja trwa w innej karcie.');}const health=await request('/health');if(!health.learningProfiles||!health.versionHistory)throw Error('Zaktualizuj Worker TEST do family-sync-test-4.');await fn();failures=0;autoBlocked=false;});}catch(e){if(automatic){failures++;if([401,403,413].includes(e.status)||(!['AbortError','TypeError'].includes(e.name)&&!e.status&&!e.message.startsWith('Pojawiły się kolejne zmiany')))autoBlocked=true;autoLabel(autoBlocked?'Wymaga uwagi rodzica · szczegóły w Family Sync':'Czeka na połączenie · postęp zapisany na urządzeniu');nextAuto=Date.now()+Math.min(120000,15000*2**Math.min(failures,3));}status(e.name==='AbortError'||e instanceof TypeError?'Nie udało się połączyć. Dane lokalne i próba synchronizacji są zachowane. Spróbuj ponownie.':e.message);}finally{busy=false;for(const b of box.querySelectorAll('button'))b.disabled=false;refresh();}}
+async function action(fn,confirmRequired=true,automatic=false){if(busy)return;if(confirmRequired&&!$('Confirm').checked){status('Potwierdź pracę na kopii TEST.');return;}if(!navigator.onLine){autoLabel('Czeka na internet · postęp zapisany na urządzeniu');status('Brak internetu. Nauka jest zapisana lokalnie. Synchronizuj po odzyskaniu połączenia.');return;}if(!navigator.locks){autoBlocked=true;autoLabel('Wymaga uwagi rodzica · zaktualizuj przeglądarkę');status('Ta przeglądarka nie obsługuje bezpiecznej blokady synchronizacji. Zaktualizuj przeglądarkę.');return;}busy=true;if(automatic)autoLabel('Sprawdzam połączenie · postęp zapisany lokalnie');for(const b of box.querySelectorAll('button'))b.disabled=true;status('Sprawdzam i zapisuję kopię…');try{await navigator.locks.request('hf37-learning',{ifAvailable:true},async lock=>{if(!lock){if(automatic){nextAuto=Date.now()+3000;return;}throw Error('Synchronizacja trwa w innej karcie.');}const health=await request('/health');if(!health.learningProfiles||!health.versionHistory)throw Error('Zaktualizuj Worker TEST do family-sync-test-4.');await fn();failures=0;autoBlocked=false;});}catch(e){if(automatic){failures++;if([401,403,413].includes(e.status)||(!['AbortError','TypeError'].includes(e.name)&&!e.status&&!e.message.startsWith('Pojawiły się kolejne zmiany')))autoBlocked=true;autoLabel(autoBlocked?'Wymaga uwagi rodzica · szczegóły w Family Sync':'Czeka na połączenie z serwerem · postęp zapisany lokalnie');nextAuto=Date.now()+Math.min(120000,15000*2**Math.min(failures,3));}status(e.name==='AbortError'||e instanceof TypeError?'Nie udało się połączyć. Dane lokalne i próba synchronizacji są zachowane. Spróbuj ponownie.':e.message);}finally{busy=false;for(const b of box.querySelectorAll('button'))b.disabled=false;refresh();}}
 $('Publish').onclick=()=>action(async()=>{
  const id=active();if(readState(id)){await sync(id);return;}
  const me=await request('/v1/me');if(me.device.role!=='parent')throw Error('Punkt startowy wybiera rodzic.');
@@ -83,14 +95,15 @@ $('Auto').onchange=()=>{
 };
 // Observe successful profile writes only. Failed local saves must not be reported as synced.
 for(const method of ['setItem','removeItem']){const original=window.frankaStore[method];window.frankaStore[method]=function(...args){const result=original.apply(this,args);if(autoEnabled()){autoLabel(navigator.onLine?'Zapisano na urządzeniu · czeka na synchronizację':'Czeka na internet · postęp zapisany na urządzeniu');schedule();}return result;};}
-window.addEventListener('online',()=>schedule(500));
-window.addEventListener('offline',()=>{if(autoEnabled())autoLabel('Czeka na internet · postęp zapisany na urządzeniu');});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule(1000);});
+window.addEventListener('online',()=>{networkEpoch++;offlineHint=false;if(autoEnabled())autoLabel('Sprawdzam połączenie · postęp zapisany lokalnie');schedule(500);});
+window.addEventListener('offline',()=>{networkEpoch++;offlineHint=true;for(const r of requests)r.abort();if(autoEnabled())autoLabel('Czeka na internet · postęp zapisany lokalnie');});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(autoEnabled())autoLabel(navigator.onLine?'Sprawdzam połączenie · postęp zapisany lokalnie':'Czeka na internet · postęp zapisany lokalnie');schedule(1000);}});
 window.addEventListener('pageshow',()=>schedule(1000));
 window.addEventListener('storage',e=>{if(e.key===autoKey(active())){refresh();schedule(1000);}});
 setInterval(()=>{
- if(!autoEnabled()||autoBlocked||busy||document.hidden)return;
+ if(!autoEnabled())return;
  if(!navigator.onLine){autoLabel('Czeka na internet · postęp zapisany na urządzeniu');return;}
+ if(autoBlocked||busy||document.hidden)return;
  if(Date.now()<nextAuto&&!(waitingForHome&&safeToRefresh()))return;
  nextAuto=Date.now()+15000;
  action(()=>sync(active(),{automatic:true}),false,true);

@@ -99,3 +99,11 @@ Po włączeniu: sprawdzenie przy starcie/powrocie do aplikacji i po odzyskaniu s
 Statusy: zapis lokalny/oczekiwanie, zsynchronizowano, czeka na internet, zmiany czekają na powrót do Dziś, wymaga uwagi rodzica. Błędy sieci ponawiane z opóźnieniem do 120 s; odebrany dostęp i nierozpoznane konflikty zatrzymują automat, nie usuwając lokalnych danych. Używamy istniejącej blokady Web Locks i operacji idempotentnych. Nadal jedna karta aplikacji na urządzeniu. Zamknięta lub zawieszona aplikacja nie gwarantuje pracy w tle; wznowienie uruchamia sprawdzenie.
 
 Dodane testy przeglądarkowe: własny zapis bez reload, odroczenie pobranego postępu w lekcji, blokada odświeżenia podczas audio, powrót sieci, wznowienie po otwarciu strony oraz odebranie dostępu. Testy synchronizacji UI: 28; backend/merge/storage: 44; regresja aplikacji: 96.
+
+## S37-M17 — FAIL i poprawka statusu połączenia (25.11.2026)
+
+M15 i M16 PASS. M17 FAIL: właściciel widział „Zapisano — postęp zsynchronizowany” również po quizie i około 30 s w trybie samolotowym. To zgłoszenie dotyczy statusu; utrata punktów nie została zgłoszona. Nie traktować M17 jako zaliczonego przed ponownym testem na urządzeniu.
+
+Poprawka: zamiast bezterminowego zapewnienia pokazujemy czas ostatniego potwierdzenia serwera. Każda próba od razu pokazuje sprawdzanie połączenia, a błąd/timeout wskazuje zapis lokalny i oczekiwanie. Timeout 8 s. Odczyty API mają unikalny parametr i cache:no-store. Zmiana połączenia unieważnia odpowiedzi rozpoczętych żądań i przerywa je; odpowiedź sprzed offline nie może przywrócić statusu sukcesu. Zachowane są trwałe identyfikatory prób, więc utracona odpowiedź PUT nie dubluje postępu. Wskazanie navigator.onLine nie zastępuje odpowiedzi serwera. Przyczyna na fizycznym urządzeniu wymaga retestu; tryb samolotowy sam w sobie nie jest dowodem niedostępności Wi-Fi.
+
+Odłożone zgłoszenie UX zapisano w BACKLOG.md (UX-01). Treści lekcji nie zmieniano.
