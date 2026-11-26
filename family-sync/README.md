@@ -107,3 +107,9 @@ M15 i M16 PASS. M17 FAIL: właściciel widział „Zapisano — postęp zsynchro
 Poprawka: zamiast bezterminowego zapewnienia pokazujemy czas ostatniego potwierdzenia serwera. Każda próba od razu pokazuje sprawdzanie połączenia, a błąd/timeout wskazuje zapis lokalny i oczekiwanie. Timeout 8 s. Odczyty API mają unikalny parametr i cache:no-store. Zmiana połączenia unieważnia odpowiedzi rozpoczętych żądań i przerywa je; odpowiedź sprzed offline nie może przywrócić statusu sukcesu. Zachowane są trwałe identyfikatory prób, więc utracona odpowiedź PUT nie dubluje postępu. Wskazanie navigator.onLine nie zastępuje odpowiedzi serwera. Przyczyna na fizycznym urządzeniu wymaga retestu; tryb samolotowy sam w sobie nie jest dowodem niedostępności Wi-Fi.
 
 Odłożone zgłoszenie UX zapisano w BACKLOG.md (UX-01). Treści lekcji nie zmieniano.
+
+## Odbiór i przygotowanie produkcji — 26.11.2026
+
+M17 ponownie PASS na Safari iPhone ↔ PC (zapis lokalny offline i automatyczny wynik po powrocie sieci). M18 PASS: po zamknięciu i ponownym otwarciu Safari profil pozostaje połączony, nowy wynik z PC pobrany automatycznie. Wszystkie M01–M18 zaakceptowane. Właściciel zlecił przygotowanie produkcji, z osobną decyzją przed publikacją.
+
+Pakiet przygotowania i procedura: [production/README.md](production/README.md). Główny index, TEST oraz produkcja nie są zmieniane przez build kandydata.
