@@ -27,7 +27,7 @@ test('ST02 — retrying after seeing the model answer never records a result pre
  expect(Object.values(before?.otono?.dialogs||{})).toHaveLength(0);
  await page.locator('#a1Stage .jr-main').filter({hasText:'Odpowiedziałem'}).click();
  await page.locator('#a1Stage .jr-main').filter({hasText:'Dalej'}).click();
- await page.locator('#a1Stage .jr-options button').filter({hasText:'Powiedziałem sam'}).click();
+ await page.locator('#a1Stage .jr-options button').filter({hasText:'Odpowiedziałem sam'}).click();
  const after=await stored(page,'hiszpanskiFrankaA1ProgressV1');
  expect(Object.values(after.otono.dialogs).reduce((n,x)=>n+x.practised,0)).toBe(1);
 });

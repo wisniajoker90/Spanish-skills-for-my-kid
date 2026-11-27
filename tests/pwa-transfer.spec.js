@@ -23,7 +23,7 @@ test('PT01 — Safari guide explains independent PWA storage and backup',async({
   await openTransfer(page);
   await expect(page.locator('#hf30TransferContext')).toContainText('przeglądarce');
   await expect(page.locator('#hf30TransferGuide')).toContainText('Nie usuwaj danych Safari');
-  await expect(page.locator('#hf30TransferGuide')).toContainText('nie synchronizują się automatycznie');
+  await expect(page.locator('#hf30TransferGuide')).toContainText('Odtworzenie z kopii tworzy osobne profile lokalne');
 });
 test('PT02 — installed PWA mode explains separate data storage',async({page})=>{
   await page.addInitScript(()=>Object.defineProperty(navigator,'standalone',{configurable:true,value:true}));
@@ -50,7 +50,7 @@ test('PT04 — import previews source, keeps current profile, then switches only
   expect(prompts).toHaveLength(1);
   expect(prompts[0]).toContain('2026-11-16');
   expect(prompts[0]).toContain('Franek');
-  expect(prompts[0]).toContain('nie zostaną nadpisane');
+  expect(prompts[0]).toContain('Odtworzyć jako osobne profile lokalne');
   const before=await page.evaluate(k=>({active:hfProfiles19.getMeta().active,original:JSON.parse(localStorage.getItem('hf18:p:franek:'+k)).points,profiles:hfProfiles19.getMeta().profiles.length}),progressKey);
   expect(before).toEqual({active:'franek',original:9,profiles:2});
   await page.locator('#hf30Activate').click();
