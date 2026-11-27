@@ -100,6 +100,7 @@ test('CAR35-01 — conversation gives time to answer, resumes its phase and fini
  await page.locator('#s15CarGo').click();
  await page.locator('#carMode').selectOption('conversation');
  await page.locator('#carUnit').selectOption('2');
+ await page.getByText('Ustawienia sesji',{exact:true}).click();
  await page.locator('#carWait').selectOption('7000');
  await page.clock.install();
  await page.clock.pauseAt(new Date(Date.now()+2000));
