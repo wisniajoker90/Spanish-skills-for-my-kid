@@ -320,9 +320,24 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 <div class="tabs" hidden="" id="tabs"><button class="active" data-unit="0">Unidad Inicial</button><button data-unit="1">Otoño</button><button data-unit="2">Invierno</button><button data-unit="3">Primavera</button><button data-unit="4">Verano</button><button data-unit="5">💬 Daily chat</button></div>
 <section class="panel epic-games" hidden="" id="epicGames"><button class="secondary" id="uxCloseGames" type="button">← Wróć do wyboru ćwiczenia</button><h2>🎮 Gry edukacyjne</h2><p class="small">Wybierz rozdział, grę i poziom trudności.</p><div class="game-setup"><label>Rozdział <select id="epicUnit"></select></label><label>Poziom <select id="epicLevel"><option value="easy">⭐ Łatwy</option><option value="medium">⭐⭐ Średni</option><option value="hard">⭐⭐⭐ Trudny</option></select></label></div><div class="game-menu" id="epicMenu"><button data-epic="memory">🧠 Memory z ilustracjami</button><button data-epic="sentence-memory">🗣️ Memory ze zdaniami</button><button data-epic="audio">🎧 Zgadnij ze słuchu</button><button data-epic="match">🎯 Dopasuj pary</button><button data-epic="letters">🔤 Rozsypanka liter</button><button data-epic="timed">⏱️ Wyzwanie 60 sekund</button></div><div class="junior-setup"><label><input checked="" id="juniorMode" type="checkbox"/> 🌟 Rozsypanka Junior: obrazek, odsłuch i pomoc</label><p class="small">Dotyczy rozsypanki. Odznacz, aby grać w klasyczną wersję.</p></div><div class="epic-stage" hidden="" id="epicStage"><div class="stage-top"><h3 id="epicTitle"></h3><button class="secondary" id="epicExit">← Wybierz grę</button></div><p class="small" id="epicScore"></p><div id="epicContent"></div><p aria-live="polite" class="feedback" id="epicFeedback"></p></div></section><section class="parent-notes panel" id="parentNotes"><details><summary>ℹ️ Dla rodzica · urządzenia i informacje techniczne</summary><div class="crossplatform"><h3>Jedna aplikacja na wszystkie urządzenia</h3><p style="margin:0 0 12px">Aplikacja działa w przeglądarce na komputerze i urządzeniach mobilnych. Aplikacja obsługuje instalację PWA i pamięć offline po pierwszym wczytaniu online. Wymaga publikacji wszystkich plików paczki.</p><div class="platforms"><span>🖥️ Windows / Mac</span><span>🤖 Android</span><span>📱 iPhone / iPad</span></div><p class="small" style="margin:12px 0 0">Publikacja w App Store i Google Play to osobny etap; prototyp nie jest jeszcze opublikowaną aplikacją.</p></div><p class="small">Postępy są zapisane lokalnie w tej przeglądarce. Dostępność głosu hiszpańskiego zależy od urządzenia i połączenia.</p></details></section><footer>Wymowa zależy od głosu hiszpańskiego dostępnego na urządzeniu. Przycisk audio korzysta z wbudowanego syntezatora mowy, więc głos i działanie offline mogą różnić się między urządzeniami. W tej wersji nie ma jeszcze oryginalnych nagrań z podręcznika.</footer>
 </div></div></main></div>
+
+
+
+
+<!-- Family Sync learning storage BEGIN -->
+<script>/* Crash-recoverable local application. Journal is removed only after all values verify. */
+(function(root){'use strict';const JOURNAL='hf37prod:learning-transaction';
+function recover(storage){const raw=storage.getItem(JOURNAL);if(!raw)return false;const saved=JSON.parse(raw);if(!Array.isArray(saved.before))throw Error('Nie można odtworzyć kopii synchronizacji.');for(const[k,v]of saved.before)if(v===null)storage.removeItem(k);for(const[k,v]of saved.before)if(v!==null)storage.setItem(k,v);for(const[k,v]of saved.before)if(storage.getItem(k)!==v)throw Error('Nie udało się odtworzyć zapisu.');storage.removeItem(JOURNAL);return true;}
+function commit(storage,updates){recover(storage);const before=Object.keys(updates).map(k=>[k,storage.getItem(k)]);storage.setItem(JOURNAL,JSON.stringify({before}));try{for(const[k,v]of Object.entries(updates)){if(v===null)storage.removeItem(k);else storage.setItem(k,v);if(storage.getItem(k)!==v)throw Error('Nie udało się zweryfikować zapisu.');}storage.removeItem(JOURNAL);}catch(e){try{recover(storage)}catch{throw Error('Zapis przerwany. Kopia odzyskiwania jest zachowana. Nie usuwaj danych przeglądarki.');}throw e;}}
+const api={commit,recover};if(typeof module==='object'&&module.exports)module.exports=api;else root.hf37LearningStorage=api;
+})(typeof window==='object'?window:globalThis);
+
+if(location.hostname==='hiszpanski-franka-test.pages.dev'||(['localhost','127.0.0.1'].includes(location.hostname)&&navigator.webdriver)){try{hf37LearningStorage.recover(localStorage)}catch(e){window.hf37RecoveryFailed=true;document.body.inert=true;alert('Nie udało się odzyskać zapisu synchronizacji. Nie usuwaj danych przeglądarki.');}}</script>
+<!-- Family Sync learning storage END -->
 <script>
 /* Sprint 18.0: additive migration, immutable legacy data, isolated profile storage. */
 (function(){'use strict';
+if(window.hf37RecoveryFailed)throw Error('Learning sync recovery required');
 const native=window.localStorage, META='hf18:meta', PREFIX='hf18:p:', SNAP='hf18:legacy-snapshot';
 const valid=k=>/^(hiszpanskiFranka[A-Za-z0-9_-]{0,100}|franka(?:Ux|Learning|Progress)[A-Za-z0-9_-]{0,100})$/i.test(k);
 const read=(k,d)=>{try{return JSON.parse(native.getItem(k))??d}catch{return d}};
@@ -1545,7 +1560,7 @@ function showQuestion(){
 }
 function finishTest(){
  const n=test.questions.length,pct=Math.round(100*test.correct/n);const kind=test.type;const u=test.u;
- const record={time:new Date().toISOString(),right:test.correct,total:n,percent:pct,incorrect:unique(test.incorrect),spoken:test.spoken||0};
+ const record={id:crypto.randomUUID(),time:new Date().toISOString(),right:test.correct,total:n,percent:pct,incorrect:unique(test.incorrect),spoken:test.spoken||0};
  const section=kind==='school'?state.school:state.a1;const old=section[u]||{history:[]};old.history=[record,...(old.history||[])].slice(0,15);old.incorrect=record.incorrect;section[u]=old;save();window.dispatchEvent(new CustomEvent('franka:s8checkpoint',{detail:{u,type:kind,percent:pct}}));
  answer.replaceChildren();answer.append(newNode('div','s6-result',`🏆 Wynik: ${test.correct}/${n} (${pct}%)`),newNode('p','',kind==='school'?(pct>=85?'Świetnie opanowany materiał!':'Zobacz błędne odpowiedzi i poćwicz je ponownie.'):'To wynik ćwiczeń — nie jest formalną oceną A1.'));
  if(record.incorrect.length)answer.append(newNode('p','small','Do powtórki: '+record.incorrect.join(', ')));
@@ -1700,7 +1715,7 @@ function draw(){
  weak.append(n('p','small',difficult.length?'Do powtórki: '+difficult.map(c=>c[2]).join(', '):'Na razie brak trudnych słówek — można poznawać kolejne!'));
  const date=$('s13ExamDate'),status=$('s13ExamStatus');date.value=examData[u]||'';status.textContent=exam?`✅ Przygotowanie aktywne do ${exam.date}. ${exam.days} dni do sprawdzianu.`:examData[u]?'Termin minął — ustaw nowy albo wyłącz przygotowanie.':'Tryb wyłączony. Codzienna nauka obejmuje szkołę i dodatkowe A1.';
 }
-function show(){if(!session)return;const item=session.queue[session.i];$('s7SessionFeedback').textContent='';$('s7NextWrap').hidden=true;const body=$('s7SessionBody');body.replaceChildren();if(!item){const correct=session.ok;const total=session.queue.length;body.append(n('h3','','🏆 Brawo, Franek!'),n('p','',`Ukończone zadania: ${total}. Poprawne odpowiedzi: ${correct}.`));$('s7SessionProgress').textContent='Sesja zakończona';const next=b('🧠 Zagraj w Memory',()=>{const go=window.frankaNav15_2?.go;const success=go?.('memory');if(success){$('s7Session').hidden=true}else{$('s7SessionFeedback').textContent='Nie udało się otworzyć Memory. Spróbuj ponownie lub wybierz Nauka → Gry.'}});body.append(next);data.dailyHistory.unshift({day:new Date().toISOString().slice(0,10),correct,total});data.dailyHistory=data.dailyHistory.slice(0,30);store();window.dispatchEvent(new CustomEvent("franka:s14daily",{detail:{correct,total}}));draw();session=null;return}
+function show(){if(!session)return;const item=session.queue[session.i];$('s7SessionFeedback').textContent='';$('s7NextWrap').hidden=true;const body=$('s7SessionBody');body.replaceChildren();if(!item){const correct=session.ok;const total=session.queue.length;body.append(n('h3','','🏆 Brawo, Franek!'),n('p','',`Ukończone zadania: ${total}. Poprawne odpowiedzi: ${correct}.`));$('s7SessionProgress').textContent='Sesja zakończona';const next=b('🧠 Zagraj w Memory',()=>{const go=window.frankaNav15_2?.go;const success=go?.('memory');if(success){$('s7Session').hidden=true}else{$('s7SessionFeedback').textContent='Nie udało się otworzyć Memory. Spróbuj ponownie lub wybierz Nauka → Gry.'}});body.append(next);data.dailyHistory.unshift({id:crypto.randomUUID(),at:new Date().toISOString(),day:new Date().toISOString().slice(0,10),correct,total});data.dailyHistory=data.dailyHistory.slice(0,30);store();window.dispatchEvent(new CustomEvent("franka:s14daily",{detail:{correct,total}}));draw();session=null;return}
 session.answered=false;$('s7SessionProgress').textContent=`Zadanie ${session.i+1} z ${session.queue.length} · ${item.kind==='word'?'Słówko':'Zdanie'}`;
 const pic=n('div','s7-illustration',item.icon||'💬');const question=n('p','s7-question',item.kind==='sentence'?'🎧 Posłuchaj całego zdania':item.es);body.append(pic,question,b('🔊 Posłuchaj',()=>speak(item.es),'epic-listen'));
 const possible=item.kind==='word'?(units[item.u]?.cards||[]).map(x=>x[2]):newSentences().map(x=>x.pl);
@@ -1923,7 +1938,7 @@ let state=read(KEY);if(!state||typeof state!=='object'||Array.isArray(state))sta
 if(!Array.isArray(state.events))state.events=[];if(!state.badges||typeof state.badges!=='object')state.badges={};
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 function save(){try{frankaStore.setItem(KEY,JSON.stringify(state))}catch(e){}}
-function evt(kind){const day=today();state.events.push({day,kind});state.events=state.events.slice(-700);save();render()}
+function evt(kind){const day=today();state.events.push({id:crypto.randomUUID(),day,kind});state.events=state.events.slice(-700);save();render()}
 const names={1:'Otoño',2:'Invierno',3:'Primavera',4:'Verano'};
 const icons={1:'🍂',2:'❄️',3:'🌸',4:'☀️'};
 function allStages(){const progress=read(PATH),out=[];for(const u of [1,2,3,4]){const v=progress[u]||{};for(const [k,r] of Object.entries(v)){if(r&&r.done)out.push({u,k,kind:k.split(':')[0],date:r.date})}}return out}
@@ -2770,7 +2785,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  }
  function finish(){const area=$('hf23Body');area.replaceChildren();const pct=answered?Math.round(correct/answered*100):0;area.append(el('h3',`🏆 Brawo, ${profile()}!`),el('p',`Poprawne odpowiedzi: ${correct}/${answered} (${pct}%).`),el('p',pct>=85?'Świetnie! Kolejna powtórka może być trochę trudniejsza.':pct<55?'Ćwiczymy spokojnie — następnym razem więcej znanych słówek.':'Dobra praca! Warto wrócić do trudniejszych słówek.'));
   $('hf23Counter').textContent='Sesja ukończona';$('hf23Progress').style.width='100%';$('hf23Next').hidden=true;
-  if(!state.partial?.finished){const previous=awards(state);const today=day();state.sessions||=[];state.sessions.push({day:today,answered,correct,level,finished:true,at:new Date().toISOString()});state.sessions=state.sessions.slice(-90);state.partial={finished:true};if(!write(state))$('hf23Feedback').textContent='⚠️ Nie udało się zapisać sesji. Sprawdź miejsce na urządzeniu.';else { $('hf23Feedback').textContent='🌟 Postęp zapisany w Twoim profilu.';const earned=awards(state).filter((a,i)=>a.ok&&!previous[i].ok).map(a=>a.name);if(earned.length)window.dispatchEvent(new CustomEvent('franka:hf24-awards-earned',{detail:{names:earned}})); }}
+  if(!state.partial?.finished){const previous=awards(state);const today=day();state.sessions||=[];state.sessions.push({id:crypto.randomUUID(),day:today,answered,correct,level,finished:true,at:new Date().toISOString()});state.sessions=state.sessions.slice(-90);state.partial={finished:true};if(!write(state))$('hf23Feedback').textContent='⚠️ Nie udało się zapisać sesji. Sprawdź miejsce na urządzeniu.';else { $('hf23Feedback').textContent='🌟 Postęp zapisany w Twoim profilu.';const earned=awards(state).filter((a,i)=>a.ok&&!previous[i].ok).map(a=>a.name);if(earned.length)window.dispatchEvent(new CustomEvent('franka:hf24-awards-earned',{detail:{names:earned}})); }}
   const again=el('button','Zakończ i wróć','hf23-primary');again.type='button';again.onclick=close;area.append(again);renderAwards();window.frankaLevel14?.render?.();
  }
  function open(){if(!pool().length){alert('Brak materiału do powtórek.');return}opener=document.activeElement;state=read();let resume=false;
@@ -2987,4 +3002,2591 @@ init();
 })();
 </script>
 
+<!-- Family Sync TEST pilot: deliberately isolated from all learning/profile stores. -->
+<style>
+#fs37Launch{margin:16px 0;width:100%;min-height:48px;border:1px dashed #547a85;border-radius:14px;background:#edf7f4;color:#184b40;font:650 16px system-ui;padding:14px}#fs37[hidden],#fs37 [hidden]{display:none!important}#fs37{position:fixed;inset:0;z-index:15000;background:#163547ba;overflow:auto;padding:16px;box-sizing:border-box}#fs37 article{box-sizing:border-box;width:min(100%,580px);margin:0 auto;background:white;color:#183747;border-radius:20px;padding:22px;font:16px/1.5 system-ui}#fs37 button,#fs37 input{box-sizing:border-box;font:inherit;border:1px solid #b3cad2;border-radius:12px;min-height:48px;padding:12px;width:100%;margin:6px 0}#fs37 button{background:#edf4f8;color:#183747;font-weight:650;cursor:pointer}#fs37 button.primary{background:#166b57;color:white}#fs37 button:disabled{opacity:.5;cursor:wait}#fs37 input{background:white;color:#183747}#fs37 label{display:block;margin-top:12px}#fs37 .note{color:#526773;font-size:14px}#fs37Status{white-space:pre-wrap;padding:12px 0}#fs37Stats{font-size:23px;font-weight:750;color:#166b57}#fs37Code{overflow-wrap:anywhere;padding:12px;background:#edf7f4;user-select:all}#fs37Qr{display:block;width:min(100%,300px);height:auto;margin:12px auto;image-rendering:pixelated}#fs37 h2{margin-top:0}#fs37 footer{margin-top:18px;border-top:1px solid #ccdce1;padding-top:12px}
+#fs37 input[type="checkbox"]{width:22px;min-height:22px;height:22px;padding:0;margin:0 8px 0 0;vertical-align:middle}#fs37 label:has(input[type="checkbox"]){padding:12px 0}
+</style>
+<section id="fs37" hidden role="dialog" aria-modal="true" aria-labelledby="fs37Title">
+<article><h2 id="fs37Title">Family Sync — urządzenia rodziny</h2>
+<p class="note">Na pierwszym iPhonie wybierz aktualny postęp Franka. Na kolejnych urządzeniach zeskanuj QR i pobierz wspólny profil. Nauka działa również offline.</p>
+<button id="fs37Close">Zamknij</button>
+<div id="fs37Unlinked">
+<label>Nazwa tego urządzenia<input id="fs37Name" maxlength="80" autocomplete="off" placeholder="np. iPhone rodzica"></label>
+<details id="fs37Setup"><summary>Pierwszy iPhone — rozpocznij synchronizację</summary>
+<label>Klucz konfiguracji rodziny<input id="fs37Secret" type="password" autocomplete="off" spellcheck="false"></label>
+<p class="note">Wklej FAMILY_SETUP_KEY z menedżera haseł. Klucz zostanie wysłany tylko do Twojego Workera i usunięty z pola po próbie. Nie zapisujemy go w przeglądarce.</p>
+<button class="primary" id="fs37Create">Rozpocznij konfigurację rodziny</button></details>
+<details id="fs37Join"><summary>Kolejne urządzenie — dołącz przez QR lub kod</summary><p class="note">Także po odłączeniu: poproś rodzica o nowy kod. Połączenie pobierze wspólny profil. Istniejące profile lokalne pozostaną zachowane.</p>
+<label>Kod z pierwszego urządzenia<input id="fs37PairInput" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="32"></label>
+<button class="primary" id="fs37JoinButton">Połącz i pobierz postęp</button><button id="fs37JoinRetry" hidden>Ponów przerwane łączenie</button></details>
+</div>
+<div id="fs37Linked" hidden><p id="fs37Identity"></p><div id="fs37Parent" hidden><button id="fs37Pair">Dodaj urządzenie — pokaż QR</button><div id="fs37Pairing" hidden><p>Zeskanuj kod aparatem telefonu lub tabletu. Następnie wpisz nazwę urządzenia i potwierdź połączenie.</p><img id="fs37Qr" alt="Kod QR do połączenia urządzenia"/><p id="fs37Code"></p><p class="note">Kod jest jednorazowy i ważny przez 10 minut. Możesz też wpisać go ręcznie na drugim urządzeniu.</p></div><button id="fs37Devices">Pokaż urządzenia</button><div id="fs37DeviceList"></div></div>
+</div>
+<details id="fs37Recovery"><summary>Odzyskaj dostęp rodzica</summary>
+<p class="note">Użyj po utracie dostępu rodzica. Zachowamy wspólne punkty i połączone urządzenia ucznia. Poprzedni dostęp rodzica oraz stare kody parowania przestaną działać.</p>
+<label>Nazwa urządzenia rodzica<input id="fs37RecoveryName" maxlength="80" autocomplete="off" placeholder="np. Komputer rodzica"></label>
+<label>Klucz odzyskiwania rodziny<input id="fs37RecoverySecret" type="password" autocomplete="off" spellcheck="false"></label>
+<p class="note">To zapisany wcześniej FAMILY_SETUP_KEY. Wklej go tylko tutaj. Nie zapisujemy klucza w aplikacji.</p>
+<label><input id="fs37RecoveryConfirm" type="checkbox" style="width:auto;min-height:0"> Zastąp poprzedni dostęp rodzica, zachowując punkty.</label>
+<button class="primary" id="fs37Recover">Odzyskaj dostęp rodzica</button></details>
+<p id="fs37Status" role="status" aria-live="polite"></p><footer class="note">Po połączeniu postęp synchronizuje się automatycznie przy otwartej aplikacji. Trwające ćwiczenie pozostaje nieprzerwane.</footer></article></section>
+<script id="fs37Script">
+(()=>{'use strict';
+const active=location.hostname==='wisniajoker90.github.io'&&location.pathname.startsWith('/Spanish-skills-for-my-kid/')||(['localhost','127.0.0.1'].includes(location.hostname)&&navigator.webdriver);
+const root=document.getElementById('fs37');if(!active){root.remove();return;}
+// Bundled qrcode-generator 2.0.4 (MIT); no external QR service.
+/*
+MIT License
+
+Copyright (c) 2009 Kazuhiko Arase
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+var qrcode = function() {
+
+  //---------------------------------------------------------------------
+  // qrcode
+  //---------------------------------------------------------------------
+
+  /**
+   * qrcode
+   * @param typeNumber 1 to 40
+   * @param errorCorrectionLevel 'L','M','Q','H'
+   */
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+
+      mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+
+      for (var r = -1; r <= 7; r += 1) {
+
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+
+        for (var c = -1; c <= 7; c += 1) {
+
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+
+    var getBestMaskPattern = function() {
+
+      var minLostPoint = 0;
+      var pattern = 0;
+
+      for (var i = 0; i < 8; i += 1) {
+
+        makeImpl(true, i);
+
+        var lostPoint = QRUtil.getLostPoint(_this);
+
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+
+      return pattern;
+    };
+
+    var setupTimingPattern = function() {
+
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+
+    var setupPositionAdjustPattern = function() {
+
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+
+      for (var i = 0; i < pos.length; i += 1) {
+
+        for (var j = 0; j < pos.length; j += 1) {
+
+          var row = pos[i];
+          var col = pos[j];
+
+          if (_modules[row][col] != null) {
+            continue;
+          }
+
+          for (var r = -2; r <= 2; r += 1) {
+
+            for (var c = -2; c <= 2; c += 1) {
+
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    var setupTypeNumber = function(test) {
+
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+
+      // vertical
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+
+      // horizontal
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+
+      // fixed module
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+
+        if (col == 6) col -= 1;
+
+        while (true) {
+
+          for (var c = 0; c < 2; c += 1) {
+
+            if (_modules[row][col - c] == null) {
+
+              var dark = false;
+
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+
+              var mask = maskFunc(row, col - c);
+
+              if (mask) {
+                dark = !dark;
+              }
+
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+
+          row += inc;
+
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+
+      var offset = 0;
+
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+
+        dcdata[r] = new Array(dcCount);
+
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+
+      var data = new Array(totalCodeCount);
+      var index = 0;
+
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+
+      var buffer = qrBitBuffer();
+
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+
+      // calc num max data.
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+
+      // end code
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+
+      // padding
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+
+      // padding
+      while (true) {
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+
+      return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data, mode) {
+
+      mode = mode || 'Byte';
+
+      var newData = null;
+
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+
+        _typeNumber = typeNumber;
+      }
+
+      makeImpl(false, getBestMaskPattern() );
+    };
+
+    _this.createTableTag = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var qrHtml = '';
+
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+
+        qrHtml += '<tr>';
+
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+
+        qrHtml += '</tr>';
+      }
+
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+
+      return qrHtml;
+    };
+
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
+
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        // Called by options.
+        opts = arguments[0];
+        // overwrite cellSize and margin.
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
+      }
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      // Compose alt property surrogate
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+
+      // Compose title property surrogate
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+
+      return qrSvg;
+    };
+
+    _this.createDataURL = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+
+    _this.createImgTag = function(cellSize, margin, alt) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += escapeXml(alt);
+        img += '"';
+      }
+      img += '/>';
+
+      return img;
+    };
+
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
+    };
+
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r1, r2, p;
+
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+
+        ascii += '\n';
+      }
+
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r, p;
+
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          line += p ? white : black;
+        }
+
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+
+  //---------------------------------------------------------------------
+  // qrcode.createStringToBytes
+  //---------------------------------------------------------------------
+
+  /**
+   * @param unicodeData base64 string of byte array.
+   * [16bit Unicode],[16bit Bytes], ...
+   * @param numChars
+   */
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+
+    // create conversion map.
+
+    var unicodeMap = function() {
+
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+
+      return unicodeMap;
+    }();
+
+    var unknownChar = '?'.charCodeAt(0);
+
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              // 1byte
+              bytes.push(b);
+            } else {
+              // 2bytes
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+
+  //---------------------------------------------------------------------
+  // QRMode
+  //---------------------------------------------------------------------
+
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+
+  //---------------------------------------------------------------------
+  // QRErrorCorrectionLevel
+  //---------------------------------------------------------------------
+
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+
+  //---------------------------------------------------------------------
+  // QRMaskPattern
+  //---------------------------------------------------------------------
+
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+
+  //---------------------------------------------------------------------
+  // QRUtil
+  //---------------------------------------------------------------------
+
+  var QRUtil = function() {
+
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+
+    var _this = {};
+
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+
+    _this.getMaskFunction = function(maskPattern) {
+
+      switch (maskPattern) {
+
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+
+    _this.getLengthInBits = function(mode, type) {
+
+      if (1 <= type && type < 10) {
+
+        // 1 - 9
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 27) {
+
+        // 10 - 26
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 41) {
+
+        // 27 - 40
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else {
+        throw 'type:' + type;
+      }
+    };
+
+    _this.getLostPoint = function(qrcode) {
+
+      var moduleCount = qrcode.getModuleCount();
+
+      var lostPoint = 0;
+
+      // LEVEL1
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+
+          for (var r = -1; r <= 1; r += 1) {
+
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+
+            for (var c = -1; c <= 1; c += 1) {
+
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+
+              if (r == 0 && c == 0) {
+                continue;
+              }
+
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+
+      // LEVEL2
+
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+
+      // LEVEL3
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      // LEVEL4
+
+      var darkCount = 0;
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+
+      return lostPoint;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // QRMath
+  //---------------------------------------------------------------------
+
+  var QRMath = function() {
+
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+
+    // initialize tables
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+
+    var _this = {};
+
+    _this.glog = function(n) {
+
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+
+      return LOG_TABLE[n];
+    };
+
+    _this.gexp = function(n) {
+
+      while (n < 0) {
+        n += 255;
+      }
+
+      while (n >= 256) {
+        n -= 255;
+      }
+
+      return EXP_TABLE[n];
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrPolynomial
+  //---------------------------------------------------------------------
+
+  function qrPolynomial(num, shift) {
+
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+
+    var _this = {};
+
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+
+    _this.getLength = function() {
+      return _num.length;
+    };
+
+    _this.multiply = function(e) {
+
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+
+      return qrPolynomial(num, 0);
+    };
+
+    _this.mod = function(e) {
+
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+
+      // recursive call
+      return qrPolynomial(num, 0).mod(e);
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // QRRSBlock
+  //---------------------------------------------------------------------
+
+  var QRRSBlock = function() {
+
+    var RS_BLOCK_TABLE = [
+
+      // L
+      // M
+      // Q
+      // H
+
+      // 1
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+
+      // 2
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+
+      // 3
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+
+      // 4
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+
+      // 5
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+
+      // 6
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+
+      // 7
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+
+      // 8
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+
+      // 9
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+
+      // 10
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+
+      // 11
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+
+      // 12
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+
+      // 13
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+
+      // 14
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+
+      // 15
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+
+      // 16
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+
+      // 17
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+
+      // 18
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+
+      // 19
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+
+      // 20
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+
+      // 21
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+
+      // 22
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+
+      // 23
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+
+      // 24
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+
+      // 25
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+
+      // 26
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+
+      // 27
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+
+      // 28
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+
+      // 29
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+
+      // 30
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+
+      // 31
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+
+      // 32
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+
+      // 33
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+
+      // 34
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+
+      // 35
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+
+      // 36
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+
+      // 37
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+
+      // 38
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+
+      // 39
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+
+      // 40
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+
+    var _this = {};
+
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+
+      var length = rsBlock.length / 3;
+
+      var list = [];
+
+      for (var i = 0; i < length; i += 1) {
+
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+
+      return list;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrBitBuffer
+  //---------------------------------------------------------------------
+
+  var qrBitBuffer = function() {
+
+    var _buffer = [];
+    var _length = 0;
+
+    var _this = {};
+
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+
+    _this.putBit = function(bit) {
+
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+
+      _length += 1;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrNumber
+  //---------------------------------------------------------------------
+
+  var qrNumber = function(data) {
+
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _data;
+
+      var i = 0;
+
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrAlphaNum
+  //---------------------------------------------------------------------
+
+  var qrAlphaNum = function(data) {
+
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var s = _data;
+
+      var i = 0;
+
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+
+    var getCode = function(c) {
+
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qr8BitByte
+  //---------------------------------------------------------------------
+
+  var qr8BitByte = function(data) {
+
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrKanji
+  //---------------------------------------------------------------------
+
+  var qrKanji = function(data) {
+
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      // self test for sjis support.
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+
+    var _bytes = stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _bytes;
+
+      var i = 0;
+
+      while (i + 1 < data.length) {
+
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+
+        buffer.put(c, 13);
+
+        i += 2;
+      }
+
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+
+    return _this;
+  };
+
+  //=====================================================================
+  // GIF Support etc.
+  //
+
+  //---------------------------------------------------------------------
+  // byteArrayOutputStream
+  //---------------------------------------------------------------------
+
+  var byteArrayOutputStream = function() {
+
+    var _bytes = [];
+
+    var _this = {};
+
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64EncodeOutputStream
+  //---------------------------------------------------------------------
+
+  var base64EncodeOutputStream = function() {
+
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+
+    var _this = {};
+
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+
+    var encode = function(n) {
+      if (n < 0) {
+        // error.
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+
+    _this.writeByte = function(n) {
+
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+
+    _this.flush = function() {
+
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+
+      if (_length % 3 != 0) {
+        // padding
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+
+    _this.toString = function() {
+      return _base64;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64DecodeInputStream
+  //---------------------------------------------------------------------
+
+  var base64DecodeInputStream = function(str) {
+
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+
+    var _this = {};
+
+    _this.read = function() {
+
+      while (_buflen < 8) {
+
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+
+        var c = _str.charAt(_pos);
+        _pos += 1;
+
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          // ignore if whitespace.
+          continue;
+        }
+
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // gifImage (B/W)
+  //---------------------------------------------------------------------
+
+  var gifImage = function(width, height) {
+
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+
+    var _this = {};
+
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+
+    _this.write = function(out) {
+
+      //---------------------------------
+      // GIF Signature
+
+      out.writeString('GIF87a');
+
+      //---------------------------------
+      // Screen Descriptor
+
+      out.writeShort(_width);
+      out.writeShort(_height);
+
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Global Color Map
+
+      // black
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+
+      // white
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+
+      //---------------------------------
+      // Image Descriptor
+
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Local Color Map
+
+      //---------------------------------
+      // Raster Data
+
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+
+      out.writeByte(lzwMinCodeSize);
+
+      var offset = 0;
+
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+
+      //---------------------------------
+      // GIF Terminator
+      out.writeString(';');
+    };
+
+    var bitOutputStream = function(out) {
+
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+
+      var _this = {};
+
+      _this.write = function(data, length) {
+
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+
+      return _this;
+    };
+
+    var getLZWRaster = function(lzwMinCodeSize) {
+
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+
+      // Setup LZWTable
+      var table = lzwTable();
+
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+
+      // clear code
+      bitOut.write(clearCode, bitLength);
+
+      var dataIndex = 0;
+
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+
+      while (dataIndex < _data.length) {
+
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+
+        if (table.contains(s + c) ) {
+
+          s = s + c;
+
+        } else {
+
+          bitOut.write(table.indexOf(s), bitLength);
+
+          if (table.size() < 0xfff) {
+
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+
+            table.add(s + c);
+          }
+
+          s = c;
+        }
+      }
+
+      bitOut.write(table.indexOf(s), bitLength);
+
+      // end code
+      bitOut.write(endCode, bitLength);
+
+      bitOut.flush();
+
+      return byteOut.toByteArray();
+    };
+
+    var lzwTable = function() {
+
+      var _map = {};
+      var _size = 0;
+
+      var _this = {};
+
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+
+      _this.size = function() {
+        return _size;
+      };
+
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+
+      return _this;
+    };
+
+    return _this;
+  };
+
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+
+    var b = byteArrayOutputStream();
+    gif.write(b);
+
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+
+    return 'data:image/gif;base64,' + base64;
+  };
+
+  //---------------------------------------------------------------------
+  // returns qrcode function.
+
+  return qrcode;
+}();
+
+// multibyte support
+!function() {
+
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        // surrogate pair
+        else {
+          i++;
+          // UTF-16 encodes 0x10000-0x10FFFF by
+          // subtracting 0x10000 and splitting the
+          // 20 bits of 0x0-0xFFFFF into two halves
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+
+}();
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof exports === 'object') {
+      module.exports = factory();
+  }
+}(function () {
+    return qrcode;
+}));
+
+const API='https://franka-family-sync.wisniajoker90.workers.dev',KEY='family-sync-production37', $=id=>document.getElementById('fs37'+id);
+const incomingMatch=location.hash.match(/^#family-join=([a-f0-9]{32})$/);
+const incomingCode=incomingMatch?.[1]||null;
+if(location.hash.startsWith('#family-join='))history.replaceState(null,'',location.pathname+location.search);
+let pairTimer=null;
+const credential=()=>({deviceId:crypto.randomUUID(),token:Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('')});
+let state={token:null,deviceId:null,profileId:null,role:null,name:'',events:[],pending:[],revision:0,lastSync:null},busy=false,simulate=false,priorFocus=null,overflow='';
+const message=text=>{$('Status').textContent=text};
+try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved){if(!Array.isArray(saved.events)||!Array.isArray(saved.pending))throw Error();state={...state,...saved};}}catch{message('Nie można odczytać zapisu testu. Nie usuwamy danych.');}
+function save(next){localStorage.setItem(KEY,JSON.stringify(next));state=next;render();}
+function render(){const linked=!!state.token;$('JoinRetry').hidden=!state.joinAttempt;$('Unlinked').hidden=linked&&state.role==='parent';$('Setup').hidden=linked;$('Linked').hidden=!linked;$('Parent').hidden=state.role!=='parent';$('Identity').textContent='Urządzenie: '+state.name+(state.role==='parent'?' · rodzic':'');for(const b of root.querySelectorAll('button:not(#fs37Close)'))b.disabled=busy;}
+async function request(path,method='GET',data,headers={}){const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),15000);try{const r=await fetch(API+path,{method,headers:{...(state.token?{Authorization:'Bearer '+state.token}:{}),...(data!==undefined?{'Content-Type':'application/json'}:{}),...headers},body:data===undefined?undefined:JSON.stringify(data),signal:ctrl.signal,cache:'no-store',credentials:'omit'});const result=await r.json();if(!r.ok){const e=new Error(result.error||'request_failed');e.status=r.status;throw e;}return result;}finally{clearTimeout(timer)}}
+function friendly(e){if(e.status===401)return 'Brak dostępu: sprawdź klucz konfiguracji albo czy urządzenie nie zostało odłączone.';if(e.status===409&&e.message==='family_already_exists')return 'Rodzina już istnieje. Wróć na pierwsze urządzenie i wygeneruj kod parowania. Nie usuwaj danych przeglądarki.';if(e.message==='family_not_found')return 'Nie ma jeszcze rodziny. Najpierw utwórz ją na pierwszym urządzeniu.';if(e.message==='recovery_expired')return 'Ta próba odzyskiwania została zastąpiona nowszą. Zamknij panel i spróbuj ponownie.';if(e.status===410)return 'Kod wygasł lub został użyty. Wygeneruj nowy na pierwszym urządzeniu.';if(e.name==='QuotaExceededError')return 'Brak miejsca na zapis lokalny. Nie zamykaj strony ani nie usuwaj danych.';return 'Nie udało się zakończyć operacji. Dane lokalne pozostają zapisane. Sprawdź połączenie i spróbuj ponownie.';}
+async function action(fn){if(busy)return;busy=true;render();try{await fn()}catch(e){message(friendly(e))}finally{busy=false;render()}}
+async function sync(){if(!state.token)return;const me=await request('/v1/me');save({...state,role:me.device.role,name:me.device.name});message('Urządzenie połączone. Wybierz poniżej postęp do synchronizacji.');document.dispatchEvent(new Event('family-device-ready'));}
+$('Create').onclick=()=>action(async()=>{const name=$('Name').value.trim();if(!name){message('Wpisz nazwę urządzenia.');return;}const secret=$('Secret').value;$('Secret').value='';if(secret.length<32){message('Wklej pełny klucz FAMILY_SETUP_KEY z menedżera haseł.');return;}localStorage.setItem(KEY,JSON.stringify(state));const result=await request('/v1/setup','POST',{deviceName:name,profileName:'Konfiguracja rodziny',snapshot:{schema:1,data:{kind:'family-config'}}},{'X-Family-Setup-Key':secret});save({...state,token:result.token,deviceId:result.deviceId,profileId:result.profileId,role:'parent',name,revision:result.revision,events:[],pending:[],lastSync:Date.now()});message('Rodzina gotowa. Teraz zapisz kopię i wybierz aktualny profil z Safari jako punkt startowy.');document.dispatchEvent(new Event('family-device-ready'));});
+async function joinDevice(retry=false){
+let attempt=retry?state.joinAttempt:null;
+if(!attempt){const name=$('Name').value.trim(),code=$('PairInput').value.trim();if(!name||!/^[a-f0-9]{32}$/.test(code)){message('Wpisz nazwę urządzenia i pełny 32-znakowy kod parowania.');return;}
+const health=await request('/health');if(health.retrySafePairing!==true){message('Parowanie wymaga aktualizacji serwera. Skontaktuj się z rodzicem; dotychczasowe punkty pozostają zapisane.');return;}
+attempt={...credential(),deviceName:name,code};save({...state,joinAttempt:attempt});}
+let result;try{result=await request('/v1/join','POST',attempt);}catch(e){if(e.status===410||e.status===401)save({...state,joinAttempt:null});throw e;}
+$('PairInput').value='';save({...state,token:result.token,deviceId:result.deviceId,profileId:null,role:'learner',name:attempt.deviceName,recoveryAttempt:null,joinAttempt:null});await sync();document.dispatchEvent(new Event('family-device-joined'));
+}
+$('JoinButton').onclick=()=>action(()=>joinDevice());
+$('JoinRetry').onclick=()=>action(()=>joinDevice(true));
+$('Recover').onclick=()=>action(async()=>{
+const name=$('RecoveryName').value.trim(),secret=$('RecoverySecret').value;$('RecoverySecret').value='';
+if(!name||!$('RecoveryConfirm').checked){message('Wpisz nazwę i potwierdź zastąpienie poprzedniego dostępu rodzica.');return;}
+if(secret.length<32){message('Wklej pełny FAMILY_SETUP_KEY z menedżera haseł.');return;}
+const attempt=state.recoveryAttempt||credential();
+save({...state,recoveryAttempt:attempt});
+let result;try{result=await request('/v1/recover-parent','POST',{deviceName:name,...attempt},{'X-Family-Setup-Key':secret});}catch(e){if(e.message==='recovery_expired')save({...state,recoveryAttempt:null});throw e;}
+save({...state,token:result.token,deviceId:result.deviceId,profileId:null,role:'parent',name,recoveryAttempt:null});
+$('RecoveryConfirm').checked=false;await sync();
+});
+function clearPair(){clearTimeout(pairTimer);pairTimer=null;$('Pairing').hidden=true;$('Qr').removeAttribute('src');$('Code').textContent='';}
+$('Pair').onclick=()=>action(async()=>{clearPair();const result=await request('/v1/pairing','POST');
+const qr=qrcode(0,'M');qr.addData('https://wisniajoker90.github.io/Spanish-skills-for-my-kid/#family-join='+result.code);qr.make();$('Qr').src=qr.createDataURL(6,24);
+$('Code').textContent=result.code+' — ważny do '+new Date(result.expiresAt).toLocaleTimeString('pl-PL');$('Pairing').hidden=false;
+pairTimer=setTimeout(()=>{clearPair();message('Kod wygasł. Wygeneruj nowy, aby dodać urządzenie.');},Math.max(0,result.expiresAt-Date.now()));
+message('Zeskanuj QR aparatem drugiego urządzenia albo wpisz kod ręcznie.');});
+$('Devices').onclick=()=>action(async()=>{const result=await request('/v1/devices'),list=$('DeviceList');list.replaceChildren();for(const d of result.devices){const row=document.createElement('div'),p=document.createElement('p');p.textContent=d.name+(d.revoked_at?' · odłączone':' · '+d.role);row.append(p);if(d.role==='learner'&&!d.revoked_at){const b=document.createElement('button');b.textContent='Odłącz: '+d.name;b.onclick=()=>action(async()=>{await request('/v1/devices/'+d.id+'/revoke','POST');row.remove();message('Urządzenie odłączone. Wspólne punkty pozostają.');});row.append(b);}list.append(row);}});
+function close(){root.hidden=true;$('Secret').value='';$('RecoverySecret').value='';$('RecoveryConfirm').checked=false;$('PairInput').value='';clearPair();document.body.style.overflow=overflow;priorFocus?.focus();}
+$('Close').onclick=close;root.addEventListener('keydown',e=>{if(e.key==='Escape')close();if(e.key==='Tab'){const nodes=[...root.querySelectorAll('button,input,summary')].filter(n=>!n.disabled&&n.getClientRects().length);const first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
+const launch=document.createElement('button');launch.id='fs37Launch';launch.textContent='Family Sync — połącz urządzenia';function openPanel(){priorFocus=document.activeElement;overflow=document.body.style.overflow;root.hidden=false;document.body.style.overflow='hidden';render();$('Close').focus();if(state.joinAttempt){$('Join').open=true;message('Poprzednie łączenie zostało przerwane. Kliknij „Ponów przerwane łączenie”.');}else if(state.token)action(sync)};launch.onclick=openPanel;(document.getElementById('s15Today')||document.body).append(launch);
+if(incomingCode){openPanel();if(state.role==='parent'){message('To urządzenie ma już dostęp rodzica. Zeskanuj QR innym telefonem lub tabletem.');}else{$('Join').open=true;$('PairInput').value=incomingCode;message('Kod z QR jest gotowy. Wpisz nazwę tego urządzenia i kliknij „Połącz i pobierz postęp”.');$('Name').focus();}}
+window.addEventListener('online',()=>{if(state.token)action(sync)});render();
+})();
+</script>
+
+<!-- Family Sync learning UI BEGIN -->
+<script>/* Family Sync learning merge: three-way deltas, no writes or network. */
+(function(root){'use strict';
+const KEYS=['A1Practice39V1','A1ProgressV1','Car26V1','DailyMission20V1','Exam13V1','Insights25V1','Journey8V1','LastActivityV1','Level14V1','Path10V2','ProgressV1','Skills22V1','Smart23V1','Smart7V1','Speaking20V1','Sprint6ProgressV1'].map(k=>'hiszpanskiFranka'+k);
+const LOCAL=new Set(['hiszpanskiFrankaDailyMission20V1','hiszpanskiFrankaLastActivityV1']);
+const obj=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
+const clone=x=>x===undefined?undefined:JSON.parse(JSON.stringify(x));
+function canonical(x){if(Array.isArray(x))return '['+x.map(canonical).join(',')+']';if(obj(x))return '{'+Object.keys(x).sort().map(k=>JSON.stringify(k)+':'+canonical(x[k])).join(',')+'}';return JSON.stringify(x);}
+const same=(a,b)=>canonical(a)===canonical(b);
+function validate(records){if(!obj(records)||Object.keys(records).length>KEYS.length)throw Error('Nieprawidłowy profil nauki.');for(const[k,v]of Object.entries(records)){if(!KEYS.includes(k)||typeof v!=='string'||v.length>700000)throw Error('Nieobsługiwane dane profilu: '+k);let d;try{d=JSON.parse(v)}catch{throw Error('Uszkodzony zapis: '+k)}if(!obj(d))throw Error('Nieprawidłowy zapis: '+k);const check=(x,depth=0)=>{if(depth>30)throw Error('Zbyt złożone dane.');if(obj(x)||Array.isArray(x))for(const[n,y]of Object.entries(x)){if(['__proto__','prototype','constructor'].includes(n))throw Error('Niedozwolone pole.');check(y,depth+1)}};check(d);if(k.endsWith('ProgressV1')&&k.includes('FrankaProgress'))for(const f of ['points','quizCorrect','quizTotal'])if(d[f]!==undefined&&(!Number.isSafeInteger(d[f])||d[f]<0))throw Error('Nieprawidłowy licznik.');}return records;}
+function shared(records){validate(records);const out={};for(const[k,v]of Object.entries(records)){if(LOCAL.has(k))continue;const d=JSON.parse(v);if(k==='hiszpanskiFrankaProgressV1'){delete d.unit;delete d.index;}if(k==='hiszpanskiFrankaCar26V1'||k==='hiszpanskiFrankaA1Practice39V1')delete d.pending;if(k==='hiszpanskiFrankaSmart23V1')delete d.partial;out[k]=canonical(d);}return out;}
+function materialize(records,local={}){validate(records);validate(local);const out={...local};for(const[k,v]of Object.entries(records)){const d=JSON.parse(v),prev=JSON.parse(local[k]||'{}');if(k==='hiszpanskiFrankaProgressV1'){d.unit=prev.unit??1;d.index=prev.index??0;}if(k==='hiszpanskiFrankaCar26V1'||k==='hiszpanskiFrankaA1Practice39V1')d.pending=prev.pending??null;if(k==='hiszpanskiFrankaSmart23V1'&&prev.partial!==undefined)d.partial=prev.partial;out[k]=JSON.stringify(d);}return out;}
+function conflict(path){throw Error('Nie można bezpiecznie scalić pola '+path.join(' / ')+'. Obie kopie zostały zachowane.');}
+const counters=new Set(['points','quizCorrect','quizTotal','right','wrong','count','total','repeated','practised','confident','needsHelp','spoken','listeningAttempts','listeningCorrect','vocabularyAttempts','vocabularyCorrect','speakingAttempts','dialogueAttempts','attempts','dialogues']);
+function additive(path){const k=path[0],f=path.at(-1);if(k==='hiszpanskiFrankaPath10V2')return false;if(k==='hiszpanskiFrankaSprint6ProgressV1')return path[1]==='foundation'&&['attempts','correct'].includes(f);if(k==='hiszpanskiFrankaSpeaking20V1'&&path[1]==='bySeason')return true;return counters.has(f);}
+function arrayMerge(b,l,r,path){b=Array.isArray(b)?b:[];const identity=x=>obj(x)&&typeof x.id==='string'?'id:'+x.id:canonical(x);const buckets=new Map();for(const list of [b,r,l]){const counts=new Map();for(const x of list){const id=identity(x),prior=buckets.get(id);if(prior&&id.startsWith('id:')&&!same(prior.value,x))conflict([...path,id]);counts.set(id,(counts.get(id)||0)+1);buckets.set(id,{value:clone(x),count:Math.max(prior?.count||0,counts.get(id))});}}return [...buckets.values()].flatMap(x=>Array.from({length:x.count},()=>clone(x.value))).sort((a,z)=>{const ta=obj(a)?String(a.at??a.time??a.day??a.startedAt??''):String(a),tz=obj(z)?String(z.at??z.time??z.day??z.startedAt??''):String(z);const order=ta.localeCompare(tz)||identity(a).localeCompare(identity(z));return ['history','dailyHistory'].includes(path.at(-1))?-order:order;});}
+function mergeNode(b,l,r,path){
+ // Counter deltas must be added even when both devices independently reach the same value.
+ if(additive(path)&&typeof l==='number'&&typeof r==='number') {const before=b??0;if(!Number.isSafeInteger(before)||!Number.isSafeInteger(l)||!Number.isSafeInteger(r)||l<before||r<before)conflict(path);const n=r+(l-before);if(!Number.isSafeInteger(n))conflict(path);return n;}
+ if(l===undefined)return clone(r);if(r===undefined)return clone(l);
+ if(Array.isArray(l)&&Array.isArray(r))return same(l,b)?clone(r):arrayMerge(b,l,r,path);
+ if(obj(l)&&obj(r)){
+  if(same(l,b))return clone(r);
+  // Mastery scheduling cannot infer a global answer order from two offline aggregates.
+  // Preserve counts; take the more conservative streak/level/due when both changed.
+  if(path[0]==='hiszpanskiFrankaProgressV1'&&path[1]==='mastery'&&path.length===3){if(same(r,b))return clone(l);const out={...clone(r),right:mergeNode(b?.right,l.right,r.right,[...path,'right']),wrong:mergeNode(b?.wrong,l.wrong,r.wrong,[...path,'wrong'])};for(const f of ['streak','level','due'])out[f]=Math.min(l[f]??0,r[f]??0);out.last=Math.max(l.last??0,r.last??0);out.source='family-sync';return out;}
+  if(path[0]==='hiszpanskiFrankaSmart7V1'&&path[1]==='sentences'&&path.length===3){if(same(r,b))return clone(l);const out={...clone((l.last??0)>(r.last??0)?l:r),right:mergeNode(b?.right,l.right,r.right,[...path,'right']),wrong:mergeNode(b?.wrong,l.wrong,r.wrong,[...path,'wrong']),streak:Math.min(l.streak??0,r.streak??0),due:Math.min(l.due??0,r.due??0)};return out;}
+  if(path[0]==='hiszpanskiFrankaJourney8V1'&&path[1]==='entries'&&path.length===3){if(same(r,b))return clone(l);const out={...clone(r),right:mergeNode(b?.right,l.right,r.right,[...path,'right']),wrong:mergeNode(b?.wrong,l.wrong,r.wrong,[...path,'wrong']),streak:Math.min(l.streak??0,r.streak??0),next:Math.min(l.next??0,r.next??0),days:arrayMerge(b?.days,l.days||[],r.days||[],[...path,'days'])};return out;}
+  if(path[0]==='hiszpanskiFrankaPath10V2'&&path.length===3){const chosen=String(l.date||'')>String(r.date||'')?l:r;return {...clone(chosen),done:!!(l.done||r.done)};}
+  const out={};for(const k of new Set([...Object.keys(b||{}),...Object.keys(l),...Object.keys(r)])){const v=path[0]==='hiszpanskiFrankaSpeaking20V1'&&path.length===1&&k==='lastPhrase'?clone(String(l.lastAt||'')>String(r.lastAt||'')?l[k]:r[k]):mergeNode(b?.[k],l[k],r[k],[...path,k]);if(v!==undefined)out[k]=v;}if(path[0]==='hiszpanskiFrankaSprint6ProgressV1'&&['school','a1'].includes(path[1])&&path.length===3&&out.history?.length)out.incorrect=clone(out.history[0].incorrect||[]);return out;
+ }
+ if(same(l,b))return clone(r);if(same(r,b)||same(l,r))return clone(l);
+ if(path.includes('badges')&&path.at(-1)==='date')return [l,r].sort()[0];
+ if(['lastAt','last','at','date'].includes(path.at(-1)))return l>r?l:r;
+ if(path[0]==='hiszpanskiFrankaProgressV1'&&path[1]==='words')return l==='review'||r==='review'?'review':r;
+ if(path.includes('checkpoints')&&typeof l==='number'&&typeof r==='number')return Math.max(l,r);
+ if(typeof l==='boolean'&&typeof r==='boolean'&&['done','initialized','finished'].includes(path.at(-1)))return l||r;
+ conflict(path);
+}
+function merge(base,local,remote){validate(base);validate(local);validate(remote);function monotonic(b,l,path){if(additive(path)&&typeof b==='number'&&typeof l==='number'&&l<b)conflict(path);if(obj(b)&&obj(l))for(const k of Object.keys(b))monotonic(b[k],l[k],[...path,k]);}for(const k of Object.keys(base)){if(local[k])monotonic(JSON.parse(base[k]),JSON.parse(local[k]),[k]);if(remote[k])monotonic(JSON.parse(base[k]),JSON.parse(remote[k]),[k]);}const out={};for(const k of new Set([...Object.keys(base),...Object.keys(local),...Object.keys(remote)])){const parse=d=>d[k]===undefined?undefined:JSON.parse(d[k]);const v=mergeNode(parse(base),parse(local),parse(remote),[k]);if(v!==undefined)out[k]=canonical(v);}return out;}
+const api={shared,materialize,merge,validate,same,canonical};if(typeof module==='object'&&module.exports)module.exports=api;else root.hf37LearningCore=api;
+})(typeof window==='object'?window:globalThis);
+</script>
+<script>/* TEST-only real-profile synchronization with opt-in background updates. No automatic production migration. */
+(()=>{'use strict';
+const allowed=(location.hostname==='wisniajoker90.github.io'&&location.pathname.startsWith('/Spanish-skills-for-my-kid/'))||(['localhost','127.0.0.1'].includes(location.hostname)&&navigator.webdriver);
+if(!allowed)return;
+const C=window.hf37LearningCore,S=window.hf37LearningStorage,API='https://franka-family-sync.wisniajoker90.workers.dev',REMOTE='00000000-0000-4000-8000-000000000037';
+const node=(tag,text)=>{const n=document.createElement(tag);if(text)n.textContent=text;return n;};
+const box=node('section');box.id='fs37Learning';box.style.cssText='margin-top:24px;border-top:2px solid #c9d7e6;padding-top:16px';
+box.innerHTML='<h3>Postęp Franka</h3><p id="fs37LearningIdentity"></p><p>Postęp może zapisywać się automatycznie. Zmiany z drugiego urządzenia odświeżą widok dopiero na ekranie Dziś, bez przerywania ćwiczenia lub dźwięku. Używaj jednej karty aplikacji.</p><label><input id="fs37LearningConfirm" type="checkbox"> Potwierdzam wybór profilu; przed pierwszym udostępnieniem mam zapisaną aktualną kopię JSON.</label><p><label><input id="fs37LearningAuto" type="checkbox"> Automatyczna synchronizacja na tym urządzeniu</label></p><div style="display:grid;gap:10px;margin-top:12px"><button id="fs37LearningBackup" type="button">Pobierz kopię przed połączeniem</button><button id="fs37LearningPublish" type="button">Udostępnij wybrany profil — punkt startowy</button><button id="fs37LearningDownload" type="button">Pobierz wspólny profil jako nowy</button><button id="fs37LearningSync" type="button">Synchronizuj postęp nauki</button><button id="fs37LearningHistory" type="button">Kopie poprzednich wersji</button></div><p id="fs37LearningStatus" role="status"></p><div id="fs37LearningVersions"></div>';
+const host=document.querySelector('#fs37Linked');if(!host)return;host.append(box);
+const $=id=>document.getElementById('fs37Learning'+id),meta=()=>window.hfProfiles19.getMeta(),active=()=>meta().active,key=id=>'hf37prod:learning:'+id;
+let networkEpoch=0,offlineHint=!navigator.onLine;const requests=new Set();
+let busy=false,waitingForHome=false,autoBlocked=false,failures=0,nextAuto=Date.now()+2000,lastInteraction=Date.now();
+const autoKey=id=>'hf37prod:auto:'+id;
+const autoEnabled=()=>localStorage.getItem(autoKey(active()))==='1'&&!!readState(active());
+const homeStatus=node('p');homeStatus.id='fs37AutoStatus';homeStatus.setAttribute('role','status');homeStatus.style.cssText='font-size:14px;padding:8px 12px;color:#34546b';(document.getElementById('s15Today')||document.body).append(homeStatus);
+function autoLabel(text){homeStatus.hidden=!readState(active());if(autoEnabled()&&(!navigator.onLine||(offlineHint&&text.startsWith('Zapis na serwerze'))))text='Czeka na internet · postęp zapisany lokalnie';homeStatus.textContent=text;}
+function visible(el){return !!el&&!el.hidden&&el.getClientRects().length>0;}
+function safeToRefresh(){
+ if(document.hidden||Date.now()-lastInteraction<2000||!visible(document.getElementById('s15Today')))return false;
+ if(window.hfCar26?.isRunning?.()||window.hf27bAudio?.owner||window.speechSynthesis?.speaking||window.speechSynthesis?.pending)return false;
+ if([...document.querySelectorAll('#s15DailyDetails[open],#s15CoachDetails[open],#s13ExamDetails[open]')].some(visible))return false;
+ if([...document.querySelectorAll('[role="dialog"],#hf202Shade,#s39Shade,#hf192Shade')].some(visible))return false;
+ return true;
+}
+function schedule(delay=2000){if(autoEnabled()&&!autoBlocked)nextAuto=Math.min(nextAuto,Date.now()+delay);}
+for(const type of ['pointerdown','keydown'])document.addEventListener(type,()=>{lastInteraction=Date.now();},true);
+
+function status(t){$('Status').textContent=t;}
+function refresh(){$('Auto').checked=autoEnabled();const m=meta(),p=m.profiles.find(x=>x.id===m.active),s=JSON.parse(localStorage.getItem(key(m.active))||'null');$('Identity').textContent='Wybrany profil: '+p.name+(s?' · połączony · wersja '+(s.revision||'startowa'):' · jeszcze niepołączony');}
+function credentials(){const p=JSON.parse(localStorage.getItem('family-sync-production37')||'null');if(!p?.token)throw Error('Najpierw połącz urządzenie przez Family Sync.');return p;}
+async function request(path,method='GET',data){
+ const token=credentials().token,epoch=networkEpoch,controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);requests.add(controller);
+ try{
+  const url=API+path+(method==='GET'?(path.includes('?')?'&':'?')+'connectionCheck='+crypto.randomUUID():'');
+  const r=await fetch(url,{method,headers:{Authorization:'Bearer '+token,...(data?{'Content-Type':'application/json'}:{})},body:data?JSON.stringify(data):undefined,signal:controller.signal,cache:'no-store',credentials:'omit'});
+  const v=await r.json();
+  // A response from before a connection change must never acknowledge current connectivity.
+  if(epoch!==networkEpoch||!navigator.onLine)throw new DOMException('Połączenie zmieniło się podczas zapisu.','AbortError');
+  if(!r.ok){const e=Error(r.status===401?'Brak dostępu. Ponownie połącz urządzenie.':r.status===403?'Ta operacja wymaga dostępu rodzica.':v.error);e.status=r.status;throw e;}
+  offlineHint=false;return v;
+ }finally{clearTimeout(timer);requests.delete(controller)}
+}
+function readState(id){return JSON.parse(localStorage.getItem(key(id))||'null');}
+function saveState(id,s){localStorage.setItem(key(id),JSON.stringify(s));}
+function readRemote(r){if(r.snapshot?.schema!==1||r.snapshot.data?.kind!=='learning-v1'||!Array.isArray(r.snapshot.data.applied))throw Error('Serwer nie zawiera obsługiwanego profilu nauki.');C.validate(r.snapshot.data.records);return r;}
+function ensureActive(id){if(active()!==id)throw Error('Profil zmienił się. Otwórz ponownie panel.');}
+function exportBackup(records,name){return {format:'hiszpanski-franka-backup',schema:2,appVersion:'family-sync-production-1',exportedAt:new Date().toISOString(),profiles:[{id:'franek-sync',name}],active:'franek-sync',data:{'franek-sync':records}};}
+function apply(id,records,state){ensureActive(id);const before=window.frankaStore.dump(),updates={};for(const[k,v]of Object.entries(C.materialize(records,before)))updates['hf18:p:'+id+':'+k]=v;updates['hf37prod:last-backup:'+id]=JSON.stringify(exportBackup(before,meta().profiles.find(p=>p.id===id).name));updates[key(id)]=JSON.stringify(state);S.commit(localStorage,updates);location.reload();}
+async function sync(id,options={}){ensureActive(id);let state=readState(id);if(!state)throw Error('Najpierw udostępnij profil lub pobierz go na to urządzenie.');
+for(let round=0;round<5;round++){
+ ensureActive(id);const current=C.shared(window.frankaStore.dump());
+ if(!state.pending){state={...state,pending:{id:crypto.randomUUID(),before:state.base,after:current}};saveState(id,state);}
+ const pending=state.pending;let remote=readRemote(await request('/v1/profiles/'+REMOTE));
+ if(!remote.snapshot.data.applied.includes(pending.id)&&!C.same(pending.before,pending.after)){
+  const merged=C.merge(pending.before,pending.after,remote.snapshot.data.records),snap={schema:1,data:{...remote.snapshot.data,records:merged,applied:[...remote.snapshot.data.applied,pending.id]}};
+  try{const r=await request('/v1/profiles/'+REMOTE,'PUT',{baseRevision:remote.revision,snapshot:snap});remote={...remote,revision:r.revision,snapshot:snap};}catch(e){if(e.status===409)continue;throw e;}
+ }
+ ensureActive(id);const now=C.shared(window.frankaStore.dump());
+ if(!C.same(now,pending.after)){state={...state,pending:{id:crypto.randomUUID(),before:pending.after,after:now}};saveState(id,state);continue;}
+ const finalState={remoteId:REMOTE,base:remote.snapshot.data.records,revision:remote.revision,pending:null,lastSync:Date.now()};
+ if(options.automatic){
+  if(!autoEnabled())return;
+  if(C.same(now,remote.snapshot.data.records)){saveState(id,finalState);waitingForHome=false;autoLabel('Zapis na serwerze potwierdzony o '+new Date(finalState.lastSync).toLocaleTimeString('pl-PL'));status('Zapis na serwerze potwierdzony.');return;}
+  if(!safeToRefresh()){waitingForHome=true;autoLabel('Twój postęp wysłany · zmiany z drugiego urządzenia pokażemy po powrocie na Dziś');status('Zmiany są pobrane. Widok odświeży się automatycznie na ekranie Dziś.');return;}
+ }
+ waitingForHome=false;apply(id,remote.snapshot.data.records,finalState);return;
+}
+throw Error('Pojawiły się kolejne zmiany. Zostały zachowane; ponów synchronizację.');}
+async function action(fn,confirmRequired=true,automatic=false){if(busy)return;if(confirmRequired&&!$('Confirm').checked){status('Potwierdź wybór profilu i zapisanie kopii.');return;}if(!navigator.onLine){autoLabel('Czeka na internet · postęp zapisany na urządzeniu');status('Brak internetu. Nauka jest zapisana lokalnie. Synchronizuj po odzyskaniu połączenia.');return;}if(!navigator.locks){autoBlocked=true;autoLabel('Wymaga uwagi rodzica · zaktualizuj przeglądarkę');status('Ta przeglądarka nie obsługuje bezpiecznej blokady synchronizacji. Zaktualizuj przeglądarkę.');return;}busy=true;if(automatic)autoLabel('Sprawdzam połączenie · postęp zapisany lokalnie');for(const b of box.querySelectorAll('button'))b.disabled=true;status('Sprawdzam i zapisuję kopię…');try{await navigator.locks.request('hf37-learning',{ifAvailable:true},async lock=>{if(!lock){if(automatic){nextAuto=Date.now()+3000;return;}throw Error('Synchronizacja trwa w innej karcie.');}const health=await request('/health');if(!health.learningProfiles||!health.versionHistory)throw Error('Serwer wymaga aktualizacji do family-sync-production-1.');await fn();failures=0;autoBlocked=false;});}catch(e){if(automatic){failures++;if([401,403,413].includes(e.status)||(!['AbortError','TypeError'].includes(e.name)&&!e.status&&!e.message.startsWith('Pojawiły się kolejne zmiany')))autoBlocked=true;autoLabel(autoBlocked?'Wymaga uwagi rodzica · szczegóły w Family Sync':'Czeka na połączenie z serwerem · postęp zapisany lokalnie');nextAuto=Date.now()+Math.min(120000,15000*2**Math.min(failures,3));}status(e.name==='AbortError'||e instanceof TypeError?'Nie udało się połączyć. Dane lokalne i próba synchronizacji są zachowane. Spróbuj ponownie.':e.message);}finally{busy=false;for(const b of box.querySelectorAll('button'))b.disabled=false;refresh();}}
+$('Publish').onclick=()=>action(async()=>{
+ const id=active();if(readState(id)){await sync(id);return;}
+ const me=await request('/v1/me');if(me.device.role!=='parent')throw Error('Punkt startowy wybiera rodzic.');
+ const initKey='hf37prod:init:'+id;let attempt=JSON.parse(localStorage.getItem(initKey)||'null');
+ if(!attempt){try{await request('/v1/profiles/'+REMOTE);throw Error('Wspólny profil już istnieje. Użyj „Pobierz wspólny profil jako nowy”.');}catch(e){if(e.status!==404)throw e;}
+ ensureActive(id);attempt={originId:crypto.randomUUID(),records:C.shared(window.frankaStore.dump()),name:meta().profiles.find(p=>p.id===id).name};localStorage.setItem(initKey,JSON.stringify(attempt));}
+ await request('/v1/learning','POST',{name:attempt.name,snapshot:{schema:1,data:{kind:'learning-v1',originId:attempt.originId,records:attempt.records,applied:[]}}});
+ const remote=readRemote(await request('/v1/profiles/'+REMOTE));if(remote.snapshot.data.originId!==attempt.originId)throw Error('Profil został wcześniej utworzony na innym urządzeniu. Pobierz go jako nowy profil.');
+ ensureActive(id);saveState(id,{remoteId:REMOTE,base:attempt.records,revision:1,pending:null});localStorage.removeItem(initKey);localStorage.setItem(autoKey(id),'1');await sync(id);
+});
+$('Download').onclick=()=>action(async()=>{
+ const sourceId=active(),remote=readRemote(await request('/v1/profiles/'+REMOTE));ensureActive(sourceId);const m=meta();
+ const existing=m.profiles.find(p=>readState(p.id)?.remoteId===REMOTE);if(existing){if(existing.id!==active())throw Error('Wybierz już połączony profil: '+existing.name);localStorage.setItem(autoKey(existing.id),'1');await sync(existing.id);return;}
+ if(m.profiles.length>=12)throw Error('Osiągnięto limit profili. Nie usuwamy istniejących danych.');
+ const id='sync-'+crypto.randomUUID(),records=C.materialize(remote.snapshot.data.records),updates={};for(const[k,v]of Object.entries(records))updates['hf18:p:'+id+':'+k]=v;
+ updates[key(id)]=JSON.stringify({remoteId:REMOTE,base:remote.snapshot.data.records,revision:remote.revision,pending:null,lastSync:Date.now()});
+ updates[autoKey(id)]='1';
+ updates['hf18:meta']=JSON.stringify({...m,active:id,profiles:[...m.profiles,{id,name:remote.name+' · Rodzina',createdAt:new Date().toISOString()}]});S.commit(localStorage,updates);location.reload();
+});
+$('Sync').onclick=()=>action(()=>sync(active()));
+$('History').onclick=()=>action(async()=>{const list=$('Versions');list.replaceChildren();const result=await request('/v1/profiles/'+REMOTE+'/history');if(!result.versions.length){status('Nie ma jeszcze wcześniejszych wersji. Kopia powstanie przy pierwszej zmianie wspólnego postępu.');return;}for(const v of result.versions){const button=node('button','Pobierz kopię wersji '+v.revision);button.onclick=()=>action(async()=>{const r=readRemote(await request('/v1/profiles/'+REMOTE+'/history/'+v.revision)),blob=new Blob([JSON.stringify(exportBackup(C.materialize(r.snapshot.data.records),'Franek — kopia wersji '+v.revision),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=node('a');a.href=url;a.download='hiszpanski-franka-sync-kopia-'+v.revision+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);status('Pobrano kopię. Jej import doda nowy profil.');},false);list.append(button);}status('Poprzednie wersje można pobrać bez zmiany bieżących danych.');},false);
+$('Auto').onchange=()=>{
+ const enabled=$('Auto').checked;
+ if(enabled&&!readState(active())){$('Auto').checked=false;status('Najpierw połącz profil nauki.');return;}
+ localStorage.setItem(autoKey(active()),enabled?'1':'0');autoBlocked=false;failures=0;nextAuto=Date.now()+1000;
+ autoLabel(enabled?'Sprawdzam zapis postępu…':'Synchronizacja ręczna');status(enabled?'Automatyczna synchronizacja włączona dla tego profilu i urządzenia.':'Automatyczna synchronizacja wyłączona.');
+};
+// Observe successful profile writes only. Failed local saves must not be reported as synced.
+for(const method of ['setItem','removeItem']){const original=window.frankaStore[method];window.frankaStore[method]=function(...args){const result=original.apply(this,args);if(autoEnabled()){autoLabel(navigator.onLine?'Zapisano na urządzeniu · czeka na synchronizację':'Czeka na internet · postęp zapisany na urządzeniu');schedule();}return result;};}
+window.addEventListener('online',()=>{networkEpoch++;offlineHint=false;if(autoEnabled())autoLabel('Sprawdzam połączenie · postęp zapisany lokalnie');schedule(500);});
+window.addEventListener('offline',()=>{networkEpoch++;offlineHint=true;for(const r of requests)r.abort();if(autoEnabled())autoLabel('Czeka na internet · postęp zapisany lokalnie');});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(autoEnabled())autoLabel(navigator.onLine?'Sprawdzam połączenie · postęp zapisany lokalnie':'Czeka na internet · postęp zapisany lokalnie');schedule(1000);}});
+window.addEventListener('pageshow',()=>schedule(1000));
+window.addEventListener('storage',e=>{if(e.key===autoKey(active())){refresh();schedule(1000);}});
+setInterval(()=>{
+ if(!autoEnabled())return;
+ if(!navigator.onLine){autoLabel('Czeka na internet · postęp zapisany na urządzeniu');return;}
+ if(autoBlocked||busy||document.hidden)return;
+ if(Date.now()<nextAuto&&!(waitingForHome&&safeToRefresh()))return;
+ nextAuto=Date.now()+15000;
+ action(()=>sync(active(),{automatic:true}),false,true);
+},1000);
+// Injected inside the learning module: retain tested merge/storage/transport logic.
+$('Backup').onclick=()=>{
+ const data=exportBackup(window.frankaStore.dump(),meta().profiles.find(p=>p.id===active()).name);
+ const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+ const a=node('a');a.href=url;a.download='hiszpanski-franka-przed-synchronizacja-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+ status('Sprawdź, czy kopia JSON została zapisana. Dopiero potem potwierdź wybór profilu.');
+};
+function onboarding(){
+ refresh();const linked=!!readState(active());
+ let parent=false;try{parent=JSON.parse(localStorage.getItem('family-sync-production37')||'null')?.role==='parent';}catch{}
+ $('Publish').hidden=linked||!parent;$('Download').hidden=linked;
+ $('Backup').hidden=linked;$('Confirm').closest('label').hidden=linked;
+ $('Auto').closest('p').hidden=!linked;$('Sync').hidden=!linked;$('History').hidden=!linked||!parent;
+ if(!linked)status(parent?'Na pierwszym iPhonie zapisz kopię i udostępnij aktualny profil. Na nowym urządzeniu pobierz istniejący wspólny profil.':'Pobierz wspólny profil. Zachowamy istniejące profile na tym urządzeniu.');
+}
+document.addEventListener('family-device-ready',onboarding);
+document.addEventListener('family-device-joined',()=>{
+ // The QR join button explicitly says “Połącz i pobierz postęp”.
+ $('Confirm').checked=true;$('Download').onclick();
+});
+document.getElementById('fs37Launch')?.addEventListener('click',onboarding);
+onboarding();
+
+document.getElementById('fs37Launch')?.addEventListener('click',refresh);refresh();autoLabel(autoEnabled()?'Sprawdzam zapis postępu…':'Synchronizacja ręczna');
+})();
+</script>
+<!-- Family Sync learning UI END -->
 </body></html>
