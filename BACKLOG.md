@@ -10,7 +10,7 @@
 - Powiązanie: razem z wcześniej odłożonym przeglądem spójności przycisków Sprintu 39.
 
 ## Sprint 40 — pełny przegląd i ujednolicenie UX
-- Status: audyt przygotowany 27.11.2026; implementacja i odbiór przed nami.
+- Status: audyt i zmiany UX przygotowane; odbiór na urządzeniach na TEST.
 - Zakres UX-02–18, priorytety i scenariusze: [audyt Sprintu 40](docs/SPRINT40_UX_AUDIT.md).
 - UX-01 pozostaje częścią tego zakresu, wraz ze spójnością przycisków Sprintu 39.
 - Ta lista jest backlogiem zgłoszeń; nie stanowi odtworzenia całego historycznego backlogu projektu.

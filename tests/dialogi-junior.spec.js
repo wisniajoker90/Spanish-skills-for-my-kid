@@ -65,7 +65,7 @@ test('DJ04 — help path records one honest needsHelp attempt in existing profil
 });
 test('DJ05 — independent speech records confidence once and shows no grading claim',async({page})=>{
  await openJunior(page);
- await feedback(page,'Powiedziałem sam');
+ await feedback(page,'Odpowiedziałem sam');
  const data=await stored(page,A1);
  const records=Object.values(data?.otono?.dialogs||{});
  expect(records.reduce((n,v)=>n+v.confident,0)).toBe(1);
@@ -79,10 +79,10 @@ test('DJ05 — independent speech records confidence once and shows no grading c
   const priorPath=await stored(page,'hiszpanskiFrankaPath10V2');
   const priorA1=await stored(page,A1);
   await page.getByRole('button',{name:/TEST · Podejrzyj rozmowę/}).click();
-  await feedback(page,'Powiedziałem sam');
+  await feedback(page,'Odpowiedziałem sam');
   await page.getByRole('button',{name:/Drugie pytanie/}).click();
   await page.getByRole('button',{name:/Potrzebuję podpowiedzi/}).click();
-  await feedback(page,'Ćwiczyłem z podpowiedzią');
+  await feedback(page,'Potrzebowałem pomocy');
   await expect(page.locator('#a1Stage')).toContainText('Postępy nie zostały zapisane');
   await page.getByRole('button',{name:'Wróć do ścieżki',exact:true}).click();
   expect(await stored(page,'hiszpanskiFrankaPath10V2')).toEqual(priorPath);
@@ -98,11 +98,11 @@ test('DJ05 — independent speech records confidence once and shows no grading c
   await expect(page.locator('[data-journey-stage-id="checkpoint"]')).toBeEnabled();
   await page.locator('[data-journey-stage-id="dialogue:a1-introduction"]').click();
   await expect(page.locator('#a1Stage .jr-question')).toHaveText('¿Cómo te llamas?');
-  await feedback(page,'Powiedziałem sam');
+  await feedback(page,'Odpowiedziałem sam');
   await page.getByRole('button',{name:/Drugie pytanie/}).click();
   await expect(page.locator('#a1Stage .jr-question')).toHaveText('¿Cuántos años tienes?');
   await page.getByRole('button',{name:/Potrzebuję podpowiedzi/}).click();
-  await feedback(page,'Ćwiczyłem z podpowiedzią');
+  await feedback(page,'Potrzebowałem pomocy');
   await page.getByRole('button',{name:'Wróć do ścieżki',exact:true}).click();
   await expect(page.locator('#s10Steps')).toBeVisible();
   await page.reload();
@@ -115,7 +115,7 @@ test('DJ05 — independent speech records confidence once and shows no grading c
 test('DJ06 — next dialogue resets hint, keeps one main action and auto-plays new question',async({page})=>{
  await openJunior(page);
  await page.locator('#a1Stage .jr-quiet').click();
- await feedback(page,'Ćwiczyłem z podpowiedzią');
+ await feedback(page,'Potrzebowałem pomocy');
  const before=await page.evaluate(()=>__ttsTest.calls.length);
  await page.locator('#a1Stage .jr-main').filter({hasText:'Następna rozmowa'}).click();
  await expect(page.locator('#a1Stage .jr-dialog')).toHaveAttribute('data-jr-step','0');

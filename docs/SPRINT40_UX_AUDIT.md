@@ -73,3 +73,12 @@ Publikacja dopiero po odbiorze TEST i osobnej interaktywnej decyzji Wdrażaj / W
 
 ## Otwarte odbiory produkcyjnego Family Sync
 PROD-01 i PROD-02: PASS użytkownika. Dwukierunkowe przyrosty wyników i offline na produkcji: ODROCZONE, nie PASS. Przeprowadzić przy naturalnej nauce Franka lub na odizolowanych danych testowych, bez sztucznego dopisywania punktów do jego profilu.
+
+## Wersja do odbioru
+- Dziś pokazuje jedną misję i krótki cel. Powtórka, sprawdzian i auto zachowują oddzielne wejścia.
+- Nauka ma wspólny wybór sezonu. Dialogi do ćwiczenia są w swojej zakładce. Sezonowe rozmowy do zaliczenia otwierają się ze ścieżki. Powrót prowadzi do ścieżki, a lekcja po zamknięciu oddaje fokus przyciskowi, z którego została otwarta.
+- Lekcje zachowują odsłuch, a tłumaczenia w odpowiedziach pojawiają się dopiero po wybraniu „Spróbuję odpowiedzieć”. Dialogi i ćwiczenia Sprintu 39 korzystają ze wspólnego wyglądu przycisków i etykiet samooceny.
+- Tryb auta pokazuje tylko własną konfigurację, sesję i quiz na postoju. Długość, tempo i przerwa są w „Ustawieniach sesji”.
+- Postępy mają wspólną galerię odznak i pucharów. „Dla rodzica” prowadzi do wyników, urządzeń i kopii. Profil pokazuje stan lokalny lub połączony, a komunikaty offline odróżniają zapis lokalny od potwierdzenia serwera.
+- Wybór równolegle synchronizowanych profili, usuwanie i archiwizacja pozostają w PROF-01–04. Rozmowy sezonowe do zaliczenia pozostają na ścieżce zgodnie z wcześniejszym ustaleniem.
+- Testy automatyczne obejmują Chromium i symulowany odsłuch. Weryfikacja dźwięku oraz odbiór na fizycznych urządzeniach są osobnym etapem.

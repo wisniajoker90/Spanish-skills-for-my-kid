@@ -249,14 +249,14 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 <section class="home-screen panel" id="homeScreen"><h2>¡Vamos, Franek! 🇪🇸</h2><p>Jak chcesz się dzisiaj uczyć?</p><div class="home-tiles"><button data-enter="car">🚗<strong>Tryb samochodowy</strong><span>Słucham i powtarzam — bez patrzenia w ekran</span></button><button data-enter="learn">🎮<strong>Centrum nauki</strong><span>Fiszki, quizy i pięć gier</span></button></div></section><div hidden="" id="workArea"><nav class="home-nav"><button class="secondary" id="backHome">🏠 Menu główne</button><span id="modeLabel"></span></nav><div id="carArea"><section aria-labelledby="carTitle" class="car-mode">
  <div class="hf26-hero"><div class="hf26-heroicon" aria-hidden="true">🚗</div><div><div class="hf26-kicker">Modo Coche</div><h2 id="carTitle">Słuchaj i powtarzaj</h2></div></div>
  <p>Dziesięć minut hiszpańskiego bez patrzenia w ekran. Przygotuj sesję przed jazdą, a potem po prostu słuchaj.</p>
- <div id="carSetup" class="hf26-card"><strong>🎧 Przygotuj swoją podróż</strong><div class="hf26-grid" style="margin-top:14px"><label>Rodzaj sesji<select id="carMode"><option value="words">Powtórka słówek</option><option value="conversation">Rozmowa A1</option></select></label><label>Materiał do powtórki<select id="carUnit"></select></label><label>Długość sesji<select id="carDuration"><option value="5">5 minut</option><option value="10" selected>10 minut</option><option value="15">15 minut</option></select></label><label>Tempo mówienia <span id="carRateLabel">Standardowe</span><select id="carRate"><option value="0.72">Spokojne</option><option value="0.82" selected>Standardowe</option><option value="0.95">Naturalne</option></select></label><label>Czas na odpowiedź<select id="carWait"><option value="3500">3,5 sekundy</option><option value="5000" selected>5 sekund</option><option value="7000">7 sekund</option></select></label></div><div class="hf26-actions"><button id="carStart" class="hf26-primary">▶ Rozpocznij naukę</button><button id="carResume" class="hf26-secondary" hidden>↩ Wznów poprzednią sesję</button></div></div>
+ <div id="carSetup" class="hf26-card"><strong>Wybierz rozmowę lub powtórkę</strong><div class="hf26-grid" style="margin-top:14px"><label>Rodzaj sesji<select id="carMode"><option value="words">Powtórka słówek</option><option value="conversation">Rozmowa A1</option></select></label><label>Materiał do powtórki<select id="carUnit"></select></label></div><details class="s40-car-settings"><summary>Ustawienia sesji</summary><div class="hf26-grid"><label>Długość sesji<select id="carDuration"><option value="5">5 minut</option><option value="10" selected>10 minut</option><option value="15">15 minut</option></select></label><label>Tempo mówienia <span id="carRateLabel">Standardowe</span><select id="carRate"><option value="0.72">Spokojne</option><option value="0.82" selected>Standardowe</option><option value="0.95">Naturalne</option></select></label><label>Czas na odpowiedź<select id="carWait"><option value="3500">3,5 sekundy</option><option value="5000" selected>5 sekund</option><option value="7000">7 sekund</option></select></label></div></details><div class="hf26-actions"><button id="carStart" class="hf26-primary">▶ Rozpocznij naukę</button><button id="carResume" class="hf26-secondary" hidden>↩ Wznów poprzednią sesję</button></div></div>
  <div id="carPlayback" class="hf26-card" hidden><div class="hf26-center"><div class="hf26-orb" aria-hidden="true">♫</div><div class="hf26-stage" id="carStage">🚗 Gotowe</div><div class="hf26-status" id="carStatus" role="status" aria-live="polite">Gotowe</div></div><div class="hf26-meter" role="progressbar" aria-label="Postęp sesji"><span id="carProgress"></span></div><div class="hf26-progressmeta"><span id="carCount">Sesja gotowa</span><span id="carClock">0:00 / 10:00</span></div><div class="hf26-actions"><button id="carPause" class="hf26-primary" hidden>⏸ Pauza</button><button id="carStop" class="hf26-secondary" hidden>■ Zakończ</button></div></div>
  <div id="carSummary" class="hf26-card" hidden><div class="hf26-center"><div class="hf26-orb" aria-hidden="true">🏆</div><h3>¡Muy bien! Świetna praca!</h3><p id="carSummaryText"></p></div><button class="hf26-primary" id="carNew">Nowa sesja</button></div>
  <p id="carVoiceWarning" class="hf26-warning" hidden>⚠ Nie wykryto hiszpańskiego głosu systemowego. Sprawdź jego dostępność przed jazdą; odtwarzanie offline może nie działać.</p>
  <div class="hf26-safety"><strong>Bezpieczeństwo:</strong> ustawienia, pauza i wznowienie tylko na postoju. Podczas jazdy nie obsługuj ekranu. Odtwarzanie może zostać wstrzymane przez system po zablokowaniu telefonu.</div>
- <div class="hf26-parked"><label><input id="carParked" type="checkbox"> Jestem na postoju — odblokuj quiz</label><button id="carQuiz" class="hf26-secondary" disabled>🎯 Quiz na postoju</button></div>
+ <div class="hf26-parked" id="carParkedActions"><label><input id="carParked" type="checkbox"> Jestem na postoju — odblokuj quiz</label><button id="carQuiz" class="hf26-secondary" disabled>🎯 Quiz na postoju</button></div><div id="s40CarQuizSlot"></div>
 </section></div><div id="learnArea"><div class="notice ux-source-note"><strong>📚 Szkoła najpierw, potem droga do A1.</strong> Cztery etapy odpowiadają porom roku. Rozszerzenia A1 są dodatkowymi ćwiczeniami; nie przypisujemy ich podręcznikowi. Verano nadal wymaga potwierdzenia materiału szkolnego.</div>
-<div class="stats"><span class="pill">⭐ Punkty: <span id="points">0</span></span><span class="pill">✅ Umiem: <span id="learnedCount">0</span></span><span class="pill">🔁 Do powtórki: <span id="reviewCount">0</span></span><span class="pill">💾 Postępy zapisują się na tym urządzeniu</span></div>
+<div class="stats"><span class="pill">⭐ Punkty: <span id="points">0</span></span><span class="pill">✅ Umiem: <span id="learnedCount">0</span></span><span class="pill">🔁 Do powtórki: <span id="reviewCount">0</span></span><span class="pill">💾 Postęp zapisuje się podczas nauki</span></div>
 <section class="panel smart-panel" id="smartPanel">
 <div class="smart-heading"><div><h2>🧠 Mój trener słówek</h2><p class="small">Aplikacja zapamiętuje odpowiedzi i proponuje powtórki. Nie musisz ćwiczyć wszystkiego naraz.</p></div><span class="pill">Mądre powtórki</span></div>
 <div class="smart-counters"><div><strong id="smartMastered">0</strong><small>Opanowane</small></div><div><strong id="smartDue">0</strong><small>Do powtórki dziś</small></div><div><strong id="smartTricky">0</strong><small>Trudniejsze</small></div><div><strong id="smartAttempts">0</strong><small>Odpowiedzi</small></div></div>
@@ -276,8 +276,8 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 <section aria-labelledby="s10PathTitle" class="s10-learning-path">
 <div class="s10-path-header"><div><h3 id="s10PathTitle">🧭 Moja droga krok po kroku</h3><p class="small">Kolejne lekcje, rozmowy i ćwiczenia wymowy — wszystko na jednej ścieżce.</p></div><span class="pill" id="s10PathProgress">0/5 etapów</span></div>
 <div aria-live="polite" class="s14-next" id="s14Next"></div>
-<details class="s14-showcase" id="s14Showcase"><summary>🏅 Moje odznaki i puchary <span id="s14BadgeCount"></span></summary>
-<p class="small">Odznaki zdobywasz za naukę i wytrwałość. Nie tracisz ich za przerwę.</p><div class="s14-badges" id="s14Badges"></div><h4>🏆 Puchary sezonów</h4><div class="s14-trophies" id="s14Trophies"></div></details>
+<details class="s14-showcase" id="s14Showcase"><summary>🏅 Moje odznaki i puchary</summary>
+<h4>Odznaki ścieżki <span id="s14BadgeCount"></span></h4><div class="s14-badges" id="s14Badges"></div><h4>🏆 Puchary sezonów</h4><div class="s14-trophies" id="s14Trophies"></div></details>
 <details class="s14-week" id="s14Week"><summary>📅 Mój tydzień z hiszpańskim</summary><div id="s14Weekly"></div></details>
 <div aria-label="Kolejne etapy rozdziału" class="s10-steps" id="s10Steps"></div>
 <div class="s10-lesson" hidden="" id="s10Lesson"><div class="s10-lesson-head"><strong id="s10LessonHeading"></strong><button class="secondary" id="s10LessonClose" type="button">✕ Zamknij</button></div><div id="s10LessonBody"></div><p aria-live="polite" id="s10LessonFeedback"></p></div>
@@ -318,7 +318,7 @@ main{max-width:1160px;padding:0 25px 90px}header{padding:18px max(28px,calc((100
 <section class="panel s6-panel" hidden="" id="s6TestingPanel"><div class="s6-head"><h2 id="s6TestTitle">📋 Checkpoint szkolny</h2><button class="secondary" id="s6TestClose">← Wróć do nauki</button></div><p class="small" id="s6TestSource"></p><div id="s6TestBody"></div><p aria-live="polite" class="s6-feedback" id="s6TestFeedback"></p><div class="s6-actions" id="s6TestActions"></div><div class="small" id="s6TestHistory"></div></section>
 <section class="panel s6-panel" hidden="" id="s6Tracking"><h2>📊 Szkoła i droga do A1 — osobne wyniki</h2><p class="small">Checkpointy szkolne nie są ocenami z dziennika. Zadania A1 pokazują postęp w ćwiczeniach, nie certyfikują znajomości języka.</p><div id="s6TrackingBody"></div></section>
 <div class="tabs" hidden="" id="tabs"><button class="active" data-unit="0">Unidad Inicial</button><button data-unit="1">Otoño</button><button data-unit="2">Invierno</button><button data-unit="3">Primavera</button><button data-unit="4">Verano</button><button data-unit="5">💬 Daily chat</button></div>
-<section class="panel epic-games" hidden="" id="epicGames"><button class="secondary" id="uxCloseGames" type="button">← Wróć do wyboru ćwiczenia</button><h2>🎮 Gry edukacyjne</h2><p class="small">Wybierz rozdział, grę i poziom trudności.</p><div class="game-setup"><label>Rozdział <select id="epicUnit"></select></label><label>Poziom <select id="epicLevel"><option value="easy">⭐ Łatwy</option><option value="medium">⭐⭐ Średni</option><option value="hard">⭐⭐⭐ Trudny</option></select></label></div><div class="game-menu" id="epicMenu"><button data-epic="memory">🧠 Memory z ilustracjami</button><button data-epic="sentence-memory">🗣️ Memory ze zdaniami</button><button data-epic="audio">🎧 Zgadnij ze słuchu</button><button data-epic="match">🎯 Dopasuj pary</button><button data-epic="letters">🔤 Rozsypanka liter</button><button data-epic="timed">⏱️ Wyzwanie 60 sekund</button></div><div class="junior-setup"><label><input checked="" id="juniorMode" type="checkbox"/> 🌟 Rozsypanka Junior: obrazek, odsłuch i pomoc</label><p class="small">Dotyczy rozsypanki. Odznacz, aby grać w klasyczną wersję.</p></div><div class="epic-stage" hidden="" id="epicStage"><div class="stage-top"><h3 id="epicTitle"></h3><button class="secondary" id="epicExit">← Wybierz grę</button></div><p class="small" id="epicScore"></p><div id="epicContent"></div><p aria-live="polite" class="feedback" id="epicFeedback"></p></div></section><section class="parent-notes panel" id="parentNotes"><details><summary>ℹ️ Dla rodzica · urządzenia i informacje techniczne</summary><div class="crossplatform"><h3>Jedna aplikacja na wszystkie urządzenia</h3><p style="margin:0 0 12px">Aplikacja działa w przeglądarce na komputerze i urządzeniach mobilnych. Aplikacja obsługuje instalację PWA i pamięć offline po pierwszym wczytaniu online. Wymaga publikacji wszystkich plików paczki.</p><div class="platforms"><span>🖥️ Windows / Mac</span><span>🤖 Android</span><span>📱 iPhone / iPad</span></div><p class="small" style="margin:12px 0 0">Publikacja w App Store i Google Play to osobny etap; prototyp nie jest jeszcze opublikowaną aplikacją.</p></div><p class="small">Postępy są zapisane lokalnie w tej przeglądarce. Dostępność głosu hiszpańskiego zależy od urządzenia i połączenia.</p></details></section><footer>Wymowa zależy od głosu hiszpańskiego dostępnego na urządzeniu. Przycisk audio korzysta z wbudowanego syntezatora mowy, więc głos i działanie offline mogą różnić się między urządzeniami. W tej wersji nie ma jeszcze oryginalnych nagrań z podręcznika.</footer>
+<section class="panel epic-games" hidden="" id="epicGames"><button class="secondary" id="uxCloseGames" type="button">← Wróć do wyboru ćwiczenia</button><h2>🎮 Gry edukacyjne</h2><p class="small">Wybierz grę i poziom trudności.</p><div class="game-setup"><label id="s40GameSeason">Sezon <select id="epicUnit"></select></label><label>Poziom <select id="epicLevel"><option value="easy">⭐ Łatwy</option><option value="medium">⭐⭐ Średni</option><option value="hard">⭐⭐⭐ Trudny</option></select></label></div><div class="game-menu" id="epicMenu"><button data-epic="memory">🧠 Memory z ilustracjami</button><button data-epic="sentence-memory">🗣️ Memory ze zdaniami</button><button data-epic="audio">🎧 Zgadnij ze słuchu</button><button data-epic="match">🎯 Dopasuj pary</button><details class="s40-game-extras"><summary>Więcej gier</summary><button data-epic="timed">⏱️ Wyzwanie 60 sekund</button><details class="s40-letter-options"><summary>Rozsypanka liter</summary><button data-epic="letters">🔤 Zagraj w rozsypankę</button><div class="junior-setup"><label><input checked="" id="juniorMode" type="checkbox"/> 🌟 Rozsypanka Junior: obrazek, odsłuch i pomoc</label><p class="small">Junior podpowiada obrazkiem i dźwiękiem.</p></div></details></details></div><div class="epic-stage" hidden="" id="epicStage"><div class="stage-top"><h3 id="epicTitle"></h3><button class="secondary" id="epicExit">← Wybierz grę</button></div><p class="small" id="epicScore"></p><div id="epicContent"></div><p aria-live="polite" class="feedback" id="epicFeedback"></p></div></section><section class="parent-notes panel" id="parentNotes"><details><summary>Instalacja i dźwięk</summary><div class="crossplatform"><h3>Jedna aplikacja na wszystkie urządzenia</h3><p style="margin:0 0 12px">Aplikacja działa w przeglądarce na komputerze i urządzeniach mobilnych. Aplikacja obsługuje instalację PWA i pamięć offline po pierwszym wczytaniu online. </p><div class="platforms"><span>🖥️ Windows / Mac</span><span>🤖 Android</span><span>📱 iPhone / iPad</span></div></div><p class="small">Stan połączenia aktywnego profilu sprawdzisz w sekcji „Urządzenia i synchronizacja”.</p></details></section><footer>Wymowa zależy od głosu hiszpańskiego dostępnego na urządzeniu. Przycisk audio korzysta z wbudowanego syntezatora mowy, więc głos i działanie offline mogą różnić się między urządzeniami. W tej wersji nie ma jeszcze oryginalnych nagrań z podręcznika.</footer>
 </div></div></main></div>
 
 
@@ -391,18 +391,19 @@ function checkPayload(o){if(o?.format!=='hiszpanski-franka-backup'||![1,2].inclu
 }
  return o}
 function render(){const host=document.getElementById('s15ParentSlot')||document.getElementById('parentNotes')||document.querySelector('main')||document.body;
- const section=document.createElement('section');section.className='s16-box';section.id='s18Profiles';section.innerHTML='<h3>👨‍👩‍👦 Profile i bezpieczeństwo</h3><p id="hf18status" role="status"></p><div class="s16-controls"><select id="hf18select" aria-label="Wybierz profil"></select><button id="hf18switch" type="button">Przełącz profil</button><button id="hf18new" type="button">＋ Nowy profil</button></div><div class="s16-controls"><button id="hf18export" type="button">↓ Kopia wszystkich profili JSON</button><button id="hf18import" type="button">↑ Import JSON</button><input id="hf18file" type="file" accept=".json,application/json" hidden></div><p class="s16-offline">Postępy są lokalne na tym urządzeniu. Aktualizacja kodu nie usuwa danych. Przed testem importu wykonaj eksport i użyj drugiego profilu przeglądarki.</p>';
+ const section=document.createElement('section');section.className='s16-box';section.id='s18Profiles';section.innerHTML='<h3>Profile i kopie</h3><p id="hf18status" role="status"></p><div class="s16-controls"><select id="hf18select" aria-label="Wybierz profil"></select><button id="hf18switch" type="button">Przełącz profil</button><button id="hf18new" type="button">＋ Nowy profil</button></div><div class="s16-controls"><button id="hf18export" type="button">↓ Kopia wszystkich profili JSON</button><button id="hf18import" type="button">↑ Odtwórz z kopii JSON</button><input id="hf18file" type="file" accept=".json,application/json" hidden></div><p id="s40ProfileSync" class="s16-offline"></p>';
  host.append(section);section.classList.add('hf19-legacy-backups');
  // Sprint 30.1: standalone PWA and Safari use separate local storage.
  const standalone=window.navigator.standalone===true||window.matchMedia?.('(display-mode: standalone)')?.matches===true;
- const guide=document.createElement('section');guide.id='hf30TransferGuide';
+ const guide=document.createElement('details');guide.id='hf30TransferGuide';
  guide.setAttribute('aria-label','Przenieś postępy Safari i aplikacja');
  guide.style.cssText='margin:14px 0;padding:16px;border:1px solid #c9d7e6;border-radius:15px;background:#f3f8fe;color:#183b60';
- guide.innerHTML='<h3 style="margin:0 0 7px">📲 Przenieś postępy Safari ↔ aplikacja</h3><p id="hf30TransferContext"></p><ol style="padding-left:22px;line-height:1.7"><li>W Safari otwórz produkcyjną aplikację i wybierz „Kopia wszystkich profili JSON”.</li><li>Zapisz plik w Plikach na iPhonie. Nie usuwaj danych Safari.</li><li>Otwórz aplikację z ekranu początkowego, wybierz „Import JSON” i wskaż plik.</li><li>Po imporcie kliknij „Przejdź do zaimportowanego profilu”, aby zobaczyć odzyskane statystyki.</li></ol><p style="font-size:.85rem">Import dodaje nowe profile — nie nadpisuje istniejących. Postępy Safari i aplikacji nie synchronizują się automatycznie. Zachowaj kopię do czasu weryfikacji.</p><div id="hf30ImportedActions" hidden><label for="hf30ImportedSelect">Zaimportowany profil:</label><select id="hf30ImportedSelect" aria-label="Wybierz zaimportowany profil" style="width:100%;margin:8px 0"></select><button type="button" id="hf30Activate" style="width:100%">Przejdź do zaimportowanego profilu</button></div>';
+ guide.innerHTML='<summary>Kopie i odtwarzanie postępu</summary><p id="hf30TransferContext"></p><ol style="padding-left:22px;line-height:1.7"><li>Na urządzeniu z postępem wybierz „Kopia wszystkich profili JSON”.</li><li>Zapisz plik w Plikach na iPhonie. Nie usuwaj danych Safari.</li><li>Na urządzeniu docelowym wybierz „Odtwórz z kopii JSON” i wskaż plik.</li><li>Po imporcie kliknij „Przejdź do zaimportowanego profilu”, aby zobaczyć odzyskane statystyki.</li></ol><p style="font-size:.85rem">Odtworzenie z kopii tworzy osobne profile lokalne. Zachowaj kopię do czasu weryfikacji.</p><div id="hf30ImportedActions" hidden><label for="hf30ImportedSelect">Zaimportowany profil:</label><select id="hf30ImportedSelect" aria-label="Wybierz zaimportowany profil" style="width:100%;margin:8px 0"></select><button type="button" id="hf30Activate" style="width:100%">Przejdź do zaimportowanego profilu</button></div>';
  guide.querySelector('#hf30TransferContext').textContent=standalone?'Jesteś w aplikacji z ekranu początkowego. Jej pamięć jest oddzielna od Safari.':'Jesteś w przeglądarce. Aplikacja dodana do ekranu początkowego może mieć oddzielne postępy.';
  section.append(guide);
  const $=id=>document.getElementById(id),status=t=>$('hf18status').textContent=t;
  if(!meta){status('⚠️ Migracja nie powiodła się: '+error+'. Oryginalne dane pozostają nietknięte. Nie zapisuj nowych postępów, dopóki nie rozwiążesz problemu.');section.querySelectorAll('button,select').forEach(el=>el.disabled=true);return}
+ $('s40ProfileSync').textContent='Profil lokalny. Postęp zapisuje się na tym urządzeniu.';
  for(const p of meta.profiles){const opt=document.createElement('option');opt.value=p.id;opt.textContent=p.name;$('hf18select').append(opt)}$('hf18select').value=meta.active;status('Aktywny profil: '+meta.profiles.find(p=>p.id===meta.active).name+' · postępy zachowane.');
  $('hf18switch').onclick=()=>switchTo($('hf18select').value);
  $('hf18new').onclick=()=>{const name=prompt('Imię nowego użytkownika (maks. 30 znaków):');if(name===null)return;const n=name.trim();if(!n||n.length>30||meta.profiles.length>=12){status('Podaj imię (1–30 znaków); maksymalnie 12 profili.');return}const id='p-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);try{saveMeta({...meta,profiles:[...meta.profiles,{id,name:n,createdAt:new Date().toISOString()}],active:id});location.reload()}catch(e){status('Nie udało się utworzyć profilu.')}};
@@ -411,7 +412,7 @@ function render(){const host=document.getElementById('s15ParentSlot')||document.
  $('hf18file').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;if(file.size>3*1024*1024){status('Limit pliku: 3 MB');return}try{const o=checkPayload(JSON.parse(await file.text()));
   const sourceProfiles=o.schema===1?['Import 17.1']:o.profiles.map(p=>p.name);
   const label='Kopia z '+(typeof o.exportedAt==='string'?o.exportedAt.slice(0,10):'nieznanej daty')+' — '+sourceProfiles.length+' profil(e): '+sourceProfiles.join(', ')+'.';
-  if(!confirm(label+'\\n\\nImport DODA nowe profile. Istniejące dane nie zostaną nadpisane. Po imporcie wybierz odzyskany profil, aby zobaczyć statystyki. Kontynuować?'))return;
+  if(!confirm(label+'\n\nOdtworzyć jako osobne profile lokalne? Po odtworzeniu możesz przełączyć się na odzyskany profil.')){e.target.value='';return;}
   const incoming=o.schema===1?[{name:'Import 17.1',data:o.data}]:o.profiles.map(p=>({name:p.name+' (import)',data:o.data[p.id]}));
   if(meta.profiles.length+incoming.length>12)throw Error('Przekroczono limit 12 profili');
   const created=[],staged=[],transaction='hf27:stage:'+Date.now().toString(36)+':'+Math.random().toString(36).slice(2)+':';
@@ -437,7 +438,7 @@ function render(){const host=document.getElementById('s15ParentSlot')||document.
    const restored=$('hf30ImportedSelect'),actions=$('hf30ImportedActions');restored.replaceChildren();
    for(const profile of created){const option=document.createElement('option');option.value=profile.id;option.textContent=profile.name;restored.append(option)}
    $('hf30Activate').onclick=()=>switchTo(restored.value);
-   actions.hidden=false;
+   actions.hidden=false;guide.open=true;
    status('Import zakończony. Nowe profile dodano bez nadpisywania obecnych. Wybierz profil i kliknij „Przejdź do zaimportowanego profilu”, aby zobaczyć postępy.');
   }catch(e){
    if(!committed){
@@ -552,7 +553,13 @@ const write=d=>{try{frankaStore.setItem(KEY,JSON.stringify(d));return true}catch
 const fmt=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
 const norm=s=>String(s||'').normalize('NFC').trim().toLocaleLowerCase('es').replace(/\s+/g,' ');
 function setStage(s,message){stage=s;$('carStage').textContent=s==='question'?'🎧 Słuchaj':s==='wait'?'💬 Twoja kolej':s==='answer'?'✨ Odpowiedź':s==='paused'?'⏸ Pauza':s==='done'?'🏆 Brawo!':'🚗 Gotowe';$('carStatus').textContent=message||''}
-function view(){const pct=Math.min(100,Math.max(0,100*(duration-seconds)/duration));$('carProgress').style.width=pct+'%';$('carClock').textContent=fmt(duration-seconds)+' / '+fmt(duration);$('carCount').textContent=queue.length?`Zadanie ${Math.min(index+1,queue.length)} z ${queue.length}`:'Sesja gotowa';$('carStart').hidden=active;$('carPause').hidden=!active;$('carStop').hidden=!active;$('carPause').textContent=paused?'▶ Wznów':'⏸ Pauza';$('carSetup').hidden=active||stage==='done';$('carPlayback').hidden=!active;$('carSummary').hidden=stage!=='done';$('carResume').hidden=!(!active&&read().pending?.profile===profile());}
+function view(){const pct=Math.min(100,Math.max(0,100*(duration-seconds)/duration));$('carProgress').style.width=pct+'%';$('carClock').textContent=fmt(duration-seconds)+' / '+fmt(duration);$('carCount').textContent=queue.length?`Zadanie ${Math.min(index+1,queue.length)} z ${queue.length}`:'Sesja gotowa';$('carStart').hidden=active;$('carPause').hidden=!active;$('carStop').hidden=!active;$('carPause').textContent=paused?'▶ Wznów':'⏸ Pauza';$('carSetup').hidden=active||stage==='done';$('carPlayback').hidden=!active;$('carSummary').hidden=stage!=='done';$('carResume').hidden=!(!active&&read().pending?.profile===profile());
+ $('carParkedActions').hidden=active&&!paused;
+ const saved=read().pending;
+ if(!active&&saved?.profile===profile()){
+  const kind=saved.queue?.[0]?.kind==='conversation'?'rozmowę A1':'powtórkę słówek';
+  $('carResume').textContent='↩ Wznów '+kind;
+ }}
 function clear(){token++;clearTimeout(waiter);clearInterval(timer);waiter=null;timer=null;try{speechSynthesis.cancel()}catch{}utter=null}
 function savePending(){const d=read();d.pending={profile:profile(),queue:queue.map(x=>x.kind==='conversation'?x:{u:x.u,es:x.es,pl:x.pl}),rate:$('carRate').value,wait:$('carWait').value,index,seconds,duration,completed,phase,at:Date.now()};write(d)}
 function finish(natural){if(!active)return;clear();active=false;paused=false;window.hf27bAudio?.release('car26');const d=read();if(natural){const now=Date.now();d.sessions=Array.isArray(d.sessions)?d.sessions.slice(-79):[];d.sessions.push({id:now+'-'+Math.random().toString(36).slice(2,8),at:new Date(now).toISOString(),seconds:duration-seconds,items:completed,finished:true,kind:'listening',correct:null});delete d.pending;write(d);setStage('done',`Przećwiczono ${completed} elementów. Świetna praca!`);$('carSummaryText').textContent=`${completed} przećwiczonych elementów · ${fmt(duration-seconds)} słuchania. Odpowiedzi nie były oceniane.`;}else{savePending();setStage('ready','Sesja zatrzymana. Możesz ją wznowić na postoju.')}view()}
@@ -617,7 +624,7 @@ $('carStart').onclick=()=>launch();$('carPause').onclick=()=>paused?resume():pau
 $('carNew').onclick=()=>{setStage('ready','Gotowe do kolejnej sesji.');view()};$('carParked').onchange=e=>{$('carQuiz').disabled=!e.target.checked};$('carQuiz').onclick=()=>{if(!$('carParked').checked)return;if(active)finish(false);$('startGame').click();window.frankaNav15_2?.go('carQuiz')||$('game').scrollIntoView({behavior:'smooth',block:'start'})};
 $('carRate').onchange=()=>{$('carRateLabel').textContent=Number($('carRate').value)<.8?'Spokojne':Number($('carRate').value)> .9?'Naturalne':'Standardowe'};
 window.addEventListener('pagehide',()=>{if(active)pause()});document.addEventListener('visibilitychange',()=>{if(document.hidden&&active)pause()});window.addEventListener('franka:profile-changed',()=>{if(active)pause()});
-window.hfCar26={stop:()=>{if(active)finish(false)},isRunning:()=>active};setStage('ready','Wybierz ustawienia na postoju i rozpocznij sesję.');view();
+window.hfCar26={stop:()=>{if(active)finish(false)},pause,isRunning:()=>active};setStage('ready','Wybierz ustawienia na postoju i rozpocznij sesję.');view();
 })();
 </script>
 <script>
@@ -1327,7 +1334,7 @@ function dialogue(){
   const card=mk('div','jr-question-card');card.append(mk('div','jr-question',d[0]));
   const repeat=button('🔊 Powtórz pytanie',()=>{jrCancelAutoplay();jrSpeak(d[0])},'jr-repeat');
   repeat.setAttribute('aria-label','Powtórz pytanie po hiszpańsku');if(!childStarts)card.append(repeat);root.append(card);
-  root.append(mk('p','jr-flow-note',childStarts?'Powiedz swoją kwestię na głos.':pilot&&conversationSeason===3?'Powiedz, co naprawdę lubisz.':'Powiedz odpowiedź sam. Mikrofon nie jest potrzebny.'));
+  root.append(mk('p','jr-flow-note',childStarts?'Powiedz swoją kwestię na głos.':pilot&&conversationSeason===3?'Powiedz, co naprawdę lubisz.':'Odpowiedz na głos.'));
   if(juniorHint){
    const hint=mk('div','jr-hint');hint.setAttribute('role','status');
    hint.append(mk('strong','','Podpowiedź 💡'),mk('span','',d[2]||'Przypomnij sobie pytanie.'));
@@ -1360,9 +1367,9 @@ function dialogue(){
    jrGoStep(3);
   }
   const options=mk('div','jr-options');
-  if(!juniorHint)options.append(button('⭐ Powiedziałem sam!',()=>{assess('yes')},'jr-good'));
-  options.append(button(juniorHint?'🤝 Ćwiczyłem z podpowiedzią':'🤝 Potrzebuję jeszcze pomocy',()=>{assess('help')},'jr-help'));
-  root.append(options,mk('p','jr-caption','To Twoja ocena. Aplikacja nie ocenia wymowy.'));
+  if(!juniorHint)options.append(button('Odpowiedziałem sam',()=>{assess('yes')},'jr-good'));
+  options.append(button('Potrzebowałem pomocy',()=>{assess('help')},'jr-help'));
+  root.append(options,mk('p','jr-caption','Sam wybierz, jak Ci poszło.'));
   $('a1Stage').replaceChildren(root);return;
  }
  root.append(mk('div','jr-celebrate','🌟'),mk('div','jr-question','¡Muy bien!'));
@@ -1379,7 +1386,9 @@ function dialogue(){
     conversationTurn=null;
     jrCancelAutoplay();
     $('uxLearningStage').hidden=true;
-    window.frankaNav15_2.go('path');
+    window.frankaNav15_2.go('path',{focus:false});
+    const stage=window.frankaPath10.stages(conversationSeason).find(x=>x.kind==='dialogue');
+    window.hf22FocusNext?.(conversationSeason,stage?.id);
     return;
    }
    conversationTurn=n+1;
@@ -1456,7 +1465,9 @@ function refreshResume(){
 choice.onchange=()=>{choose(getUnit(),selected);$('uxLearningStage').hidden=true;$('epicGames').hidden=true};
 activities.forEach(b=>b.onclick=()=>{choose(getUnit(),b.dataset.uxActivity);$('uxLearningStage').hidden=true;$('epicGames').hidden=true});
 $('uxStart').onclick=showLearning;
-$('uxBackToChoice').onclick=()=>{window.dispatchEvent(new Event('franka:junior-leave'));$('uxLearningStage').hidden=true;window.frankaNav15_2?.go('chooser') || $('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
+$('uxBackToChoice').onclick=()=>{window.dispatchEvent(new Event('franka:junior-leave'));$('uxLearningStage').hidden=true;const fromJourney=$('s15Learning')?.dataset.mode==='dialogues'&&$('s15Learning')?.dataset.journeyDialog==='true';
+ if(fromJourney){window.frankaNav15_2.go('path');return;}
+ window.frankaNav15_2?.go('chooser') || $('uxChooser').scrollIntoView({behavior:'smooth',block:'start'})};
 $('uxResume').onclick=()=>{let v;try{v=JSON.parse(frankaStore.getItem(uxKey)||'null')}catch(e){}if(v&&supported(v.unit,v.kind)){choose(v.unit,v.kind);showLearning()}};
 function openGames(startMemory){
  const n=getUnit();
@@ -1630,7 +1641,7 @@ window.addEventListener('storage',drawDashboard);
   return {pct,wordRight,total:words.length,sentenceRight,words:70*wordCredits/Math.max(1,words.length),sentences:20*sentenceCredits/patterns.length,checkpoint:check.school||0};
  }
  function draw(){const grid=document.getElementById('s8SeasonGrid');if(!grid)return;const active=Number(document.getElementById('uxUnit').value)||1;grid.replaceChildren();for(const u of [1,2,3,4]){const p=progress(u),b=document.createElement('button');b.type='button';b.className='s8-season'+(u===active?' selected':'');b.setAttribute('aria-pressed',String(u===active));b.innerHTML='<span class="s8-emoji">'+({1:'🍂',2:'❄️',3:'🌸',4:'☀️'}[u])+'</span><strong>'+({1:'Otoño',2:'Invierno',3:'Primavera',4:'Verano'}[u])+'</strong><small>'+({1:'1 · Start i podstawy',2:'2 · Zdania i dom',3:'3 · Codzienne rozmowy',4:'4 · Utrwalanie A1'}[u])+'</small><div class="s8-meter"><div class="s8-fill" style="width:'+p.pct+'%"></div></div><small>'+p.pct+'% rozdziału</small>';b.onclick=()=>{const sel=document.getElementById('uxUnit');sel.value=u;sel.dispatchEvent(new Event('change',{bubbles:true}));draw();const daily=document.getElementById('s8FocusSeason');daily.value=u;daily.dispatchEvent(new Event('change'))};grid.append(b)}
- const p=progress(active),dest=document.getElementById('s8JourneySummary');dest.textContent=`🌱 ${window.frankaSeasons8.names[active]} · ${p.pct}% opanowania rozdziału · ${p.wordRight}/${p.total} słówek dobrze utrwalonych. Jeden wspólny postęp dla materiału szkolnego i A1. (Sprawdzian szkolny jest oceniany osobno tylko wewnętrznie.)`;
+ const p=progress(active),dest=document.getElementById('s8JourneySummary');dest.textContent=`🌱 ${window.frankaSeasons8.names[active]} · ${p.pct}% opanowania rozdziału · ${p.wordRight}/${p.total} utrwalonych słówek`;
  }
  window.frankaJourney8={get,result,checkpoint,progress,draw};
  // Hook existing learning paths; do not read/migrate legacy performance into journey percentages.
@@ -1835,7 +1846,7 @@ function unlocked(u,i){
  return !prior||done(u,stage)||done(u,prior)||original.slice(original.findIndex(x=>x.id===prior.id)+1).some(x=>done(u,x));
 }
 const s31TestHost=location.hostname==='hiszpanski-franka-test.pages.dev'||((location.hostname==='localhost'||location.hostname==='127.0.0.1')&&navigator.webdriver===true);
-let session=null,showAll=false;
+let session=null,showAll=false,lessonReturn=null;
 function h(tag,cl,txt){const e=document.createElement(tag);if(cl)e.className=cl;if(txt!==undefined)e.textContent=txt;return e}
 function button(txt,onClick,cl='secondary'){const b=h('button',cl,txt);b.type='button';b.onclick=onClick;return b}
 function shuffle(a){const x=[...a];for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x}
@@ -1848,9 +1859,8 @@ function display(){if(!session)return;const x=session,body=$('s10LessonBody');bo
  $('s10LessonHeading').textContent=`${x.stage.emoji} ${x.stage.title} · ${x.pos+1}/${x.list.length}`;
  body.append(h('p','s10-question',sentence?'🎧 Posłuchaj zdania':es));
  const listen=h('div','s10-center');listen.append(button('🔊 Posłuchaj',()=>speak(es),'epic-listen'));body.append(listen);
- const help=h('div','s10-help',`Najpierw posłuchaj i powtórz: ${es} — ${pl}. Potem sprawdź, czy pamiętasz.`);body.append(help);
  const answerBlock=h('div');answerBlock.hidden=true;body.append(answerBlock);
- const prep=h('div','s10-center');const reveal=button('✅ Spróbuję odpowiedzieć',()=>{help.hidden=true;prep.hidden=true;answerBlock.hidden=false},'epic-primary');prep.append(reveal);body.insertBefore(prep,answerBlock);
+ const prep=h('div','s10-center');const reveal=button('✅ Spróbuję odpowiedzieć',()=>{prep.hidden=true;answerBlock.hidden=false;answerBlock.querySelector('button')?.focus()},'epic-primary');prep.append(reveal);body.insertBefore(prep,answerBlock);
  const meanings=sentence?(sentenceBank[x.u]||[]).map(c=>c[1]):unique(x.u).map(c=>c[2]);
  const choices=shuffle([pl,...shuffle([...new Set(meanings.filter(v=>v!==pl))]).slice(0,3)]),grid=h('div','s10-answer-grid');answerBlock.append(grid);
  for(const val of choices){grid.append(button(val,()=>{
@@ -1867,7 +1877,7 @@ function display(){if(!session)return;const x=session,body=$('s10LessonBody');bo
 }
 function begin(u,i,preview=false){const items=stages(u),s=items[i];if(!s||(!preview&&!unlocked(u,i)))return;
  if(s.kind==='dialogue'){
-  window.frankaNav15_2.go('dialogues');
+  window.frankaNav15_2.go('dialogues',{journey:true});
   window.dispatchEvent(new CustomEvent('franka:open-season-conversation',{detail:{season:u,preview:preview && s31TestHost}}));
   return;
  }
@@ -1878,6 +1888,7 @@ function begin(u,i,preview=false){const items=stages(u),s=items[i];if(!s||(!prev
  }
  if(s.kind==='checkpoint'){$('s10Lesson').hidden=true;$('s6SchoolStart').click();return}
  if(!s.raw.length){complete(u,s,{empty:true});return}
+ lessonReturn={u,id:s.id,opener:document.activeElement};
  session={u,stage:s,list:shuffle(s.raw),pos:0,correct:0,answered:false,preview:!!(preview&&s31TestHost&&u===2)};$('s10Lesson').hidden=false;display();window.frankaNav15_2?.go('lesson') || $('s10Lesson').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 window.addEventListener('franka:season-conversation-complete',event=>{
@@ -1912,11 +1923,21 @@ function draw(){const u=Number($('uxUnit')?.value||1),root=$('s10Steps');if(!roo
  }
  for(const i of visible){for(const extra of extraSlots.filter(x=>x.before===i)){root.append(window.frankaS39.entry(extra.task,unlocked(u,i)));}
  const s=all[i],passed=done(u,s),open=unlocked(u,i),item=button('',()=>begin(u,i),'s10-step'+(passed?' done':open?' active':''));item.disabled=!open;item.dataset.journeyStageId=s.id;item.dataset.journeySeason=String(u);if(i===next)item.classList.add('hf22-next-stage');
- item.append(h('span','s10-step-ico',s.emoji));const content=h('span','s10-step-main');content.append(h('strong','',s.title));content.append(h('small','',s.note+(s.kind==='dialogue'?' · 2 wypowiedzi':s.kind!=='checkpoint'?` · ${s.raw.length} zadań`:'')));item.append(content);item.append(h('span','s10-step-mark',passed?'✓ Gotowe':open?'▶ Start':'🔒'));root.append(item)}
+ item.append(h('span','s10-step-ico',s.emoji));const content=h('span','s10-step-main');content.append(h('strong','',s.title));if(!open)content.append(h('small','s40-lock','Ukończ wcześniejsze etapy, aby odblokować.'));content.append(h('small','',s.note+(s.kind==='dialogue'?' · 2 wypowiedzi':s.kind!=='checkpoint'?` · ${s.raw.length} zadań`:'')));item.append(content);item.append(h('span','s10-step-mark',passed?'✓ Gotowe':open?'▶ Start':'🔒 Zablokowany'));root.append(item)}
  if(all.length>visible.length)root.append(button(`📖 ${showAll?'Pokaż mniej':'Pokaż wszystkie etapy'} (${all.length})`,()=>{showAll=!showAll;draw()},'secondary'));
  else if(showAll&&all.length>5)root.append(button('📖 Pokaż mniej',()=>{showAll=false;draw()},'secondary'));
 }
-$('s10LessonClose').onclick=()=>{$('s10Lesson').hidden=true;session=null;window.frankaNav15_2?.go('path')};
+$('s10LessonClose').onclick=()=>{
+ $('s10Lesson').hidden=true;session=null;
+ const target=lessonReturn;lessonReturn=null;
+ window.frankaNav15_2?.go('path',{focus:false});
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  if(!target||Number($('uxUnit').value)!==target.u)return;
+  const step=[...$('s10Steps').querySelectorAll('[data-journey-stage-id]')].find(button=>button.dataset.journeyStageId===target.id);
+  const destination=target.opener?.isConnected&&target.opener!==document.body&&target.opener.getClientRects().length?target.opener:step;
+  if(destination){destination.scrollIntoView({block:'nearest',behavior:'instant'});destination.focus({preventScroll:true});}
+ }));
+};
 $('uxUnit').addEventListener('change',()=>{$('s10Lesson').hidden=true;session=null;showAll=false;draw()});
 window.addEventListener('franka:s8checkpoint',e=>{const x=e.detail,u=Number(x?.u);if(x?.type==='school'&&[1,2,3,4].includes(u)){
  const s=stages(u).find(s=>s.kind==='checkpoint');if(x.percent>=85)complete(u,s,{score:x.percent});else draw();
@@ -1961,7 +1982,7 @@ function unlock(){let changed=false;for(const def of definitions){if(!state.badg
 function render(){if(!$('s14Badges'))return;unlock();const medals=$('s14Badges');medals.replaceChildren();let total=0;for(const def of definitions){const won=!!state.badges[def.id];if(won)total++;const card=node('div','s14-badge'+(won?'':' locked'));card.append(node('span','s14-emoji',won?def.icon:'🔒'),node('strong','',def.name),node('small','',def.text));const count=Math.min(def.target,def.count());card.append(node('small','',won?'✅ Zdobyta '+state.badges[def.id].date:`${count}/${def.target}`));if(!won){const bar=node('progress');bar.max=def.target;bar.value=count;bar.setAttribute('aria-label',def.name);card.append(bar)}medals.append(card)}
 $('s14BadgeCount').textContent=`(${total}/6)`;
 const cups=$('s14Trophies');cups.replaceChildren();for(const u of [1,2,3,4]){const won=trophy(u),d=node('div','s14-trophy');d.append(node('span','',won?'🏆':'🔒'),node('strong','',`${icons[u]} ${names[u]}`));cups.append(d)}
-const stages=window.frankaPath10?.stages;const u=Number($('uxUnit')?.value||1);if(stages){const list=stages(u),pathData=read(PATH)[u]||{};const idx=list.findIndex(s=>!pathData[s.id]?.done),next=$('s14Next');next.replaceChildren();if(idx<0){next.append(node('strong','',`🏆 ${names[u]} — sezon ukończony!`),node('p','','Możesz wracać do gier i powtórek.'))}else{const s=list[idx];next.append(node('strong','',`🎯 Najbliższy cel: ${s.emoji} ${s.title}`),node('p','',`Etap ${idx+1} z ${list.length}. ${s.note}.`));const preview=list.slice(idx+1,idx+3);if(preview.length)next.append(node('p','s14-goal','Dalej: '+preview.map(x=>x.emoji+' '+x.title).join(' · ')))}const missing=definitions.filter(d=>!state.badges[d.id]).sort((a,b)=>(b.count()/b.target)-(a.count()/a.target))[0];if(missing)next.append(node('p','s14-goal',`🏅 Następna odznaka: ${missing.name} (${Math.min(missing.target,missing.count())}/${missing.target})`))}
+const stages=window.frankaPath10?.stages;const u=Number($('uxUnit')?.value||1);if(stages){const list=stages(u),pathData=read(PATH)[u]||{};const idx=list.findIndex(s=>!pathData[s.id]?.done),next=$('s14Next');next.replaceChildren();if(idx<0){next.append(node('strong','',`🏆 ${names[u]} — sezon ukończony!`),node('p','','Możesz wracać do gier i powtórek.'))}else{const s=list[idx];next.append(node('strong','',`🎯 Najbliższy cel: ${s.emoji} ${s.title}`),node('p','',`Etap ${idx+1} z ${list.length}. ${s.note}.`));}const missing=definitions.filter(d=>!state.badges[d.id]).sort((a,b)=>(b.count()/b.target)-(a.count()/a.target))[0];if(missing)next.append(node('p','s14-goal',`🏅 Następna odznaka: ${missing.name} (${Math.min(missing.target,missing.count())}/${missing.target})`))}
 const mon=weekStart(new Date()),iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;const end=new Date(mon);end.setDate(end.getDate()+7);
 const thisWeek=d=>{if(!/^\d{4}-\d\d-\d\d$/.test(d||''))return false;const v=new Date(d+'T12:00:00');return v>=mon&&v<end};
 const p=read(S7),daily=(p.dailyHistory||[]).filter(x=>thisWeek(x.day));const lessons=allStages().filter(x=>thisWeek(x.date)&&x.kind!=='finale'&&x.kind!=='checkpoint').length;const reviews=allStages().filter(x=>thisWeek(x.date)&&x.kind==='review').length;const w=$('s14Weekly');w.replaceChildren();const stats=node('div','s14-stats');for(const [v,t] of [[daysThisWeek(),'Dni nauki'],[lessons,'Zaliczone etapy'],[reviews,'Powtórki etapowe']]){const block=node('div','s14-stat');block.append(node('strong','',String(v)),node('small','',t));stats.append(block)}w.append(stats,node('p','small',`Ukończone sesje codzienne: ${daily.length}. Liczymy zapisane zdarzenia i ukończone etapy; pojedyncze kliknięcia nie są punktami.`),node('p','small','¡Muy bien! Każdy powrót do nauki się liczy. Nie tracisz żadnych nagród za przerwę.'));
@@ -1978,27 +1999,33 @@ window.frankaLevel14={render,definitions,weekStart};
  const $=id=>document.getElementById(id), make=(tag,cls,text)=>{let e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e};
  const main=document.querySelector('main');if(!main||!$('communicationLab')||!$('s7Daily'))return;
  const oldHome=$('homeScreen'),oldWork=$('workArea'),learnArea=$('learnArea');
+ const game=$('game'),gameAnchor=document.createComment('Quiz obrazkowy');
+ game.before(gameAnchor);
+ function closeCarQuiz(){
+  if(game.parentElement!==$('s40CarQuizSlot'))return;
+  game.hidden=true;gameAnchor.after(game);
+  $('carParked').checked=false;$('carQuiz').disabled=true;
+ }
  // Enter the existing learning mode once, activating all original APIs.
  const learnTile=document.querySelector('[data-enter="learn"]');if(learnTile)learnTile.click();
  const shell=make('div','s15-shell');shell.id='s15Shell';
  const top=make('div','s15-topbar');top.innerHTML='<div class="s15-brand"><span class="s15-logo" aria-hidden="true">✦</span><div><strong>Hiszpański Franka</strong><small>Twoja codzienna przygoda 🇪🇸</small></div></div><span class="s15-date" id="s15Date"></span>';shell.append(top);
  const today=make('section','s15-view s15-active');today.id='s15Today';today.setAttribute('aria-label','Dziś');
- today.innerHTML=`<div class="s15-sectionhead"><div><span class="s15-heading-overline">TWÓJ DZIEŃ</span><h1>¡Hola, <span id="s15GreetingName">Franek</span>! <span aria-hidden="true">👋</span></h1><p>Gotowy na kilka minut hiszpańskiej przygody?</p></div></div>
- <div class="s15-cards"><div class="s15-feature"><span class="s15-eyebrow">CODZIENNA MISJA</span><h2>Dzisiaj uczę się</h2><p>Kilka pytań, mądre powtórki i coś nowego. Wszystko w Twoim tempie.</p><button id="s15DailyGo" type="button">▶ &nbsp; Rozpocznij naukę</button><div class="s15-art" aria-hidden="true"><svg viewBox="0 0 230 210" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="s15sun" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe39a"/><stop offset="1" stop-color="#ffc46d"/></linearGradient></defs><circle cx="173" cy="53" r="34" fill="url(#s15sun)"/><path d="M0 186Q43 111 88 161T176 141T230 165V210H0" fill="#ac9afa" opacity=".8"/><path d="M0 192Q45 164 85 185T161 177T230 187V210H0" fill="#e2d3ff"/><path d="M61 184V101L83 91V184Z" fill="#f4c992"/><path d="M82 184V69L108 51L133 69V184Z" fill="#ffe5b8"/><path d="M103 52V25h9v27" fill="#ffe5b8"/><path d="M96 80h21v25H96zM99 123h15v61H99zM72 118h10v18H72z" fill="#8862ca"/><path d="M96 25Q108 13 121 25" stroke="#fff2d8" stroke-width="6" fill="none"/><path d="M161 183V113L175 101L189 113V183" fill="#fff1d8"/><path d="M171 127h9v16h-9" fill="#ac89eb"/><circle cx="28" cy="60" r="7" fill="#fff" opacity=".6"/><circle cx="45" cy="47" r="4" fill="#fff" opacity=".5"/></svg></div></div>
- <div class="s15-card s15-daily-card"><span class="s15-mini-label">✦ &nbsp; TWÓJ PLAN</span><h3>Małe kroki, duży postęp</h3><p>Każdego dnia ćwiczysz dokładnie to, co pomoże Ci iść dalej.</p><p class="s15-mini-hint" id="s15TodayGoal">Wybierz sezon w zakładce Nauka, aby zobaczyć kolejne cele.</p><div class="s15-plan-items"><div class="s15-plan-item"><span class="s15-plan-icon">↻</span>Powtórki trudnych słów</div><div class="s15-plan-item"><span class="s15-plan-icon">✦</span>Nowe słówka</div><div class="s15-plan-item"><span class="s15-plan-icon">♬</span>Krótkie zdania i dialogi</div></div></div></div>
- <div class="s15-quick"><button type="button" class="s15-quick-card exam" id="s15ExamGo"><span class="s15-qicon">📝</span><strong>Mam sprawdzian</strong><small>Ucz się dokładnie tego, co jest w szkole.</small></button><button type="button" class="s15-quick-card achieve" id="s15AwardsGo"><span class="s15-qicon">🏆</span><strong>Moje nagrody</strong><small>Odznaki, puchary i małe zwycięstwa.</small></button><button type="button" class="s15-quick-card car" id="s15CarGo"><span class="s15-qicon">🚗</span><strong>Uczę się w aucie</strong><small>Słuchaj i powtarzaj bez patrzenia w ekran.</small></button></div>
+ today.innerHTML=`<div class="s15-sectionhead"><div><span class="s15-heading-overline">TWÓJ DZIEŃ</span><h1>¡Hola, <span id="s15GreetingName">Franek</span>! <span aria-hidden="true">👋</span></h1></div></div>
+ <div class="s15-cards"><div class="s15-feature"><span class="s15-eyebrow">CODZIENNA MISJA</span><h2>Dzisiaj uczę się</h2><p>Słówka, słuchanie i krótki dialog.</p><p id="s15TodayGoal" hidden></p><button id="s15DailyGo" type="button">▶ &nbsp; Rozpocznij naukę</button><div class="s15-art" aria-hidden="true"><svg viewBox="0 0 230 210" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="s15sun" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe39a"/><stop offset="1" stop-color="#ffc46d"/></linearGradient></defs><circle cx="173" cy="53" r="34" fill="url(#s15sun)"/><path d="M0 186Q43 111 88 161T176 141T230 165V210H0" fill="#ac9afa" opacity=".8"/><path d="M0 192Q45 164 85 185T161 177T230 187V210H0" fill="#e2d3ff"/><path d="M61 184V101L83 91V184Z" fill="#f4c992"/><path d="M82 184V69L108 51L133 69V184Z" fill="#ffe5b8"/><path d="M103 52V25h9v27" fill="#ffe5b8"/><path d="M96 80h21v25H96zM99 123h15v61H99zM72 118h10v18H72z" fill="#8862ca"/><path d="M96 25Q108 13 121 25" stroke="#fff2d8" stroke-width="6" fill="none"/><path d="M161 183V113L175 101L189 113V183" fill="#fff1d8"/><path d="M171 127h9v16h-9" fill="#ac89eb"/><circle cx="28" cy="60" r="7" fill="#fff" opacity=".6"/><circle cx="45" cy="47" r="4" fill="#fff" opacity=".5"/></svg></div></div>
+ <div class="s15-quick"><button type="button" class="s15-quick-card exam" id="s15ExamGo"><span class="s15-qicon">📝</span><strong>Mam sprawdzian</strong><small>Ucz się dokładnie tego, co jest w szkole.</small></button><button type="button" class="s15-quick-card car" id="s15CarGo"><span class="s15-qicon">🚗</span><strong>Uczę się w aucie</strong><small>Słuchaj i powtarzaj bez patrzenia w ekran.</small></button></div>
  <details class="s15-card s15-today-detail" id="s15DailyDetails"><summary>▾ Dzisiejsza sesja i szczegóły nauki</summary><div id="s15DailySlot"></div></details>
  <div class="s15-exam-wrap" id="s15ExamSlot"></div>
  <details class="s15-card s15-today-detail" id="s15CoachDetails"><summary>▾ Dodatkowe powtórki i trener słówek</summary><div id="s15CoachSlot"></div></details>`;
  const activeGreetingProfile=window.hfProfiles19?.getMeta?.();const activeGreetingName=activeGreetingProfile?.profiles?.find(p=>p.id===activeGreetingProfile.active)?.name||'Uczeń';const greetingNode=today.querySelector('#s15GreetingName');if(greetingNode)greetingNode.textContent=activeGreetingName;
  const learning=make('section','s15-view s15-learning-zone');learning.id='s15Learning';learning.dataset.mode='lessons';learning.setAttribute('aria-label','Nauka');
- learning.innerHTML=`<div class="s15-sectionhead"><div><span class="s15-heading-overline">TWOJA PRZYGODA</span><h1>Wybierz sezon</h1><p>Cztery pory roku, jedna droga do hiszpańskiego.</p></div></div>
- <div class="s15-season-grid" id="s15Seasons"></div>
+ learning.innerHTML=`<div class="s15-sectionhead"><div><span class="s15-heading-overline">TWOJA PRZYGODA</span><h1>Nauka</h1></div></div>
+ <div id="s15Seasons" class="s40-season"><label for="s40Season">Sezon</label><select id="s40Season"></select></div>
  <div class="s15-seg" role="tablist" aria-label="Typ nauki"><button type="button" data-s15-mode="lessons" role="tab" aria-selected="true">▤ &nbsp; Lekcje</button><button type="button" data-s15-mode="games" role="tab" aria-selected="false">🎮 &nbsp; Gry</button><button type="button" data-s15-mode="dialogues" role="tab" aria-selected="false">☏ &nbsp; Dialogi</button></div>
- <div id="s15LearnContent"></div><div id="s15GamesSlot"></div><div id="s15CarSlot"></div><div id="s15TestSlot"></div><div id="s15ContinueSlot"></div>`;
+ <p id="s40DialogContext" hidden></p><div id="s15LearnContent"></div><div id="s15GamesSlot"></div><div id="s15CarSlot"></div><div id="s15TestSlot"></div><div id="s15ContinueSlot"></div>`;
  const progress=make('section','s15-view s15-progress-content');progress.id='s15Progress';progress.setAttribute('aria-label','Postępy');
- progress.innerHTML=`<div class="s15-sectionhead"><div><span class="s15-heading-overline">TWOJE OSIĄGNIĘCIA</span><h1>Każdy krok się liczy 🏆</h1><p>To, czego się nauczyłeś, zostaje z Tobą.</p></div></div><div class="s15-progress-top"><div class="s15-stat"><b id="s15BadgeTotal">0/6</b><span>Odznaki</span></div><div class="s15-stat"><b id="s15CupTotal">0/4</b><span>Puchary</span></div><div class="s15-stat"><b id="s15SeasonDone">0</b><span>Etapy nauki</span></div></div><div id="s15ProgressSlots"></div><details class="s15-card s15-parentfold"><summary>Informacje dla rodzica</summary><div id="s15ParentSlot"></div></details>`;
- const dock=make('nav','s15-dock');dock.setAttribute('aria-label','Nawigacja główna');dock.innerHTML=`<button type="button" data-s15-view="today" class="s15-current" aria-current="page"><span class="s15-nav-icon">◉</span>Dziś</button><button type="button" data-s15-view="learning"><span class="s15-nav-icon">▤</span>Nauka</button><button type="button" data-s15-view="progress"><span class="s15-nav-icon">▥</span>Postępy</button>`;
+ progress.innerHTML=`<div class="s15-sectionhead"><div><span class="s15-heading-overline">TWOJE OSIĄGNIĘCIA</span><h1>Każdy krok się liczy 🏆</h1><p>To, czego się nauczyłeś, zostaje z Tobą.</p></div></div><div class="s15-progress-top"><div class="s15-stat"><b id="s15BadgeTotal">0/6</b><span>Odznaki ścieżki</span></div><div class="s15-stat"><b id="s15CupTotal">0/4</b><span>Puchary</span></div><div class="s15-stat"><b id="s15SeasonDone">0</b><span>Etapy nauki</span></div></div><div id="s15ProgressSlots"></div><details class="s15-card s15-parentfold"><summary>Dla rodzica</summary><div id="s15ParentSlot"></div></details>`;
+ const dock=make('nav','s15-dock');dock.setAttribute('aria-label','Nawigacja główna');dock.innerHTML=`<button type="button" data-s15-view="today" class="s15-current" aria-current="page"><span class="s15-nav-icon" aria-hidden="true">◉</span>Dziś</button><button type="button" data-s15-view="learning"><span class="s15-nav-icon" aria-hidden="true">▤</span>Nauka</button><button type="button" data-s15-view="progress"><span class="s15-nav-icon" aria-hidden="true">▥</span>Postępy</button>`;
  shell.append(today,learning,progress,dock);main.append(shell);
  const into=(id,selector)=>{const e=$(id),slot=shell.querySelector(selector);if(e&&slot)slot.append(e)};
  into('s7Daily','#s15DailySlot');into('s13ExamDetails','#s15ExamSlot');into('smartPanel','#s15CoachSlot');into('s14Showcase','#s15ProgressSlots');into('s14Week','#s15ProgressSlots');into('s12Skills','#s15ProgressSlots');into('s7Insights','#s15ProgressSlots');
@@ -2010,13 +2037,32 @@ window.frankaLevel14={render,definitions,weekStart};
  const footer=learnArea.querySelector('footer');if(footer)progress.querySelector('#s15ParentSlot').append(footer);
  if(oldHome)oldHome.hidden=true;if(oldWork)oldWork.hidden=false;if(learnArea)learnArea.hidden=false;
  const labels=['','Otoño','Invierno','Primavera','Verano'],icons=['','🍁','⛄','🌷','☀️'];
+ const seasonPicker=$('s40Season');
+ for(let u=1;u<=4;u++)seasonPicker.add(new Option(icons[u]+' '+labels[u],String(u)));
+ seasonPicker.onchange=()=>{
+  if(!$('epicStage').hidden&&learning.dataset.mode==='games')$('epicExit').click();
+  pick(Number(seasonPicker.value));
+  if(learning.dataset.mode==='dialogues')go('dialogues',{focus:false});
+  if(learning.dataset.mode==='games')go('games',{focus:false});
+ };
  let view='today',mode='lessons';
- function viewTo(next){view=next;[['today',today],['learning',learning],['progress',progress]].forEach(([key,el])=>el.classList.toggle('s15-active',key===next));dock.querySelectorAll('button').forEach(b=>{const active=b.dataset.s15View===next;b.classList.toggle('s15-current',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});if(next==='progress'){try{window.frankaLevel14?.render()}catch(e){}refreshProgress()}if(next==='learning')refreshSeasons();window.scrollTo({top:0,behavior:'instant'})}
- function modeTo(next){mode=next;learning.dataset.mode=next;learning.querySelectorAll('[data-s15-mode]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.s15Mode===next)));if(next==='games'){if($('epicGames')?.hidden)$('uxGames')?.click();}if(next==='dialogues'){$('s15ChooserDetails').open=true;$('uxChooser')?.querySelector('[data-ux-activity="dialogues"]')?.click();}if(next==='car'){$('carArea').hidden=false;}viewTo('learning')}
+ function viewTo(next){
+  if(next!=='learning'&&view==='learning'&&mode==='dialogues')window.dispatchEvent(new Event('franka:junior-leave'));
+  if(next!=='learning'||mode!=='car'){closeCarQuiz();window.hfCar26?.pause();}
+  view=next;[['today',today],['learning',learning],['progress',progress]].forEach(([key,el])=>el.classList.toggle('s15-active',key===next));dock.querySelectorAll('button').forEach(b=>{const active=b.dataset.s15View===next;b.classList.toggle('s15-current',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});if(next==='progress'){try{window.frankaLevel14?.render()}catch(e){}refreshProgress()}if(next==='learning')refreshSeasons();window.scrollTo({top:0,behavior:'instant'})}
+ function modeTo(next){if(next!=='dialogues'&&mode==='dialogues')window.dispatchEvent(new Event('franka:junior-leave'));mode=next;learning.dataset.mode=next;learning.querySelectorAll('[data-s15-mode]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.s15Mode===next)));if(next==='games'){if($('epicGames')?.hidden)$('uxGames')?.click();}if(next==='dialogues'){$('s15ChooserDetails').open=true;$('uxChooser')?.querySelector('[data-ux-activity="dialogues"]')?.click();}if(next==='car'){$('carArea').hidden=false;}
+  if(next!=='dialogues')$('s40DialogContext').hidden=true;
+  if(next==='games')$('epicGames').hidden=false;
+  viewTo('learning')}
  function pick(u){if(!$('uxUnit'))return;$('uxUnit').value=String(u);$('uxUnit').dispatchEvent(new Event('change',{bubbles:true}));if($('s8FocusSeason')){$('s8FocusSeason').value=String(u);$('s8FocusSeason').dispatchEvent(new Event('change',{bubbles:true}))}if($('epicUnit')){$('epicUnit').value=String(u);$('epicUnit').dispatchEvent(new Event('change',{bubbles:true}))}refreshSeasons()}
  function read(k){try{return JSON.parse(frankaStore.getItem(k)||'{}')||{}}catch(e){return {}}}
  function stats(u){const stages=window.frankaPath10?.stages?.(u)||[];const saved=read('hiszpanskiFrankaPath10V2')[u]||{};const done=stages.filter(s=>saved[s.id]?.done).length;return {done,total:stages.length,pct:stages.length?Math.round(done/stages.length*100):0}}
- function refreshSeasons(){const goal=$('s15TodayGoal');if(goal){const source=$('s14Next')?.querySelector('strong');goal.textContent=source?source.textContent:'Wybierz sezon w zakładce Nauka, aby zobaczyć kolejne cele.'}const target=$('s15Seasons');if(!target)return;target.replaceChildren();const u=Number($('uxUnit')?.value||1);for(let i=1;i<=4;i++){const a=stats(i),b=make('button',`s15-season s15-season--${i}`+(i===u?' s15-selected':''));b.type='button';b.setAttribute('aria-label',`${labels[i]}, ukończono ${a.done} z ${a.total} etapów`);b.innerHTML=`<span class="s15-season-art" aria-hidden="true">${icons[i]}</span><span class="s15-season-copy"><strong>${labels[i]}</strong><small>Słowa · Zdania · Checkpoint</small><span class="s15-season-progress"><span style="width:${a.pct}%"></span></span><span class="s15-season-pct">${a.pct}% · ${a.done}/${a.total} etapów</span></span><span class="s15-chevron" aria-hidden="true">›</span>`;b.onclick=()=>{pick(i);go('path',{focus:false})};target.append(b)}}
+ function refreshSeasons(){
+  const goal=$('s15TodayGoal'),source=$('s14Next')?.querySelector('strong');
+  goal.textContent=source?.textContent||'';
+  goal.hidden=!source;
+  seasonPicker.value=$('uxUnit')?.value||'1';
+ }
  function refreshProgress(){const b=read('hiszpanskiFrankaLevel14V1').badges||{};const total=Object.keys(b).length;$('s15BadgeTotal').textContent=`${total}/6`;const nums=[1,2,3,4].map(i=>stats(i));$('s15SeasonDone').textContent=String(nums.reduce((v,x)=>v+x.done,0));let cups=0;const states=read('hiszpanskiFrankaPath10V2');for(let i=1;i<=4;i++){const stages=window.frankaPath10?.stages?.(i)||[];if(stages.some(s=>s.kind==='finale'&&states[i]?.[s.id]?.done||s.id==='finale-v1'&&states[i]?.[s.id]?.done))cups++} // Alternative verified trophy DOM after render.
  const domCups=$('s14Trophies')?.querySelectorAll('.s14-trophy');if(domCups?.length)cups=[...domCups].filter(x=>x.textContent.includes('🏆')).length;$('s15CupTotal').textContent=`${cups}/4`}
  function startDailyMemory(){
@@ -2073,14 +2119,20 @@ window.frankaLevel14={render,definitions,weekStart};
    case 'learningStage':viewTo('learning');if(chooser)chooser.open=true;target=$('uxLearningStage');break;
    case 'games':reveal('learning','games');if($('epicGames')?.hidden)$('uxGames')?.click();target=$('epicGames');break;
    case 'memory':return startDailyMemory();
-   case 'dialogues':reveal('learning','dialogues');if(chooser)chooser.open=true;$('uxStart')?.click();target=$('uxLearningStage');break;
+   case 'dialogues':
+    $('s40DialogContext').textContent=opts.journey?'Rozmowa na ścieżce':'Ćwicz rozmowę. Etapy do zaliczenia znajdziesz w zakładce Lekcje.';
+    $('s40DialogContext').hidden=false;
+    learning.dataset.journeyDialog=String(!!opts.journey);
+    $('uxBackToChoice').textContent=opts.journey?'← Wróć do ścieżki':'← Wróć do wyboru ćwiczenia';
+    reveal('learning','dialogues');if(chooser)chooser.open=true;$('uxStart')?.click();target=$('uxLearningStage');break;
    case 'checkpoint':reveal('learning','lessons');if(chooser)chooser.open=true;target=$('s6TestingPanel');break;
    case 'daily':reveal('today');if(daily)daily.open=true;target=$('s7Session');break;
    case 'review':reveal('today');if(coach)coach.open=true;target=$('smartReview');break;
    case 'exam':reveal('today');$('s15ExamSlot').classList.add('s15-show-exam');$('s13ExamDetails').open=true;target=$('s13ExamDetails');break;
    case 'awards':reveal('progress');if($('s14Showcase'))$('s14Showcase').open=true;target=$('s14Showcase');break;
    case 'car':reveal('learning','car');target=$('carArea');break;
-   case 'carQuiz':reveal('learning','car');target=$('game');break;
+   case 'carQuiz':
+    reveal('learning','car');$('s40CarQuizSlot').append(game);target=game;break;
    default:return false;
   }
   if(target){
@@ -2099,7 +2151,7 @@ window.frankaLevel14={render,definitions,weekStart};
 
  dock.querySelectorAll('button').forEach(b=>b.onclick=()=>viewTo(b.dataset.s15View));learning.querySelectorAll('[data-s15-mode]').forEach(b=>b.onclick=()=>{const next=b.dataset.s15Mode;if(next==='dialogues')go('dialogues',{focus:false});else if(next==='lessons')go('path',{focus:false});else if(next==='games')go('games',{focus:false});else modeTo(next)});
  $('s15DailyGo').onclick=()=>{$('s15DailyDetails').open=true;$('s7DailyStart')?.click();go('daily')};
- $('s15ExamGo').onclick=showExam;$('s15AwardsGo').onclick=()=>go('awards');$('s15CarGo').onclick=()=>go('car');
+ $('s15ExamGo').onclick=showExam;$('s15CarGo').onclick=()=>go('car');
  $('s15Date').textContent=new Date().toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
  // Route successful checkpoint navigation to the correct main destination.
  $('s13ExamTest')?.addEventListener('click',()=>go('checkpoint'));
@@ -2169,11 +2221,11 @@ function personalise(){
  const name=current()?.name||'Franek';
  const target=$('s15Today')?.querySelector('h1');if(target){target.replaceChildren(document.createTextNode('¡Hola, '+name+'! '));const wave=document.createElement('span');wave.setAttribute('aria-hidden','true');wave.textContent='👋';target.append(wave)}
  const home=$('homeScreen')?.querySelector('h2');if(home)home.textContent='¡Vamos, '+name+'! 🇪🇸';
- const car=$('carArea')?.querySelector('.car-mode > p');if(car)car.textContent='Aktywna nauka przez słuchanie: '+name+' usłyszy słowo lub zwrot po hiszpańsku, chwilę na odpowiedź i odpowiedź po polsku. Nie trzeba patrzeć w ekran ani niczego dotykać w trakcie jazdy.';
+ const car=$('carArea')?.querySelector('.car-mode > p');if(car)car.textContent='Ustaw sesję przed jazdą. Posłuchaj, odpowiedz na głos w przerwie i porównaj ze wzorem.';
  const header=document.querySelector('header h1');if(header)header.textContent='🇪🇸 Hiszpański — '+name;
  const brand=document.querySelector('.s15-brand strong');if(brand)brand.textContent='Hiszpański — '+name;
 }
-function draw(){const meta=api.getMeta();const list=$('hf19List');list.replaceChildren();for(const p of meta.profiles){const b=document.createElement('button');b.type='button';b.className='hf19-profile';b.setAttribute('aria-pressed',String(selected===p.id));b.innerHTML='<span class="hf19-face" aria-hidden="true">'+esc(p.avatar||'🦊')+'</span><strong>'+esc(p.name)+'</strong><small>'+(p.id===meta.active?'Aktywny profil':'Wybierz profil')+'</small>';b.onclick=()=>{selected=p.id;draw()};list.append(b)}const add=document.createElement('button');add.type='button';add.className='hf19-profile';add.innerHTML='<span class="hf19-face" aria-hidden="true">＋</span><strong>Nowy profil</strong><small>Dodaj ucznia</small>';add.onclick=()=>showForm();list.append(add);$('hf19Go').textContent=selected===meta.active?'Kontynuuj naukę →':'Przełącz profil →';}
+function draw(){const meta=api.getMeta();const list=$('hf19List');list.replaceChildren();for(const p of meta.profiles){const b=document.createElement('button');b.type='button';b.className='hf19-profile';b.setAttribute('aria-pressed',String(selected===p.id));b.innerHTML='<span class="hf19-face" aria-hidden="true">'+esc(p.avatar||'🦊')+'</span><strong>'+esc(p.name)+'</strong><small>'+((p.id===meta.active?'Aktywny · ':'')+(window.hf37IsProfileLinked?.(p.id)?'połączony':'lokalny'))+'</small>';b.onclick=()=>{selected=p.id;draw()};list.append(b)}const add=document.createElement('button');add.type='button';add.className='hf19-profile';add.innerHTML='<span class="hf19-face" aria-hidden="true">＋</span><strong>Nowy profil</strong><small>Dodaj ucznia</small>';add.onclick=()=>showForm();list.append(add);$('hf19Go').textContent=selected===meta.active?'Kontynuuj naukę →':'Przełącz profil →';}
 function showForm(){const f=$('hf19Form');f.hidden=false;$('hf19Name').value='';chosenAvatar='🦊';drawAvatars();$('hf19Name').focus()}
 function drawAvatars(){const a=$('hf19Avatars');a.replaceChildren();avatars.forEach(em=>{const b=document.createElement('button');b.type='button';b.className='hf19-avatar';b.textContent=em;b.setAttribute('aria-label','Awatar '+em);b.setAttribute('aria-pressed',String(chosenAvatar===em));b.onclick=()=>{chosenAvatar=em;drawAvatars()};a.append(b)})}
 function open(){previousFocus=document.activeElement;selected=api.getMeta().active;$('hf19Form').hidden=true;$('hf19Message').textContent='';draw();$('hf19Overlay').classList.add('hf19-open');$('hf19Close').focus()}
@@ -2273,7 +2325,10 @@ if(!api)return;
 let mission=null,previousFocus=null;
 function attachParent(){
  const dialog=$('hf19Dialog'),trigger=$('hf192Open');if(!dialog||!trigger||$('hf193Parent'))return;
- const b=document.createElement('button');b.type='button';b.id='hf193Parent';b.textContent='🔒 Dla rodzica · panel postępów';
+ const b=document.createElement('button');b.type='button';b.id='hf193Parent';b.textContent='🔒 Wyniki i ustawienia rodzica';
+ const parentLink=b.cloneNode(true);parentLink.id='s40ParentResults';
+ parentLink.addEventListener('click',()=>trigger.click());
+ $('s15ParentSlot')?.prepend(parentLink);
  b.onclick=()=>{$('hf19Close')?.click();trigger.click()};
  const actions=dialog.querySelector('.hf19-actions');if(actions)actions.insertAdjacentElement('afterend',b);else dialog.append(b);
 }
@@ -2391,21 +2446,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  function line(label,value){const wrap=document.createElement('div');wrap.className='hf1932-line';const a=document.createElement('span');a.textContent=label;const b=document.createElement('strong');b.textContent=value;wrap.append(a,b);return wrap}
  function meter(value){const track=document.createElement('div');track.className='hf1932-track';const fill=document.createElement('span');fill.style.width=Math.max(0,Math.min(100,Number(value)||0))+'%';track.append(fill);return track}
  function dual(u){const v=values(u),root=document.createElement('div');root.className='hf1932-dual';root.append(line('Ukończenie lekcji',v.lessons+'% · '+v.completed+'/'+v.total),meter(v.lessons),line('Opanowanie materiału',v.mastery===null?'Brak danych':v.mastery+'%'),meter(v.mastery));return root}
- function renderCards(){const grid=$('s15Seasons');if(!grid)return;for(const [i,card] of [...grid.children].entries()){
-   if(i>=4)break;card.querySelector('.hf1932-dual')?.remove();
-   const original=card.querySelector('.s15-season-progress');if(original)original.hidden=true;
-   const originalLabel=card.querySelector('.s15-season-pct');if(originalLabel)originalLabel.hidden=true;
-   card.querySelector('.s15-season-copy')?.append(dual(i+1));
-   const v=values(i+1);card.setAttribute('aria-label',labels[i+1]+': ukończenie lekcji '+v.lessons+'%, opanowanie materiału '+(v.mastery===null?'brak danych':v.mastery+'%'));
- }}
  function renderPanel(){const page=$('s15Progress');if(!page)return;let root=$('hf1932Panel');if(!root){root=document.createElement('section');root.id='hf1932Panel';root.className='hf1932-panel';root.setAttribute('aria-label','Postępy sezonowe: lekcje i opanowanie');const anchor=$('s15ProgressSlots');if(anchor)page.insertBefore(root,anchor);else page.append(root)}
  root.replaceChildren();const h=document.createElement('h3');h.textContent='📚 Postępy w czterech sezonach';root.append(h);
- const p=document.createElement('p');p.className='hf1932-note';p.textContent='Ukończenie lekcji rośnie po zaliczeniu etapów ścieżki. Opanowanie materiału uwzględnia odpowiedzi z lekcji, gier i codziennej misji; może pozostać bez zmian po pojedynczej powtórce.';root.append(p);
+ const p=document.createElement('p');p.className='hf1932-note';p.textContent='Ukończone lekcje to zaliczone etapy ścieżki. Opanowanie materiału pokazuje, ile pamiętasz po ćwiczeniach i powtórkach.';root.append(p);
  for(let u=1;u<=4;u++){const section=document.createElement('div');section.className='hf1932-season';const title=document.createElement('strong');title.textContent=labels[u];section.append(title,dual(u));root.append(section)}
  }
- let scheduled=false;function refresh(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;renderCards();renderPanel()})}
- function init(){const grid=$('s15Seasons');if(grid){new MutationObserver(mutations=>{if(mutations.some(m=>m.target===grid&&m.type==='childList'))refresh()}).observe(grid,{childList:true})}
-  document.addEventListener('click',e=>{if(e.target.closest('[data-s15-view],.s15-season,#hf193Next,#hf193Close'))refresh()});
+ let scheduled=false;function refresh(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;renderPanel()})}
+ function init(){
+  document.addEventListener('click',e=>{if(e.target.closest('[data-s15-view],#hf193Next,#hf193Close'))refresh()});
   window.addEventListener('franka:mission-answer',refresh);
   window.addEventListener('franka:s14stage',refresh);
   window.addEventListener('franka:s14word',refresh);
@@ -2433,7 +2481,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 @media(max-width:390px){.hf201-cards{gap:5px}.hf201-cards button{min-height:64px!important;padding:5px!important}.hf201-actions{display:grid}}
 </style>
 <script id="hf201Script">
-/* Sprint 20.1 — Daily Mission 2.0. Only writes a new, profile-scoped key via frankaStore.
+/* Sprint 20.1. Only writes a new, profile-scoped key via frankaStore.
    Answer recording delegates to the established recordResult/Journey8 pipeline. */
 (()=>{'use strict';
  const KEY='hiszpanskiFrankaDailyMission20V1', $=id=>document.getElementById(id);
@@ -2456,7 +2504,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  function say(t){if(typeof speak==='function')speak(display(t))}
  function feedback(t){$('hf201Feedback').textContent=t||''}
  function render(){if(!state)return;const stage=state.stage,done=stage>=4;
-  $('hf201Title').textContent='🌟 Misja '+profile().name+' — Daily Mission 2.0';$('hf201Step').textContent=done?'Misja zakończona':`Etap ${stage+1}/4 · ${STAGES[stage]}`;
+  $('hf201Title').textContent='🌟 Misja '+profile().name;$('hf201Step').textContent=done?'Misja zakończona':`Etap ${stage+1}/4 · ${STAGES[stage]}`;
   $('hf201Meter').style.width=(done?100:stage*25)+'%';$('hf201Content').replaceChildren();$('hf201Actions').replaceChildren();feedback('');
   if(done){summary();return}if(stage===0)vocab();else if(stage===1)memory();else if(stage===2)listening();else dialogue();
  }
@@ -2507,7 +2555,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   document.body.append(shade);$('hf201Close').onclick=close;shade.addEventListener('click',e=>{if(e.target===shade)close()});shade.addEventListener('keydown',e=>{if(e.key==='Escape')close();if(e.key==='Tab'){const bs=[...shade.querySelectorAll('button:not([disabled])')].filter(x=>x.getClientRects().length);if(!bs.length)return;const first=bs[0],last=bs[bs.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
   const go=$('s15DailyGo');if(go)go.onclick=start;
   const old=$('hf193Shade');if(old)old.setAttribute('aria-hidden','true');
-  const savedMission=read();if(go&&savedMission&&!savedMission.completed)go.textContent='▶ Wznów dzisiejszą misję';
+  const savedMission=read();if(go&&savedMission&&!savedMission.completed)go.textContent='▶ Kontynuuj misję';
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,80));else setTimeout(init,80);
  window.hfDailyMission20={read,start};
@@ -2796,7 +2844,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  function close(){if(window.speechSynthesis)try{speechSynthesis.cancel()}catch(e){}$('hf23Modal').classList.remove('open');$('hf23Modal').setAttribute('aria-hidden','true');opener?.focus?.();renderAwards()}
  function init(){if($('hf23Home'))return;const slot=$('s15Today')?.querySelector('.s15-cards')||$('s15Today');if(!slot)return;
   const home=el('section',undefined);home.id='hf23Home';home.append(el('h3','🧠 Powtórka mistrza'),el('p','Krótka sesja z trudniejszymi i zapomnianymi słówkami. Około 5 minut, bez nowego materiału.'));const b=el('button','▶ Rozpocznij powtórkę');b.id='hf23Start';b.type='button';b.onclick=open;home.append(b,el('p','','hf23-meta'));slot.append(home);
-  const progress=$('s15ProgressSlots')||$('s15Progress');if(progress){const awardsRoot=el('section');awardsRoot.id='hf23Awards';progress.append(awardsRoot)}
+  const progress=$('s15ProgressSlots')||$('s15Progress');if(progress){const awardsRoot=el('section');awardsRoot.id='hf23Awards';awardsRoot.hidden=true;progress.append(awardsRoot)}
   const modal=el('div',undefined,'hf23-modal');modal.id='hf23Modal';modal.setAttribute('aria-hidden','true');modal.innerHTML='<section class="hf23-panel" role="dialog" aria-modal="true" aria-labelledby="hf23Title"><div class="hf23-top"><div><h2 id="hf23Title">🧠 Powtórka mistrza</h2><span id="hf23Mode" class="hf23-chip"></span></div><button id="hf23Close" type="button" aria-label="Zamknij powtórkę">✕</button></div><p id="hf23Counter" class="hf23-muted"></p><div class="hf23-progress"><span id="hf23Progress"></span></div><div id="hf23Body"></div><p id="hf23Feedback" class="hf23-feedback" role="status" aria-live="polite"></p><div class="hf23-controls"><button id="hf23Next" type="button" class="hf23-primary" hidden>Następne pytanie</button></div><p class="hf23-muted">Możesz przerwać i wrócić później. Każda odpowiedź zapisuje się tylko raz.</p></section>';
   document.body.append(modal);$('hf23Close').onclick=close;$('hf23Next').onclick=()=>{idx++;state.partial.idx=idx;write(state);show()};modal.addEventListener('click',e=>{if(e.target===modal)close()});modal.addEventListener('keydown',e=>{if(e.key==='Escape')close();if(e.key==='Tab'){const controls=[...modal.querySelectorAll('button:not([disabled]):not([hidden])')].filter(b=>b.getClientRects().length);if(!controls.length)return;const first=controls[0],last=controls[controls.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
   renderAwards();window.addEventListener('franka:s14word',()=>{if(!$('hf23Modal')?.classList.contains('open'))renderAwards()});
@@ -2825,7 +2873,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  function snapshot(){const s=window.hf23?.read?.()||{},sessions=Array.isArray(s.sessions)?s.sessions.filter(x=>x&&x.finished):[],days=new Set(sessions.map(x=>x.day)),perfect=sessions.filter(x=>Number(x.answered)>=5&&Number(x.correct)===Number(x.answered)).length,reviewed=sessions.reduce((n,x)=>n+(Number(x.answered)||0),0);const values=[sessions.length,days.size,perfect,reviewed];return definitions.map((d,i)=>({...d,value:Math.max(0,values[i]),won:values[i]>=d.goal}));}
  function openCollection(){const target=$('s14Showcase');if(!target)return;try{window.frankaNav15_2?.go('awards',{focus:false})}catch(e){};target.open=true;target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});setTimeout(()=>{$('hf24Collection')?.scrollIntoView({behavior:'auto',block:'nearest'})},180)}
  function showDetail(a){const root=$('hf24Detail');if(!root)return;root.replaceChildren();const title=element('strong','',a.icon+' '+a.name);root.append(title,element('p','',a.description),element('p','',a.won?'✅ Zdobyta!':'🔒 Jeszcze do zdobycia'));if(!a.won){const meter=element('progress','hf24-meter');meter.max=a.goal;meter.value=Math.min(a.goal,a.value);meter.setAttribute('aria-label','Postęp: '+a.name);root.append(meter,element('p','',`${Math.min(a.goal,a.value)} / ${a.goal} (${a.unit})`))}root.hidden=false;}
- function render(){const data=snapshot(),won=data.filter(x=>x.won).length;const home=$('hf23Home');if(home){let btn=$('hf24OpenAwards');if(!btn){btn=element('button','hf24-link');btn.type='button';btn.id='hf24OpenAwards';btn.onclick=openCollection;home.append(btn)}btn.textContent=`🏅 Zobacz odznaki Powtórki mistrza (${won}/4)`;const old=home.querySelector('.hf23-meta');if(old)old.textContent=`Zdobyte odznaki: ${won}/4 · Ostatnie sesje: ${(window.hf23?.read?.()?.sessions||[]).filter(x=>x.finished).length}`;}
+ function render(){const data=snapshot(),won=data.filter(x=>x.won).length;const home=$('hf23Home');if(home){let btn=$('hf24OpenAwards');if(!btn){btn=element('button','hf24-link');btn.type='button';btn.id='hf24OpenAwards';btn.onclick=openCollection;home.append(btn)}btn.textContent=`🏅 Zobacz odznaki Powtórki mistrza (${won}/4)`;const old=home.querySelector('.hf23-meta');if(old)old.hidden=true;}
   const target=$('s14Showcase');if(!target)return;let section=$('hf24Collection');if(!section){section=element('section','hf24-section');section.id='hf24Collection';const trophy=$('s14Trophies');if(trophy)trophy.after(section);else target.append(section)}section.replaceChildren();section.append(element('h4','',`🧠 Powtórka mistrza — ${won}/4 odznaki`),element('p','hf24-intro','Wybierz odznakę, aby zobaczyć, jak ją zdobyć. Nie tracisz nagród za przerwy.'));const grid=element('div','hf24-grid');for(const a of data){const card=element('button','hf24-card'+(a.won?' hf24-won':''));card.type='button';card.append(element('span','hf24-emoji',a.won?a.icon:'🔒'),element('strong','',a.name),element('small','',a.description),element('span','hf24-state',a.won?'✅ Zdobyta':`${Math.min(a.goal,a.value)}/${a.goal} · Do zdobycia`));card.onclick=()=>showDetail(a);grid.append(card)}section.append(grid);const detail=element('div','hf24-detail');detail.id='hf24Detail';detail.hidden=true;detail.setAttribute('role','status');section.append(detail);
   const root=$('hf23Awards');if(root){let link=$('hf24AwardsLink');if(!link){link=element('button','hf24-link','🏆 Zobacz wszystkie odznaki i puchary');link.id='hf24AwardsLink';link.type='button';link.onclick=openCollection;root.append(link)}else if(link.parentNode!==root)root.append(link)}
  }
@@ -2976,14 +3024,14 @@ function modelBox(a){const box=node('div',undefined,'s39-model');box.append(node
 function render(){if(!run)return;stopSound();const t=topic(),body=$('s39Body');body.replaceChildren();status(writeError);$('s39Title').textContent=t.icon+' '+t.title;$('s39Context').textContent=(run.preview?'Podgląd TEST · bez zapisu · ':'')+'Mówię i rozumiem · wariant '+(run.variant+1);const total=t.variants[run.variant].length;
 const meter=node('div',undefined,'s39-meter'),fill=node('i');fill.style.width=(run.phase==='summary'?100:run.step/total*100)+'%';meter.append(fill);body.append(meter);
 if(run.phase==='learn'){body.append(node('h3','Najpierw posłuchaj i spróbuj powtórzyć.'),node('p','Potem użyjesz tych zwrotów w rozmowie. Nie musisz niczego pisać.','s39-note'));for(const [es,pl]of t.prepare){const row=node('div',undefined,'s39-row'),words=node('div');words.append(node('strong',es),node('small',pl));row.append(words,btn('🔊',()=>say(es)));row.lastChild.setAttribute('aria-label','Posłuchaj: '+es);body.append(row)}body.append(btn('Spróbuję sam →',()=>{run.phase='task';persist();render()},'s39-primary'));if(run.preview)body.append(btn('Zmień wariant',()=>{run.variant=(run.variant+1)%t.variants.length;render()}));return}
-if(run.phase==='summary'){const quizzes=run.results.filter(x=>x.source==='quiz'),speech=run.results.filter(x=>x.kind==='oral');body.append(node('h3','🌟 Rozmowa i ćwiczenia zakończone!'),node('p',`Zadania z wyborem lub układaniem: ${quizzes.filter(x=>x.correct).length}/${quizzes.length} poprawnych przy pierwszej próbie.`),node('p',`Wypowiedzi na głos: ${speech.length}. Brawo za ćwiczenie mówienia!`),node('p',run.preview?'To podgląd — postęp nie zostanie zapisany.':'Zapisz ćwiczenie. Przy kolejnym podejściu otrzymasz drugi wariant. Dawne zaliczenia i puchary pozostają bez zmian.','s39-note'),btn(run.preview?'Wróć do ścieżki':'Zapisz i wróć do ścieżki',finish,'s39-primary'));return}
+if(run.phase==='summary'){const quizzes=run.results.filter(x=>x.source==='quiz'),speech=run.results.filter(x=>x.kind==='oral');body.append(node('h3','🌟 Rozmowa i ćwiczenia zakończone!'),node('p',`Zadania z wyborem lub układaniem: ${quizzes.filter(x=>x.correct).length}/${quizzes.length} poprawnych przy pierwszej próbie.`),node('p',`Wypowiedzi na głos: ${speech.length}. Brawo za ćwiczenie mówienia!`),node('p',run.preview?'To podgląd — postęp nie zostanie zapisany.':'Możesz wrócić do ścieżki albo powtórzyć ćwiczenie później.','s39-note'),btn(run.preview?'Wróć do ścieżki':'Zapisz i wróć do ścieżki',finish,'s39-primary'));return}
 const a=activity(),i=run.item;body.append(node('p',`Zadanie ${run.step+1} z ${total}`,'s39-note'),node('h3',a.prompt));
 if(a.audio){body.append(btn(i.heard?'🔊 Posłuchaj jeszcze raz':'🔊 Posłuchaj',heard));}
 if(a.kind==='listen'){
 const opts=node('div',undefined,'s39-choices');a.options.forEach((label,n)=>{const b=btn(label,()=>completeItem(n));b.disabled=i.checked||!i.heard;if(i.checked){b.dataset.correct=String(n===a.answer);b.dataset.wrong=String(n===i.answer&&n!==a.answer)}opts.append(b)});body.append(opts);if(!i.heard)body.append(node('p','Najpierw naciśnij „Posłuchaj”.','s39-note'));if(i.checked)body.append(node('p',(i.answer===a.answer?'✓ Zgadza się. ':'Poćwiczmy to jeszcze. ')+a.pl,'s39-feedback'));
 }else if(a.kind==='oral'){
 body.append(node('p','Powiedz na głos. Nagrywanie nie jest potrzebne.','s39-note'));
-if(!i.checked&&!i.revealed){const actions=node('div',undefined,'s39-actions');const answer=btn('Powiedziałem — porównaj',()=>{i.revealed=true;persist();render()},'s39-primary');answer.disabled=!!a.audio&&!i.heard;actions.append(answer,btn('Potrzebuję wzoru',()=>{i.help=true;i.model=true;i.revealed=true;persist();render()}));body.append(actions)}else{body.append(modelBox(a));if(!i.checked){const ratings=node('div',undefined,'s39-actions');for(const [q,label]of [['independent','Odpowiedziałem sam'],['help','Potrzebowałem pomocy']]){if(i.model&&q==='independent')continue;ratings.append(btn(label,()=>{i.source='self';i.quality=q;i.help ||=q==='help';completeItem(q)},q==='independent'?'s39-primary':'s39-secondary'))}body.append(ratings,node('p','Własna odpowiedź o tym samym znaczeniu też jest dobra. To nie automatyczny test mowy.','s39-note'))}else body.append(node('p',({independent:'✓ Odpowiedziałem sam',help:'✓ Potrzebowałem pomocy',practice:'Jeszcze ćwiczę'}[i.quality]),'s39-feedback'))}
+if(!i.checked&&!i.revealed){const actions=node('div',undefined,'s39-actions');const answer=btn('Powiedziałem — porównaj',()=>{i.revealed=true;persist();render()},'s39-primary');answer.disabled=!!a.audio&&!i.heard;actions.append(answer,btn('Potrzebuję wzoru',()=>{i.help=true;i.model=true;i.revealed=true;persist();render()}));body.append(actions)}else{body.append(modelBox(a));if(!i.checked){const ratings=node('div',undefined,'s39-actions');for(const [q,label]of [['independent','Odpowiedziałem sam'],['help','Potrzebowałem pomocy']]){if(i.model&&q==='independent')continue;ratings.append(btn(label,()=>{i.source='self';i.quality=q;i.help ||=q==='help';completeItem(q)},q==='independent'?'s39-primary':'s39-secondary'))}body.append(ratings,node('p','Własna odpowiedź o tym samym znaczeniu też jest dobra.','s39-note'))}else body.append(node('p',({independent:'✓ Odpowiedziałem sam',help:'✓ Potrzebowałem pomocy',practice:'Jeszcze ćwiczę'}[i.quality]),'s39-feedback'))}
 }else{
 body.append(node('p','Dotykaj słów w odpowiedniej kolejności. Dotknij wybranego słowa, aby je cofnąć.','s39-note'));
 if(!i.pool)i.pool=a.tokens.map((_,n)=>n).reverse();const assembled=node('div',undefined,'s39-assembled');assembled.setAttribute('aria-label','Twoje zdanie');for(const index of i.chosen){const b=btn(a.tokens[index],()=>{i.chosen=i.chosen.filter(n=>n!==index);persist();render()});b.disabled=i.checked;assembled.append(b)}if(!i.chosen.length)assembled.append(node('span','Tu powstanie zdanie.','s39-note'));body.append(assembled);const pool=node('div',undefined,'s39-tokens');for(const index of i.pool){const b=btn(a.tokens[index],()=>{i.chosen.push(index);persist();render()});b.dataset.tokenIndex=String(index);b.disabled=i.checked||i.chosen.includes(index);pool.append(b)}body.append(pool);
@@ -5402,7 +5450,7 @@ message('Zeskanuj QR aparatem drugiego urządzenia albo wpisz kod ręcznie.');})
 $('Devices').onclick=()=>action(async()=>{const result=await request('/v1/devices'),list=$('DeviceList');list.replaceChildren();for(const d of result.devices){const row=document.createElement('div'),p=document.createElement('p');p.textContent=d.name+(d.revoked_at?' · odłączone':' · '+d.role);row.append(p);if(d.role==='learner'&&!d.revoked_at){const b=document.createElement('button');b.textContent='Odłącz: '+d.name;b.onclick=()=>action(async()=>{await request('/v1/devices/'+d.id+'/revoke','POST');row.remove();message('Urządzenie odłączone. Wspólne punkty pozostają.');});row.append(b);}list.append(row);}});
 function close(){root.hidden=true;$('Secret').value='';$('RecoverySecret').value='';$('RecoveryConfirm').checked=false;$('PairInput').value='';clearPair();document.body.style.overflow=overflow;priorFocus?.focus();}
 $('Close').onclick=close;root.addEventListener('keydown',e=>{if(e.key==='Escape')close();if(e.key==='Tab'){const nodes=[...root.querySelectorAll('button,input,summary')].filter(n=>!n.disabled&&n.getClientRects().length);const first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
-const launch=document.createElement('button');launch.id='fs37Launch';launch.textContent='Family Sync — połącz urządzenia';function openPanel(){priorFocus=document.activeElement;overflow=document.body.style.overflow;root.hidden=false;document.body.style.overflow='hidden';render();$('Close').focus();if(state.joinAttempt){$('Join').open=true;message('Poprzednie łączenie zostało przerwane. Kliknij „Ponów przerwane łączenie”.');}else if(state.token)action(sync)};launch.onclick=openPanel;(document.getElementById('s15Today')||document.body).append(launch);
+const launch=document.createElement('button');launch.id='fs37Launch';launch.textContent='Urządzenia i synchronizacja';function openPanel(){priorFocus=document.activeElement;overflow=document.body.style.overflow;root.hidden=false;document.body.style.overflow='hidden';render();$('Close').focus();if(state.joinAttempt){$('Join').open=true;message('Poprzednie łączenie zostało przerwane. Kliknij „Ponów przerwane łączenie”.');}else if(state.token)action(sync)};launch.onclick=openPanel;(document.getElementById('s15ParentSlot')||document.body).prepend(launch);
 if(incomingCode){openPanel();if(state.role==='parent'){message('To urządzenie ma już dostęp rodzica. Zeskanuj QR innym telefonem lub tabletem.');}else{$('Join').open=true;$('PairInput').value=incomingCode;message('Kod z QR jest gotowy. Wpisz nazwę tego urządzenia i kliknij „Połącz i pobierz postęp”.');$('Name').focus();}}
 window.addEventListener('online',()=>{if(state.token)action(sync)});render();
 })();
@@ -5466,7 +5514,7 @@ let busy=false,waitingForHome=false,autoBlocked=false,failures=0,nextAuto=Date.n
 const autoKey=id=>'hf37prod:auto:'+id;
 const autoEnabled=()=>localStorage.getItem(autoKey(active()))==='1'&&!!readState(active());
 const homeStatus=node('p');homeStatus.id='fs37AutoStatus';homeStatus.setAttribute('role','status');homeStatus.style.cssText='font-size:14px;padding:8px 12px;color:#34546b';(document.getElementById('s15Today')||document.body).append(homeStatus);
-function autoLabel(text){homeStatus.hidden=!readState(active());if(autoEnabled()&&(!navigator.onLine||(offlineHint&&text.startsWith('Zapis na serwerze'))))text='Czeka na internet · postęp zapisany lokalnie';homeStatus.textContent=text;}
+function autoLabel(text){homeStatus.hidden=!readState(active());if(autoEnabled()&&(!navigator.onLine||(offlineHint&&text.startsWith('Zapis na serwerze'))))text='Czeka na internet · postęp zapisany lokalnie';if(homeStatus.textContent!==text)homeStatus.textContent=text;}
 function visible(el){return !!el&&!el.hidden&&el.getClientRects().length>0;}
 function safeToRefresh(){
  if(document.hidden||Date.now()-lastInteraction<2000||!visible(document.getElementById('s15Today')))return false;
@@ -5479,7 +5527,14 @@ function schedule(delay=2000){if(autoEnabled()&&!autoBlocked)nextAuto=Math.min(n
 for(const type of ['pointerdown','keydown'])document.addEventListener(type,()=>{lastInteraction=Date.now();},true);
 
 function status(t){$('Status').textContent=t;}
-function refresh(){$('Auto').checked=autoEnabled();const m=meta(),p=m.profiles.find(x=>x.id===m.active),s=JSON.parse(localStorage.getItem(key(m.active))||'null');$('Identity').textContent='Wybrany profil: '+p.name+(s?' · połączony · wersja '+(s.revision||'startowa'):' · jeszcze niepołączony');}
+function refresh(){
+ const linked=window.hf37IsProfileLinked(active());
+ const profile=meta().profiles.find(p=>p.id===active());
+ $('Auto').checked=autoEnabled();
+ $('Identity').textContent=profile.name+(linked?' · profil połączony':' · profil lokalny');
+ const info=document.getElementById('s40ProfileSync');
+ if(info)info.textContent=linked?'Profil połączony. Postęp możesz synchronizować na połączonych urządzeniach.':'Profil lokalny. Postęp zapisuje się na tym urządzeniu.';
+}
 function credentials(){const p=JSON.parse(localStorage.getItem('family-sync-production37')||'null');if(!p?.token)throw Error('Najpierw połącz urządzenie przez Family Sync.');return p;}
 async function request(path,method='GET',data){
  const token=credentials().token,epoch=networkEpoch,controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);requests.add(controller);
@@ -5494,6 +5549,9 @@ async function request(path,method='GET',data){
  }finally{clearTimeout(timer);requests.delete(controller)}
 }
 function readState(id){return JSON.parse(localStorage.getItem(key(id))||'null');}
+window.hf37IsProfileLinked=id=>{
+ try{return readState(id)?.remoteId===REMOTE;}catch{return false;}
+};
 function saveState(id,s){localStorage.setItem(key(id),JSON.stringify(s));}
 function readRemote(r){if(r.snapshot?.schema!==1||r.snapshot.data?.kind!=='learning-v1'||!Array.isArray(r.snapshot.data.applied))throw Error('Serwer nie zawiera obsługiwanego profilu nauki.');C.validate(r.snapshot.data.records);return r;}
 function ensureActive(id){if(active()!==id)throw Error('Profil zmienił się. Otwórz ponownie panel.');}
@@ -5519,7 +5577,7 @@ for(let round=0;round<5;round++){
  waitingForHome=false;apply(id,remote.snapshot.data.records,finalState);return;
 }
 throw Error('Pojawiły się kolejne zmiany. Zostały zachowane; ponów synchronizację.');}
-async function action(fn,confirmRequired=true,automatic=false){if(busy)return;if(confirmRequired&&!$('Confirm').checked){status('Potwierdź wybór profilu i zapisanie kopii.');return;}if(!navigator.onLine){autoLabel('Czeka na internet · postęp zapisany na urządzeniu');status('Brak internetu. Nauka jest zapisana lokalnie. Synchronizuj po odzyskaniu połączenia.');return;}if(!navigator.locks){autoBlocked=true;autoLabel('Wymaga uwagi rodzica · zaktualizuj przeglądarkę');status('Ta przeglądarka nie obsługuje bezpiecznej blokady synchronizacji. Zaktualizuj przeglądarkę.');return;}busy=true;if(automatic)autoLabel('Sprawdzam połączenie · postęp zapisany lokalnie');for(const b of box.querySelectorAll('button'))b.disabled=true;status('Sprawdzam i zapisuję kopię…');try{await navigator.locks.request('hf37-learning',{ifAvailable:true},async lock=>{if(!lock){if(automatic){nextAuto=Date.now()+3000;return;}throw Error('Synchronizacja trwa w innej karcie.');}const health=await request('/health');if(!health.learningProfiles||!health.versionHistory)throw Error('Serwer wymaga aktualizacji do family-sync-production-1.');await fn();failures=0;autoBlocked=false;});}catch(e){if(automatic){failures++;if([401,403,413].includes(e.status)||(!['AbortError','TypeError'].includes(e.name)&&!e.status&&!e.message.startsWith('Pojawiły się kolejne zmiany')))autoBlocked=true;autoLabel(autoBlocked?'Wymaga uwagi rodzica · szczegóły w Family Sync':'Czeka na połączenie z serwerem · postęp zapisany lokalnie');nextAuto=Date.now()+Math.min(120000,15000*2**Math.min(failures,3));}status(e.name==='AbortError'||e instanceof TypeError?'Nie udało się połączyć. Dane lokalne i próba synchronizacji są zachowane. Spróbuj ponownie.':e.message);}finally{busy=false;for(const b of box.querySelectorAll('button'))b.disabled=false;refresh();}}
+async function action(fn,confirmRequired=true,automatic=false){if(busy)return;if(confirmRequired&&!$('Confirm').checked){status('Potwierdź wybór profilu i zapisanie kopii.');return;}if(!navigator.onLine){autoLabel('Czeka na internet · postęp zapisany na urządzeniu');status('Brak internetu. Nauka jest zapisana lokalnie. Synchronizuj po odzyskaniu połączenia.');return;}if(!navigator.locks){autoBlocked=true;autoLabel('Wymaga uwagi rodzica · zaktualizuj przeglądarkę');status('Ta przeglądarka nie obsługuje bezpiecznej blokady synchronizacji. Zaktualizuj przeglądarkę.');return;}busy=true;autoLabel('Synchronizuję… · postęp zapisany lokalnie');for(const b of box.querySelectorAll('button'))b.disabled=true;status('Sprawdzam i zapisuję kopię…');try{await navigator.locks.request('hf37-learning',{ifAvailable:true},async lock=>{if(!lock){if(automatic){nextAuto=Date.now()+3000;return;}throw Error('Synchronizacja trwa w innej karcie.');}const health=await request('/health');if(!health.learningProfiles||!health.versionHistory)throw Error('Serwer wymaga aktualizacji do family-sync-production-1.');await fn();failures=0;autoBlocked=false;});}catch(e){if(automatic){failures++;if([401,403,413].includes(e.status)||(!['AbortError','TypeError'].includes(e.name)&&!e.status&&!e.message.startsWith('Pojawiły się kolejne zmiany')))autoBlocked=true;autoLabel(autoBlocked?'Wymaga uwagi rodzica · szczegóły w Family Sync':'Czeka na połączenie z serwerem · postęp zapisany lokalnie');nextAuto=Date.now()+Math.min(120000,15000*2**Math.min(failures,3));}if(!automatic)autoLabel('Wymaga uwagi · szczegóły w synchronizacji');status(e.name==='AbortError'||e instanceof TypeError?'Nie udało się połączyć. Dane lokalne i próba synchronizacji są zachowane. Spróbuj ponownie.':e.message);}finally{busy=false;for(const b of box.querySelectorAll('button'))b.disabled=false;refresh();}}
 $('Publish').onclick=()=>action(async()=>{
  const id=active();if(readState(id)){await sync(id);return;}
  const me=await request('/v1/me');if(me.device.role!=='parent')throw Error('Punkt startowy wybiera rodzic.');
@@ -5589,4 +5647,59 @@ document.getElementById('fs37Launch')?.addEventListener('click',refresh);refresh
 })();
 </script>
 <!-- Family Sync learning UI END -->
+<style id="s40Styles">
+.s15-cards{grid-template-columns:1fr}
+.s15-feature{min-height:230px}
+.s15-quick{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.s15-quick-card{min-height:84px;gap:5px;padding:14px}
+.s15-quick-card:last-child{grid-column:auto}
+.s15-quick-card small{line-height:1.35}
+.s40-season{display:flex;align-items:center;gap:12px;margin:0 0 12px;font-weight:750}
+.s40-season select{min-height:44px;min-width:0;padding:8px 12px;border:1px solid #d9d3ef;border-radius:12px;background:white;color:#302458;font:inherit}
+#s40DialogContext{margin:8px 0 12px;color:#51486a}
+#s15Learning[data-mode="dialogues"] :is(.s10-learning-path,#s8JourneySummary,#hf203Checkpoints,#s15TestSlot,#s15ContinueSlot,#uxChooser),
+#s15Learning[data-mode="car"] :is(.s15-sectionhead,#s15Seasons,.s15-seg,#s15ContinueSlot,#s15TestSlot),
+#s15Learning[data-mode="games"] :is(#s15ContinueSlot,#uxCloseGames,#s40GameSeason){display:none!important}
+#s15Learning[data-journey-dialog="true"][data-mode="dialogues"] #s15Seasons{display:none}
+.s10-steps{grid-template-columns:minmax(0,1fr)}
+.s10-steps > *{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.s10-step-main{min-width:0}
+.s10-step-mark{flex-shrink:0}
+.s40-lock{color:#50486b}
+@media(max-width:390px){
+ .s10-step{gap:8px}
+ .s10-step-mark{max-width:66px;text-align:center;white-space:normal;font-size:.73rem;padding:5px}
+}
+.s40-car-settings{margin-top:16px}
+.s40-car-settings summary{min-height:44px;padding:10px 0;cursor:pointer;font-weight:700}
+.s40-game-extras,.s40-letter-options{grid-column:1/-1}
+.s40-game-extras>summary,.s40-letter-options>summary,#hf30TransferGuide>summary{
+ display:list-item;padding:10px 0;min-height:44px;font-weight:750;cursor:pointer
+}
+.s40-game-extras[open]{display:grid;gap:8px}
+.s40-letter-options[open]{display:grid;gap:8px}
+#s40CarQuizSlot:not(:empty){background:white;color:#2b2452;border-radius:18px;padding:12px;margin-top:16px}
+#s40CarQuizSlot h2{color:#302458}
+#s40ParentResults{width:100%;margin-top:8px}
+#s15ParentSlot #fs37Launch{border-style:solid;background:#f0edff;color:#44338f}
+#s15Shell button,.s39-actions button,#s39Panel button,#a1Stage .jr-dialog button{min-height:44px}
+#s39Panel button.s39-primary,#a1Stage .jr-dialog button.jr-main,#a1Stage .jr-dialog button.jr-good,
+#hf201Dialog button.hf201-primary,#hf202Panel button.primary,#hf23Modal button.hf23-primary{
+ background:#5541c3;color:white;border-color:#5541c3;border-radius:14px
+}
+#s39Panel button.s39-secondary,#a1Stage .jr-dialog button.jr-quiet,#a1Stage .jr-dialog button.jr-help{
+ background:#f0edfb;color:#44338f;border-color:#dcd5f2;border-radius:14px
+}
+#s39Panel button[data-wrong="true"]{background:#fff0ed;color:#8a261a;border-color:#b25647}
+#s39Panel button[data-correct="true"]{background:#e6f8ee;color:#155838;border-color:#429a73}
+:where(#s15Shell,#s39Panel,#hf201Dialog,#hf202Panel,#hf23Modal) :is(button,summary,select):focus-visible{
+ outline:3px solid #6854d0;outline-offset:3px
+}
+@media(max-width:420px){
+ .s15-quick-card small{display:none}
+ .s15-feature{padding:20px}
+ .s15-feature .s15-art{opacity:.32}
+}
+@media(prefers-reduced-motion:reduce){.s15-view{animation:none}#s15Shell button{transition:none}}
+</style>
 </body></html>

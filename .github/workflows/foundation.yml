@@ -62,6 +62,9 @@ jobs:
       - name: Require exactly 96 clean passes (no skips, failures or flaky tests)
         run: node scripts/verify-results.cjs test-results/regression.json
 
+      - name: Verify Sprint 40 navigation, offline copy and parked quiz
+        run: npx playwright test tests/sprint40-ux.spec.js --forbid-only --reporter=list --output=test-results/sprint40
+
       # No modifications to index.html/tests. A controlled, intentional failure
       # proves the release gate blocks publishing even when all 96 tests pass.
       - name: Manual negative gate test - deliberately block deployment
